@@ -1,0 +1,12 @@
+<div class="container">
+        <h1>Strona główna</h1>
+        <ul>
+                <% companies.forEach(company => { %>
+                        <li><a href="/company/<%= company.slug %>"><%= company.name %></a></li>
+                <% }) %>
+        </ul>
+
+        <!--Wszystko co poniżej jest dla fragmentu sidebar-->
+        <%- contentFor('sidebar')%>
+        <h2>SideBar</h2>
+</div>

@@ -1,0 +1,13 @@
+node_modules
+packages/*/node_modules
+packages/*/out
+Dockerfile*
+.env
+Jenkinsfile
+.dockerignore
+.git
+.gitignore
+.idea
+README.md
+packages/*/dist
+packages/*/storybook-static

@@ -1,0 +1,32 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "backend - nodeJS",
+  "main": "index.js",
+  "scripts": {
+    "build:forntend": "vite build",
+    "test": "jest --runInBand",
+    "watch": "nodemon src/index.js -e js, json && vite",
+    "test:e2e": "start-server-and-test start http://localhost:3000 cypress:run",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
+  },
+  "dependencies": {
+    "json2csv": "^6.0.0-alpha.2",
+    "mongodb": "^6.10.0",
+    "mongoose": "^8.8.0",
+    "multer": "^1.4.5-lts.1",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "express-ejs-layouts": "^2.5.1",
+    "express-session": "^1.18.1"
+  },
+  "devDependencies": {
+    "start-server-and-test": "^2.0.8",
+    "nodemon": "^3.1.7"
+  },
+  "author": "adamw",
+  "license": "ISC"
+}

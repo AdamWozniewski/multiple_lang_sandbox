@@ -1,0 +1,22 @@
+<h1>Lista firm</h1>
+<form action="">
+    <%- include('./partials/search') %>
+    <div class="row">
+        <%- include('./partials/filters') %>
+        <div class="col-9">
+            <% companies.forEach(company => { %>
+                <div class="bg-light card mb-3">
+                    <div class="card-body">
+                        <p class="h3 mb-4"><%= company.name %></p>
+                        <p class="h6 mb-4">liczba pracowników: <%= company.employeesCount %></p>
+                        <a class="btn btn-primary" href="/company/<%= company.slug %>">Zobacz</a>
+                        <a class="btn btn-warning" href="/admin/company/<%= company.slug %>/edit">Edytuj</a>
+                        <a class="btn btn-danger" href="/admin/company/<%= company.slug %>/delete"
+                           onclick="return confirm('Czy jesteś pewien?')">Usuń</a>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+    <%- include('./partials/pagination') %>
+</form>
