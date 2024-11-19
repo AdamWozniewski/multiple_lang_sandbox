@@ -2,7 +2,7 @@
 <form method="POST">
     <div class="form-group">
         <label for="">Email</label>
-        <input required value="<%= form?.email %>" type="email" name="email" class="form-control <%- errors?.email ? 'is-invalid' : '' %>%>
+        <input required value="<%= form?.email %>" type="email" name="email" class="form-control <%- errors?.email ? 'is-invalid' : '' %>
             " id="" aria-describedby="emailHelp" placeholder="Emial">
         <% if(errors?.email) { %>
             <div class="invalid-feedback"><%= errors.email.message %></div>
