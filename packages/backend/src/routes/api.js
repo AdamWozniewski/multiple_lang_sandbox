@@ -3,12 +3,11 @@ import {CompaniesControllerApi} from "../controllers/api/company-controller-api.
 import {upload} from "../services/uploader.js";
 import {isAuthMiddleware} from "../middleware/is-auth-api.js";
 import {UserControllerApi} from "../controllers/api/user-controller-api.js";
-import {UserController} from "../controllers/web/user-controller.js";
 
 const routerApi = new Router();
 
 const companies = new CompaniesControllerApi();
-const user = new UserController();
+const user = new UserControllerApi();
 
 routerApi.get('/companies', companies.showCompanies);
 routerApi.post('/companies', isAuthMiddleware, companies.createCompany);

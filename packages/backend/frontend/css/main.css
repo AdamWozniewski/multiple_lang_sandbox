@@ -1,0 +1,9 @@
+@import 'tailwind.css';
+@import 'styles.css';
+@import 'custom.css';
+
+/*@import 'partials/header.scss';*/
+
+/*@import '../less/styles.less';*/
+
+@import 'custom.css';

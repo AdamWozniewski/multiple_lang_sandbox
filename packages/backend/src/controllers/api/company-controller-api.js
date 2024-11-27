@@ -1,6 +1,6 @@
 import path from "path";
 import {fileURLToPath} from "url";
-import {Company} from "../../db/models/company.js";
+import {Company} from "../../db/mongo/models/company.js";
 import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);

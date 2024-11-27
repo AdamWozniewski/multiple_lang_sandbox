@@ -7,4 +7,4 @@ const changePage = (e) => {
 
 document.querySelectorAll('.pagination a').forEach(item => {
     item.addEventListener('click', changePage);
-})
+});

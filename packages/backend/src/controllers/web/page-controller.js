@@ -1,5 +1,5 @@
 export class PageController {
-    home(req, res) {
+    async home(req, res) {
         res.render('pages/home', {companies: [], title: 'Strona główna', url: req.url});
     }
 

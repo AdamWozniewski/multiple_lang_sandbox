@@ -1,0 +1,44 @@
+<h1>Lista firm</h1>
+<div class="row">
+    <% if(user) { %>
+        <div class="col-12">
+            <a class="btn btn-success w-100 mb-2" href="/admin/company/add">Dodaj nową firmę</a>
+        </div>
+    <% } %>
+        <div class="col-12">
+            <a class="btn btn-success w-100 mb-2" href="/csv">Pobierz listę firm</a>
+        </div>
+</div>
+<form action="">
+    <%- include('./partials/search') %>
+    <div class="row">
+
+        <%- include('./partials/filters') %>
+        <div class="col-9">
+            <% companies.forEach(company => { %>
+                <div class="bg-light card mb-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-3">
+                                <img src="/img/<%- company.image %>" alt="" class="img-fluid">
+                            </div>
+                            <div class="col-9">
+                                <p class="h3 mb-4"><%= company.name %></p>
+                                <p class="h6 mb-4">liczba pracowników: <%= company.employeesCount %></p>
+                                <p class="h6 mb-4">Kontakt: <%= company.user?.email %></p>
+                                <p class="h6 mb-4">CEO: <%= company.user?.fullName %></p>
+                                <a class="btn btn-primary" href="/company/<%= company.slug %>">Zobacz</a>
+                                <% if(user) { %>
+                                    <a class="btn btn-warning" href="/admin/company/<%= company.slug %>/edit">Edytuj</a>
+                                    <a class="btn btn-danger" href="/admin/company/<%= company.slug %>/delete"
+                                       onclick="return confirm('Czy jesteś pewien?')">Usuń</a>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+    <%- include('./partials/pagination') %>
+</form>

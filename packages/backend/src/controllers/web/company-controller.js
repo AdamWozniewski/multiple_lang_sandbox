@@ -1,4 +1,4 @@
-import {Company} from "../../db/models/company.js";
+import {Company} from "../../db/mongo/models/company.js";
 import fs from "fs";
 import path from "path";
 import {fileURLToPath} from "url";

@@ -1,7 +1,7 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
+<nav class="w-full bg-amber-200">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
-            <img src="/img/logo.png" class="logo" alt="">
+            <img src="/img/logo.jpg" width="100px" height="100px" class="logo" alt="">
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -23,10 +23,10 @@
                     </li>
                 <% } else { %>
                     <li class="nav-item">
-                        <a class="nav-link <%- url.includes('profile') ? 'active' : '' %>" href="admin/profile">Profil</a>
+                        <a class="nav-link <%- url.includes('company') ? 'active' : '' %>" href="/logout">Wyloguj</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <%- url.includes('company') ? 'active' : '' %>" href="/logout">Wyloguj</a>
+                        <a class="nav-link <%- url.includes('profile') ? 'active' : '' %>" href="admin/profile">Profil</a>
                     </li>
                 <% } %>
 

@@ -1,0 +1,14 @@
+<div class="row">
+    <div class="col">
+        <p>wyników <%- companies.length %> na <%- resultsCount %></p>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <% for(let i = 1; i <= pagesCount; i++) { %>
+                    <li class="page-item <%- currentPage == i ? 'active' : '' %>"><a class="page-link" href="#"
+                                                                                     data-page="<%- i %>"><%- i %></a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+    </div>
+</div>

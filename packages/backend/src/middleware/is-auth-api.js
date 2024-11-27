@@ -1,4 +1,4 @@
-import {User} from "../db/models/user.js";
+import {User} from "../db/mongo/models/user.js";
 
 export const isAuthMiddleware = async (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1];

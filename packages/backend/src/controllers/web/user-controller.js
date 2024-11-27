@@ -1,4 +1,4 @@
-import {User} from "../../db/models/user.js";
+import {User} from "../../db/mongo/models/user.js";
 
 export class UserController {
     register(req, res) {

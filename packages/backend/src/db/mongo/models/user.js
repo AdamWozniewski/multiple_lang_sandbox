@@ -1,7 +1,7 @@
 import mongoose, {Schema} from "mongoose";
-import bcrypt from 'bcrypt';
 import {validateEmail} from "../validators.js";
 import {generate} from "randomstring";
+import { hashPassword, verifyPassword } from '../../../services/hash.js';
 
 const userSchema = new Schema({
     email: {
@@ -24,8 +24,7 @@ const userSchema = new Schema({
 
 userSchema.pre("save", function (next) {
     const user = this
-    const salt = bcrypt.genSaltSync(10);
-    user.password = bcrypt.hashSync(user.password, salt);
+    user.password = hashPassword(user.password);
     next();
 });
 
@@ -50,7 +49,7 @@ userSchema.post('save', function (err, doc, next) {
 
 userSchema.methods = {
     comparePassword: function (password) {
-        return bcrypt.compareSync(password, this.password);
+        return verifyPassword(password, this.password);
     }
 };
 

@@ -13,8 +13,8 @@ const user = new UserController()
 
 routerWeb.get('/', page.home);
 
-routerWeb.get('/company/:name', company.showCompany);
-routerWeb.get('/company', company.showCompanies);
+routerWeb.get('/courses/:name', company.showCompany);
+routerWeb.get('/courses', company.showCompanies);
 
 routerWeb.get('/admin/company/add', isAuthMiddleware, company.showCreateCompany);
 routerWeb.post('/admin/company/add', isAuthMiddleware, company.createCompany);
