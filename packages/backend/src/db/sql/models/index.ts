@@ -1,4 +1,4 @@
-// import { userTable } from './user.js';
+// import { userTable } from './user.ts';
 // // import './photo.ts';
 // // import './course.ts';
 //
@@ -8,13 +8,12 @@
 //     // courseTable,
 // };
 
-import { pgTable, serial, text } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar } from "drizzle-orm/pg-core";
 
 export const userTable = pgTable('user', {
-    id: serial('id').primaryKey().notNull().unique(),
-    name: text('name').notNull(),
-    email: text('email').notNull().unique(),
-    lastName: text('lastName'),
-    firstName: text('firstName'),
-    password: text('password').notNull(),
+  id: serial('id').primaryKey().notNull().unique(),
+  email: varchar('email').notNull().unique(),
+  lastName: varchar('lastName'),
+  firstName: varchar('firstName'),
+  password: varchar('password').notNull(),
 });

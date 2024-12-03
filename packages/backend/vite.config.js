@@ -8,14 +8,14 @@ export default defineConfig({
     build: {
         outDir: resolve(__dirname, 'public'),
         emptyOutDir: true,
-        watch: { // Dodaj watch dla trybu deweloperskiego
-            include: 'frontend/**/*', // Monitorowanie zmian w frontend
+        watch: {
+            include: 'frontend/**/*',
         },
         rollupOptions: {
             input: {
-                main: resolve(__dirname, 'frontend/index.html'), // Punkt wejścia
-                mainCss: resolve(__dirname, 'frontend/css/main.css'), // Punkt wejściowy dla CSS
-                mainJs: resolve(__dirname, 'frontend/js/main.js'), // Punkt wejściowy dla JS
+                main: resolve(__dirname, 'frontend/index.html'),
+                mainCss: resolve(__dirname, 'frontend/css/main.css'),
+                mainJs: resolve(__dirname, 'frontend/js/main.js'),
             },
             output: {
                 // entryFileNames: 'js/[name].js',

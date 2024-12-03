@@ -1,4 +1,4 @@
-// jest.config.js
+// jest.config.ts
 export default {
   testEnvironment: 'node',
   verbose: true,

@@ -1,20 +1,66 @@
-<h1>Rejestracja</h1>
-<form method="POST">
-    <div class="form-group">
-        <label for="">Email</label>
-        <input required value="<%= form?.email %>" type="email" name="email" class="form-control <%- errors?.email ? 'is-invalid' : '' %>
-            " id="" aria-describedby="emailHelp" placeholder="Emial">
-        <% if(errors?.email) { %>
-            <div class="invalid-feedback"><%= errors.email.message %></div>
-        <% } %>
+<div
+        data-dialog-backdrop="sign-in-modal"
+        data-dialog-backdrop-close="true"
+        class="inset-0 z-[999] grid h-full place-items-center bg-black bg-opacity-60 duration-300"
+>
+    <div
+            data-dialog="sign-in-modal"
+            class="relative mx-auto w-full max-w-[24rem] rounded-lg overflow-hidden shadow-sm"
+    >
+        <form method="POST" class="relative flex flex-col bg-white">
+            <div class="relative m-2 items-center flex justify-center text-white h-24 rounded-md bg-slate-800">
+                <h3 class="text-2xl">
+                    Zarejestruj się
+                </h3>
+            </div>
+            <div class="flex flex-col gap-4 p-6">
+                <div class="w-full max-w-sm min-w-[200px]">
+                    <label class="block mb-2 text-sm text-slate-600">
+                        Email
+                    </label>
+                    <input id="" value="<%= form?.email %>" required type="email" name="email"
+                           class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+                           placeholder="Your Email" />
+                    <% if(errors?.email) { %>
+                        <div class="invalid-feedback"><%= errors.email.message %></div>
+                    <% } %>
+                </div>
+
+                <div class="w-full max-w-sm min-w-[200px]">
+                    <label class="block mb-2 text-sm text-slate-600">
+                        Hasło
+                    </label>
+                    <input id="" value="<%= form?.password %>" type="password" name="password" required
+                           class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+                           placeholder="Your Password" />
+                    <% if(errors?.password) { %>
+                        <div class="invalid-feedback"><%= errors.password.message %></div>
+                    <% } %>
+                </div>
+                <div class="w-full max-w-sm min-w-[200px]">
+                    <label class="block mb-2 text-sm text-slate-600">
+                        Powtórz hasło
+                    </label>
+                    <input id="" value="<%= form?.password %>" type="password" name="repeat-password" required
+                           class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow"
+                           placeholder="Retry Password" />
+                    <% if(errors?.password) { %>
+                        <div class="invalid-feedback"><%= errors.password.message %></div>
+                    <% } %>
+                </div>
+            </div>
+            <div class="p-6 pt-0">
+                <button class="w-full rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+                        type="submit">
+                    Zarejestruj
+                </button>
+                <p class="flex justify-center mt-6 text-sm text-slate-600">
+                    Masz konto?
+                    <a href="/login" class="ml-1 text-sm font-semibold text-slate-700 underline">
+                        Zaloguj się
+                    </a>
+                </p>
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-        <label for="">Hasło</label>
-        <input required value="<%= form?.password %>" type="password" name="password" class="form-control <%- errors?.password ? 'is-invalid' : '' %>"
-               id="" placeholder="Hasło">
-        <% if(errors?.password) { %>
-            <div class="invalid-feedback"><%= errors.password.message %></div>
-        <% } %>
-    </div>
-    <button type="submit" class="btn btn-primary">Zarejestruj</button>
-</form>
+</div>
