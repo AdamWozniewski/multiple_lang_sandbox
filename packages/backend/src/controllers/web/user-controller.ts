@@ -1,12 +1,12 @@
 import { User } from "@mongo/models/user.js";
-import { Request, Response } from "express";
-import { logger } from "../../services/logger.js";
 import { db } from "@sql/db.js";
 import { userTable } from "@sql/models/index.js";
+import type { Request, Response } from "express";
 import { hashPassword } from "../../services/hash.js";
+import { logger } from "../../services/logger.js";
 
 export class UserController {
-  register(req: Request, res: Response) {
+  register(_req: Request, res: Response) {
     res.render("pages/auth/register", {});
   }
 
@@ -17,34 +17,35 @@ export class UserController {
       const password = hashPassword(req.body.password);
       await db.insert(userTable).values({
         email: req.body.email,
-        password
+        password,
       });
       logger.info("registerUser", { ip: req.body.ip });
       res.redirect("/");
     } catch (error: any) {
       logger.error("Error registerUser", {
         ip: req.body.ip,
-        stack: error.stack
+        stack: error.stack,
       });
       console.log(error);
       res.render("pages/auth/register", {
         errors: {
           email: {
-            message: "ten amejl jest zajęty"
-          }
-        }, form: req.body
+            message: "ten amejl jest zajęty",
+          },
+        },
+        form: req.body,
       });
     }
   }
 
-  showLogin(req: Request, res: Response) {
+  showLogin(_req: Request, res: Response) {
     res.render("pages/auth/login", {});
   }
 
   async loginUser(req: Request, res: Response) {
     try {
       const user = await User.findOne({
-        email: req.body.email
+        email: req.body.email,
       });
       if (!user) {
         throw new Error("User does not exist");
@@ -57,7 +58,7 @@ export class UserController {
         _id: user._id,
         email: user.email,
         firstName: user.firstName,
-        lastName: user.lastName
+        lastName: user.lastName,
       };
       res.redirect("/");
     } catch (e: any) {
@@ -67,8 +68,7 @@ export class UserController {
   }
 
   async logout(req: Request, res: Response) {
-    await req.session.destroy(() => {
-    });
+    await req.session.destroy(() => {});
     res.clearCookie("connect.sid");
     res.redirect("/login");
   }
@@ -93,9 +93,12 @@ export class UserController {
     } catch (error: any) {
       logger.error("Error saveProfile", {
         ip: req.body.ip,
-        stack: error.stack
+        stack: error.stack,
       });
-      res.render("pages/auth/profile", { errors: error.errors, form: req.body });
+      res.render("pages/auth/profile", {
+        errors: error.errors,
+        form: req.body,
+      });
     }
   }
 }

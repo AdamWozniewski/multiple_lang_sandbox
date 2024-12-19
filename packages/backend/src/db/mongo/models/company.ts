@@ -1,6 +1,6 @@
-import { validateForbiddenString } from '../validators';
-import mongoose, { Model, ObjectId, Schema } from 'mongoose';
-import { IUser } from './user.js';
+import mongoose, { type Model, type ObjectId, Schema } from "mongoose";
+import { validateForbiddenString } from "../validators.js";
+import type { IUser } from "./user.js";
 
 export interface ICompany extends Document {
   slug: string;
@@ -13,10 +13,10 @@ export interface ICompany extends Document {
 const companySchema = new Schema<ICompany>({
   slug: {
     type: String,
-    required: [true, 'pole slug jest wymagane'],
+    required: [true, "pole slug jest wymagane"],
     minlength: 3,
-    maxlength: [6, 'maksymalna liczba znaków to 6'],
-    validate: (value: string) => validateForbiddenString(value, 'slug'),
+    maxlength: [6, "maksymalna liczba znaków to 6"],
+    validate: (value: string) => validateForbiddenString(value, "slug"),
   },
   name: {
     type: String,
@@ -29,8 +29,11 @@ const companySchema = new Schema<ICompany>({
   user: {
     type: mongoose.Types.ObjectId,
     required: true,
-    ref: 'User',
+    ref: "User",
   },
   image: String,
 });
-export const Company: Model<ICompany> = mongoose.model<ICompany>('Company', companySchema);
+export const Company: Model<ICompany> = mongoose.model<ICompany>(
+  "Company",
+  companySchema,
+);

@@ -1,6 +1,5 @@
 {
-  "watch": ["src"],
-  "ext": "js,json",
-  "ignore": ["node_modules", "frontend/"],
-  "exec": "node --experimental-json-modules"
+  "watch": ["dist"],
+  "ext": "js",
+  "exec": "node dist/index.js"
 }
