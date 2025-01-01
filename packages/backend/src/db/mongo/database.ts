@@ -1,13 +1,15 @@
-import { connect, connection } from "mongoose";
+import mongoose from "mongoose";
 import { config } from "../../config.js";
 
-connection.on("connected", () => console.log("connected"));
-connection.on("open", () => console.log("open"));
-connection.on("disconnected", () => console.log("disconnected"));
-connection.on("reconnected", () => console.log("reconnected"));
-connection.on("disconnecting", () => console.log("disconnecting"));
-connection.on("close", () => console.log("close"));
+const { connection } = mongoose;
 
-await connect(config.db, {
+connection.on("connected", () => console.log("mongo - connected"));
+connection.on("open", () => console.log("mongo - open"));
+connection.on("disconnected", () => console.log("mongo - disconnected"));
+connection.on("reconnected", () => console.log("mongo - reconnected"));
+connection.on("disconnecting", () => console.log("mongo - disconnecting"));
+connection.on("close", () => console.log("mongo - close"));
+
+await mongoose.connect(config.db, {
   serverSelectionTimeoutMS: 5000,
 });

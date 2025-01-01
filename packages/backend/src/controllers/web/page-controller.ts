@@ -9,7 +9,8 @@ export class PageController {
       // logger.info('User accessed dashboard', {  });
       res.render("pages/home", {
         companies: [],
-        title: "Strona główna",
+        // title: req.t('title'),
+        title: "req.t('title')",
         url: req.url,
       });
     } catch (_e) {
@@ -34,4 +35,13 @@ export class PageController {
     await mailer(email, "Test", text);
     res.render("pages/subscribe-thanks");
   }
+
+  changeLanguage = (req: Request, res: Response) => {
+    console.log(req.query);
+    const { lng } = req.query;
+    res.cookie('i18next', lng);
+
+    const redirectPath = req.get('Referrer') || '/';
+    res.redirect(redirectPath);
+  };
 }

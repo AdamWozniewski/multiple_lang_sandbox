@@ -1,5 +1,5 @@
-import { User } from "@mongo/models/user.js";
 import type { NextFunction, Request, Response } from "express";
+import { User } from '@mongo/models/user.js';
 
 export const isAuthMiddleware = async (
   req: Request,

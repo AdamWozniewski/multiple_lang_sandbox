@@ -1,12 +1,12 @@
 import "./instrument.js";
-import path from "path";
+import path from "node:path";
 import * as Sentry from "@sentry/node";
 import cookieParser from "cookie-parser";
 // import { runDBAdmin } from "./db/sql/init.ts";
 import express from "express";
 import expressEjsLayouts from "express-ejs-layouts";
 import expressSession from "express-session";
-import { readFile } from "fs/promises";
+import { readFile } from "node:fs/promises";
 import { serve, setup } from "swagger-ui-express";
 import { config } from "./config.js";
 import { isAuthMiddleware } from "./middleware/is-auth-middleware.js";
@@ -14,12 +14,15 @@ import { rateLimiterMiddleware } from "./middleware/rate-limiter-middleware.js";
 import { userMiddleware } from "./middleware/user-middleware.js";
 import { globalMiddleware } from "./middleware/view-variables.js";
 import { routerApi } from "./routes/api.js";
-// import './db/mongo/database.ts';
+import "./db/mongo/database.ts";
 import { routerWeb } from "./routes/web.js";
-
 import { routerDev } from "./routes/web-dev.js";
 import { __dirname } from "./services/dirname.js";
-import { DEVELOPMENT } from "./static/env.js";
+import { DEVELOPMENT, PRODUCTION } from "./static/env.js";
+import helmet from "helmet";
+import i18next from "./i18n.js";
+import { handle } from "i18next-http-middleware";
+import { languageMiddleware } from './middleware/language-middleware.js';
 
 export const startApp = async () => {
   const app = express();
@@ -28,10 +31,12 @@ export const startApp = async () => {
     expressSession({
       secret: config.secretSession,
       saveUninitialized: true,
+      resave: false,
       cookie: {
         maxAge: 86400000,
+        secure: config.env === PRODUCTION,
+        sameSite: "strict",
       },
-      resave: false,
     }),
   );
 
@@ -45,28 +50,32 @@ export const startApp = async () => {
   app.set("views", path.join(__dirname(import.meta.url), "/views"));
   app.set("layout", "layouts/main");
   app.use(express.static("public"));
+  // app.use('/locales', express.static('locales'))
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(express.json());
-
   app.use(globalMiddleware);
-
   app.use(userMiddleware);
-  // app.use(helmet({
-  //     directives: {
-  //         defaultSrc: ["'self'"],
-  //         scriptSrc: ["'self'", "cdn.jsdelivr.net"],
-  //         styleSrc: ["'self'", "cdn.jsdelivr.net"],
-  //     }
-  // }))
 
+  if (config.env === PRODUCTION)
+    app.use(
+      helmet({
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "cdn.jsdelivr.net"],
+          styleSrc: ["'self'", "cdn.jsdelivr.net"],
+        },
+      }),
+    );
+  Sentry.setupExpressErrorHandler(app);
   app.use(rateLimiterMiddleware);
   app.use("/admin", isAuthMiddleware);
   // Routing
   app.use("/api", routerApi);
   if (config.env === DEVELOPMENT) app.use("/dev", routerDev);
+  app.use(handle(i18next));
+  app.use(languageMiddleware);
   app.use(routerWeb);
-  Sentry.setupExpressErrorHandler(app);
   app.use(function onError(_err: any, _req: any, res: any, _next: any) {
     res.statusCode = 500;
     res.end(`${res.sentry}\n`);

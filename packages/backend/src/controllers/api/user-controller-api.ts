@@ -1,5 +1,6 @@
-import { User } from "@mongo/models/user.js";
+
 import type { Request, Response } from "express";
+import { User } from '../../db/mongo/models/user';
 
 export class UserControllerApi {
   async loginUser(req: Request, res: Response) {

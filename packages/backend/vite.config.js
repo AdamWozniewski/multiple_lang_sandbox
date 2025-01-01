@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import viteImagemin from "vite-plugin-imagemin";
 import { viteStaticCopy } from "vite-plugin-static-copy";
+import AutoImport from 'unplugin-auto-import/vite'
 
 export default defineConfig({
   root: resolve(__dirname, "./frontend"),
@@ -62,6 +63,10 @@ export default defineConfig({
     hmr: true,
   },
   plugins: [
+    AutoImport({
+      imports: ['vitest'],
+      dts: true,
+    }),
     viteImagemin({
       gifsicle: {
         optimizationLevel: 7,

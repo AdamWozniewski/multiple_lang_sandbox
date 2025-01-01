@@ -1,11 +1,3 @@
-variable "instance_type" {
-  default = "t2.micro"
-}
-
-variable "ami" {
-  default = "ami-005e54dee72cc1d00"
-}
-
-variable "availability_zone" {
-  default = "eu-west-2a"
-}
+instance_type     = "t2.micro"
+ami               = "ami-005e54dee72cc1d00"
+availability_zone = "eu-west-2a"

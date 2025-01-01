@@ -1,3 +1,3 @@
 ### GET request
-GET http://localhost:3000/api/items
+GET http://localhost:3000/api/companies
 Content-Type: application/json

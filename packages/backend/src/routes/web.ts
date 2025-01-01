@@ -13,8 +13,8 @@ const user = new UserController();
 
 routerWeb.get("/", page.home);
 
-routerWeb.get("/courses/:name", company.showCompany);
-routerWeb.get("/courses", company.showCompanies);
+routerWeb.get("/company/:name", company.showCompany);
+routerWeb.get("/companies", company.showCompanies);
 
 routerWeb.get(
   "/admin/company/add",
@@ -54,6 +54,8 @@ routerWeb.post("/register", user.registerUser);
 routerWeb.get("/login", user.showLogin);
 routerWeb.post("/login", user.loginUser);
 routerWeb.post("/logout", user.logout);
+routerWeb.get("/activate/:id/:token", user.activateUser);
+
 routerWeb.get("/csv", company.getCSV);
 
 routerWeb.get("*", page.notFound);

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 let mongoServer;
 
-beforeAll(async () => {
+beforeEach(async () => {
   mongoServer = await MongoMemoryServer.create();
   const uri = mongoServer.getUri();
   await mongoose.connect(uri, {
@@ -12,7 +12,7 @@ beforeAll(async () => {
   });
 });
 
-afterAll(async () => {
+beforeEach(async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongoServer.stop();

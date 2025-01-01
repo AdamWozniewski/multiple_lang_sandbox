@@ -2,7 +2,7 @@
 <div class="row">
     <% if(user) { %>
         <div class="col-12">
-            <a class="btn btn-success w-100 mb-2" href="/admin/company/add">Dodaj nową firmę</a>
+            <a class="btn btn-success w-100 mb-2" href="/<%= language %>/admin/company/add">Dodaj nową firmę</a>
         </div>
     <% } %>
         <div class="col-12">
@@ -16,21 +16,42 @@
         <%- include('./partials/filters') %>
         <div class="col-9">
             <% companies.forEach(company => { %>
-                <div class="bg-light card mb-3">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-3">
-                                <img src="/img/<%- company.image %>" alt="" class="img-fluid">
+
+                <div class="flex justify-center items-center min-h-screen">
+                    <div class="max-w-[720px] mx-auto">
+
+                        <!-- Centering wrapper -->
+                        <div class="relative flex flex-col text-gray-700 bg-white shadow-md bg-clip-border rounded-xl w-96">
+                            <div class="relative mx-4 mt-4 overflow-hidden text-gray-700 bg-white bg-clip-border rounded-xl h-96">
+                                <img
+                                        src="/img/<%- company.image %>"
+                                        alt="card-image" class="object-cover w-full h-full" />
                             </div>
-                            <div class="col-9">
-                                <p class="h3 mb-4"><%= company.name %></p>
-                                <p class="h6 mb-4">liczba pracowników: <%= company.employeesCount %></p>
-                                <p class="h6 mb-4">Kontakt: <%= company.user?.email %></p>
-                                <p class="h6 mb-4">CEO: <%= company.user?.fullName %></p>
-                                <a class="btn btn-primary" href="/company/<%= company.slug %>">Zobacz</a>
+                            <div class="p-6">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h1 class="block font-sans text-base antialiased font-medium leading-relaxed text-blue-gray-900">
+                                        <%= company.name %>
+                                    </h1>
+
+                                </div>
+                                <div class="flex items-center justify-between mb-2">
+
+                                    <p class="block font-sans text-base antialiased font-medium leading-relaxed text-blue-gray-900">
+                                        liczba pracowników: <%= company.employeesCount %>
+                                    </p>
+                                </div>
+                                <p class="block font-sans text-sm antialiased font-normal leading-normal text-gray-700 opacity-75">
+                                    Kontakt: <%= company.user?.email %>
+                                </p>
+                                <p class="block font-sans text-sm antialiased font-normal leading-normal text-gray-700 opacity-75">
+                                    CEO: <%= company.user?.fullName %>
+                                </p>
+                            </div>
+                            <div class="p-6 pt-0">
+                                <a class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-yellow-200/15 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100" type="button" href="/company/<%= company.slug %>">Podgląd</a>
                                 <% if(user) { %>
-                                    <a class="btn btn-warning" href="/admin/company/<%= company.slug %>/edit">Edytuj</a>
-                                    <a class="btn btn-danger" href="/admin/company/<%= company.slug %>/delete"
+                                    <a class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-yellow-200/15 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100" type="button" href="/admin/company/<%= company.slug %>/edit">Edytuj</a>
+                                    <a type="button" class="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-red-600/15 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100" href="/admin/company/<%= company.slug %>/delete"
                                        onclick="return confirm('Czy jesteś pewien?')">Usuń</a>
                                 <% } %>
                             </div>

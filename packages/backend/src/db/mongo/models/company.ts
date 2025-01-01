@@ -1,4 +1,4 @@
-import mongoose, { type Model, type ObjectId, Schema } from "mongoose";
+import { model, type Model, type ObjectId, Schema, Types } from 'mongoose';
 import { validateForbiddenString } from "../validators.js";
 import type { IUser } from "./user.js";
 
@@ -27,13 +27,13 @@ const companySchema = new Schema<ICompany>({
     min: 1,
   },
   user: {
-    type: mongoose.Types.ObjectId,
+    type: Types.ObjectId,
     required: true,
     ref: "User",
   },
   image: String,
 });
-export const Company: Model<ICompany> = mongoose.model<ICompany>(
+export const Company: Model<ICompany> = model<ICompany>(
   "Company",
   companySchema,
 );

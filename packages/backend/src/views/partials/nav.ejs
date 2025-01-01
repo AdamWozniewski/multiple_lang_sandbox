@@ -36,24 +36,32 @@
                 </div>
                 <div class="hidden sm:ml-6 sm:block">
                     <div class="flex space-x-4">
+                        <ul>
+                            <li><a href="/pl<%= url.replace(/^\/(pl|eng)/, '') %>">Polski</a></li>
+                            <li><a href="/eng<%= url.replace(/^\/(pl|eng)/, '') %>">English</a></li>
+                        </ul>
                         <a class="rounded-md px-3 py-2 text-sm font-medium <%- url === '/' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'; %>"
                            aria-current="page" href="/">Strona główna</a>
 
                         <a class="rounded-md px-3 py-2 text-sm font-medium <%- url.includes('company') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'; %>"
-                           href="/company">Firmy</a>
+                           href="/<%= language %>/companies ">Firmy</a>
                         <% if(!user) { %>
-                            <a class="rounded-md px-3 py-2 text-sm font-medium <%- url.includes('register') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'; %>"
-                               href="/register">Zarejestruj</a>
+                            <!--                            <a class="rounded-md px-3 py-2 text-sm font-medium <%- url.includes('register') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'; %>"-->
+                            <!--                               href="/register">Zarejestruj</a>-->
 
-                            <a class="rounded-md px-3 py-2 text-sm font-medium <%- url.includes('login') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'; %>"
-                               href="/login">Zaloguj</a>
+                            <!--                            <a class="rounded-md px-3 py-2 text-sm font-medium <%- url.includes('login') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'; %>"-->
+                            <!--                               href="/login">Zaloguj</a>-->
 
                         <% } else { %>
-                            <a class="rounded-md px-3 py-2 text-sm font-medium <%- url.includes('company') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'; %>"
-                               href="/logout">Wyloguj</a>
+                            <form action="/<%= language %>/logout" method="POST" class="inline-flex">
+                                <button type="submit"
+                                        class="rounded-md px-3 py-2 text-sm font-medium <%- url.includes('company') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'; %>"
+                                >Wyloguj
+                                </button>
+                            </form>
 
                             <a class="rounded-md px-3 py-2 text-sm font-medium <%- url.includes('profile') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'; %>"
-                               href="admin/profile">Profil</a>
+                               href="/<%= language %>/admin/profile">Profil</a>
                         <% } %>
                     </div>
                 </div>
@@ -98,21 +106,21 @@
                     <div class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none"
                          role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
                         <!-- Active: "bg-gray-100 outline-none", Not Active: "" -->
-                        <a href="admin/profile" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
+                        <a href="/<%= language %>/admin/profile" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
                            tabindex="-1"
                            id="user-menu-item-0">Twój profil</a>
                         <a href="#" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1"
                            id="user-menu-item-1">Settings</a>
                         <a class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1"
                            id="user-menu-item-2"
-                           href="/logout">Wyloguj</a>
+                           href="/<%= language %>/logout">Wyloguj</a>
 
                     </div>
                     <% } else { %>
                         <a class="block rounded-md px-3 py-2 text-base font-medium bg-gray-900 text-white mr-1"
-                           href="/login">Login</a>
+                           href="/<%= language %>/login">Login</a>
                         <a class="block rounded-md px-3 py-2 text-base font-medium text-white bg-gray-700"
-                           href="/login">Register</a>
+                           href="/<%= language %>/register">Register</a>
                     <% } %>
                 </div>
             </div>
@@ -126,7 +134,7 @@
                aria-current="page" href="/">Strona główna</a>
 
             <a class="block rounded-md px-3 py-2 text-base font-medium <%- url.includes('company') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'; %>"
-               href="/company">Firmy</a>
+               href="/companies">Firmy</a>
         </div>
     </div>
 </nav>

@@ -1,4 +1,4 @@
-import "tsconfig-paths/register";
+import 'tsconfig-paths/register.js';
 import fs from "node:fs";
 import { createServer } from "node:https";
 import { startApp } from "./app.js";

@@ -1,8 +1,8 @@
-import fs from "fs";
-import { Company } from "@mongo/models/company.js";
+import fs from "node:fs";
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import { __dirname } from "../../services/dirname.js";
+import { Company } from '@mongo/models/company.js';
 
 export class CompaniesControllerApi {
   async showCompanies(_req: Request, res: Response) {
@@ -32,28 +32,32 @@ export class CompaniesControllerApi {
     }
   }
 
-  async editCompany(req: Request, res: Response) {
+  async editCompany(req: Request, res: Response): Promise<void> {
     const { name } = req.params;
     const company = await Company.findOne({
       slug: name,
     });
-    if (req.body.name) company!.slug = req.body.name;
-    if (req.body.slug) company!.slug = req.body.slug;
+    if (!company) {
+      res.status(404).json({ message: "Company not found" });
+      return;
+    }
+    if (req.body.name) company.slug = req.body.name;
+    if (req.body.slug) company.slug = req.body.slug;
     if (req.body.numberEmployees)
-      company!.employeesCount = req.body.employeesCount;
-    if (req.file?.filename && company!.image) {
+      company.employeesCount = req.body.employeesCount;
+    if (req.file?.filename && company.image) {
       await fs.unlink(
         `${__dirname(import.meta.url)}/../../public/img/uploads/${
-          company!.image
+          company.image
         }`,
         () => {},
       );
     }
     if (req.file?.filename) {
-      company!.image = req.file.filename;
+      company.image = req.file.filename;
     }
     try {
-      await company!.save();
+      await company?.save();
       res.status(200).json(company);
     } catch (e) {
       console.log(e);
@@ -69,10 +73,10 @@ export class CompaniesControllerApi {
     const { slug } = req.params;
     try {
       const company = await Company.findOne({ slug });
-      if (company!.image) {
+      if (company?.image) {
         try {
           fs.unlinkSync(
-            `${__dirname(import.meta.url)}/public/img/${company!.image}`,
+            `${__dirname(import.meta.url)}/public/img/${company?.image}`,
           );
         } catch (e) {
           if (e instanceof mongoose.Error.ValidationError) {
@@ -84,7 +88,7 @@ export class CompaniesControllerApi {
           }
         }
       }
-      await Company.deleteOne({ slug: name });
+      await Company.deleteOne({ slug: company?.name });
       res.status(204).send();
     } catch (e) {
       console.log(e);
