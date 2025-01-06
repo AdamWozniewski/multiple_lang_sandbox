@@ -1,7 +1,7 @@
-import { type Model, Schema, Types, model } from 'mongoose';
-import { generate } from "randomstring";
+import { type Model, Schema, Types, model, type ObjectId } from 'mongoose';
 import { hashPassword, verifyPassword } from "../../../services/hash.js";
 import { validateEmail } from "../validators.js";
+import type { IUserRole } from '@mongo/models/roles.js';
 
 export interface IUser extends Document {
   _id: Types.ObjectId;
@@ -12,6 +12,7 @@ export interface IUser extends Document {
   lastName?: string;
   apiToken?: string;
   activate: boolean;
+  roles: ObjectId | IUserRole;
 
   comparePassword(password: string): boolean;
   compareToken(token: string): boolean;
@@ -37,17 +38,23 @@ const userSchema = new Schema<IUser>({
   firstName: String,
   lastName: String,
   apiToken: String,
+  roles: {
+    type: Types.ObjectId,
+    required: true,
+    ref: "UserRole",
+  },
   activate: {
     type: Boolean,
     default: false
   },
 });
 
-userSchema.pre("save", function (next) {
+userSchema.pre("save", async function(next) {
   if (!this.activate) {
     this.apiToken = hashPassword(this.id);
   }
   this.password = hashPassword(this.password);
+
   next();
 });
 
@@ -61,13 +68,6 @@ userSchema.post("save", (err: any, _doc: any, next: any) => {
   }
   next(err);
 });
-
-// userSchema.post("save", function (_err: any, _doc: any, next: any) {
-//   if (!this.activate) {
-//     this.apiToken = hashPassword(this.id);
-//   }
-//   next();
-// });
 
 userSchema.methods = {
   comparePassword: function (password: string) {

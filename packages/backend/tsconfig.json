@@ -3,7 +3,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ESNext",
-    "rootDir": "./src",
+    "rootDir": "./",
     "outDir": "./dist",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -17,17 +17,14 @@
     "types": ["vitest/globals"],
     "paths": {
       "@mongo/*": ["./src/db/mongo/*"],
-      "@sql/*": ["./src/db/sql/*"]
+      "@sql/*": ["./src/db/sql/*"],
+      "@customTypes/*": ["./src/types/*"],
+      "@interface/*": ["./src/interfaces/*"]
     },
-
     "sourceMap": true,
     "inlineSources": true,
-
-    // Set `sourceRoot` to  "/" to strip the build path prefix
-    // from generated source code references.
-    // This improves issue grouping in Sentry.
-    "sourceRoot": "/"
+    "sourceRoot": "./"
   },
-  "include": ["./src/**/*.ts"],
+  "include": ["./src/**/*.ts", "./test/**/*.ts", "./wdio.conf.ts"],
   "exclude": ["node_modules", "dist", "tests"]
 }

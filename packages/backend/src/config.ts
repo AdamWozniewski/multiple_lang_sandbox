@@ -26,9 +26,14 @@ export const config = {
   secretSession: process.env.SESSION_SECRET || "",
 
   // JWT
+  jwtSecret: process.env.JWT_SECRET || "",
+  jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || "",
+
+  // CSRF
+  csrfToken: process.env.CSRF_TOKEN || "",
 
   // Email
-  emailSender: process.env.EMAIL_SENDER || "Adam W <adam.baaka@gmail.com>",
+  emailSender: process.env.EMAIL_SENDER || "Adam W <xx@xx.xx>",
   emailHost: process.env.EMAIL_HOST || "smtp.ethereal.email",
   emailPort: process.env.EMAIL_PORT || 587,
 

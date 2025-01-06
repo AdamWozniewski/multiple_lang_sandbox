@@ -1,4 +1,5 @@
-import { Document, Schema, Model, model } from "mongoose";
+import type { Document, Schema, Model } from "mongoose";
+import { model } from "mongoose";
 
 export interface IBaseModel extends Document {
   createdAt?: Date;

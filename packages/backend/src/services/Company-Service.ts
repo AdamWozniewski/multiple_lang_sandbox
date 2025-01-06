@@ -19,7 +19,6 @@ export class CompanyService extends BaseService {
     if (newImage && company.image) {
       await fs.unlink(`public/img/uploads/${company.image}`);
     }
-    console.log(data);
     Object.assign(company, data);
     console.log(Object.assign(company, data));
     return await company.save();

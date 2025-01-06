@@ -3,12 +3,14 @@ import { logger } from "../../services/logger.js";
 // import { db } from '@sql/db.js';
 // import { userTable } from '@sql/models/index.js';
 import { UserService } from "../../services/User-Service.js";
+import { RoleService } from '../../services/Role-Services.js';
 
 export class UserController {
   private userService: UserService;
 
   constructor() {
-    this.userService = new UserService();
+    const roleService = new RoleService();
+    this.userService = new UserService(roleService);
   }
 
   register(_req: Request, res: Response) {

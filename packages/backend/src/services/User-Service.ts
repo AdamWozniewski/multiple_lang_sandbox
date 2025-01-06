@@ -6,11 +6,20 @@ import type { IUser } from "@mongo/models/user.js";
 import { BaseService } from "./Base-Service.js";
 import type { IUserService } from "../interfaces/user-interface.js";
 import { mailer } from './mailing.js';
+import type { IRoleService } from '@interface/role-interface.js';
 
 export class UserService extends BaseService implements IUserService {
+  private roleService: IRoleService;
+
+  constructor(roleService: IRoleService) {
+    super();
+    this.roleService = roleService;
+  }
+
   async createUser({ email, password }: Partial<IUser>): Promise<IUser> {
     const passwordHash = hashPassword(password as string);
-    const user = new User({ email, password: passwordHash });
+    const userRoleId = await this.roleService.getDefaultUserRole();
+    const user = new User({ email, password: passwordHash, roles: userRoleId });
     const savedUser = await user.save();
 
     const activationLink = `${process.env.APP_URL}/activate/${savedUser.id}/${savedUser.apiToken}`;

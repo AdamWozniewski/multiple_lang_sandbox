@@ -5,7 +5,10 @@ import { __dirname } from "../../services/dirname.js";
 import { Company } from '@mongo/models/company.js';
 
 export class CompaniesControllerApi {
-  async showCompanies(_req: Request, res: Response) {
+  async showCompanies(req: Request, res: Response) {
+    console.log(req.params);
+    console.log(req.body);
+    console.log(req);
     const companies = await Company.find();
     res.header("content-type", "application/json");
     res.json({ companies });

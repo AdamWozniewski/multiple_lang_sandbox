@@ -1,0 +1,1 @@
+export type Role = 'user' | 'semi-admin' | 'admin';

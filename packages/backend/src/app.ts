@@ -23,6 +23,7 @@ import helmet from "helmet";
 import i18next from "./i18n.js";
 import { handle } from "i18next-http-middleware";
 import { languageMiddleware } from './middleware/language-middleware.js';
+import { csrfTokenMiddleware, doubleCsrfProtection, handleCsrfErrors } from './middleware/csrf-middleware.js';
 
 export const startApp = async () => {
   const app = express();
@@ -50,12 +51,14 @@ export const startApp = async () => {
   app.set("views", path.join(__dirname(import.meta.url), "/views"));
   app.set("layout", "layouts/main");
   app.use(express.static("public"));
-  // app.use('/locales', express.static('locales'))
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(express.json());
   app.use(globalMiddleware);
   app.use(userMiddleware);
+
+  // app.use(csrfTokenMiddleware);
+  // app.use(doubleCsrfProtection);
 
   if (config.env === PRODUCTION)
     app.use(
@@ -76,9 +79,11 @@ export const startApp = async () => {
   app.use(handle(i18next));
   app.use(languageMiddleware);
   app.use(routerWeb);
+  // app.use(handleCsrfErrors);
   app.use(function onError(_err: any, _req: any, res: any, _next: any) {
     res.statusCode = 500;
     res.end(`${res.sentry}\n`);
   });
+
   return app;
 };
