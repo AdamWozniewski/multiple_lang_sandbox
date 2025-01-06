@@ -1,0 +1,65 @@
+{
+  "name": "multiple_lang_sandbox",
+  "version": "1.0.0",
+  "description": "multiple tech sandbox",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint \"packages/**/{src, test}/**/*.{js,jsx,ts,tsx,json}\"",
+    "lint:fix": "eslint --fix \"packages/**/{src, test}/**/*.{js,jsx,ts,tsx,json}\"",
+    "format": "prettier --no-error-on-unmatched-pattern --write \"packages/**/{src,test}/**/*.{js,jsx,ts,tsx,css,md,json}\" --config .prettierrc",
+    "format:check": "prettier --no-error-on-unmatched-pattern --check \"packages/**/{src,test}/**/*.{js,jsx,ts,tsx,css,md,json}\" --config .prettierrc"
+  },
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdamWozniewski/multiple_lang_sandbox.git"
+  },
+  "hoist": true,
+  "author": "adamw",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AdamWozniewski/multiple_lang_sandbox/issues"
+  },
+  "homepage": "https://github.com/AdamWozniewski/multiple_lang_sandbox#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/dotenv": "^8.2.3",
+    "@types/express": "^5.0.0",
+    "@wdio/allure-reporter": "^9.5.0",
+    "@wdio/appium-service": "^9.5.0",
+    "@wdio/cli": "^9.5.0",
+    "@wdio/local-runner": "^9.5.0",
+    "@wdio/mocha-framework": "^9.5.0",
+    "@wdio/spec-reporter": "^9.5.0",
+    "@wdio/types": "^9.5.0",
+    "allure-commandline": "^2.32.0",
+    "appium-uiautomator2-driver": "^3.9.6",
+    "autoprefixer": "^10.4.20",
+    "chromedriver": "^131.0.4",
+    "cssnano": "^7.0.6",
+    "dotenv": "^16.4.5",
+    "eslint": "^9.17.0",
+    "globals": "^15.13.0",
+    "jest": "^29.7.0",
+    "lerna": "^8.1.9",
+    "less": "^4.2.0",
+    "postcss": "^8.4.49",
+    "postcss-cli": "^11.0.0",
+    "postcss-import": "^16.1.0",
+    "sass": "^1.81.0",
+    "tailwindcss": "^3.4.15",
+    "ts-jest": "^29.2.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0",
+    "vitest": "^2.1.8",
+    "wdio-chromedriver-service": "^8.1.1"
+  },
+  "dependencies": {
+    "i18next": "^24.2.0"
+  }
+}
