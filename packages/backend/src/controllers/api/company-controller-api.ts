@@ -1,14 +1,11 @@
 import fs from "node:fs";
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
-import { __dirname } from "../../services/dirname.js";
-import { Company } from '@mongo/models/company.js';
+import { __dirname } from "@utility/dirname.js";
+import { Company } from "@mongo/models/company.js";
 
 export class CompaniesControllerApi {
   async showCompanies(req: Request, res: Response) {
-    console.log(req.params);
-    console.log(req.body);
-    console.log(req);
     const companies = await Company.find();
     res.header("content-type", "application/json");
     res.json({ companies });

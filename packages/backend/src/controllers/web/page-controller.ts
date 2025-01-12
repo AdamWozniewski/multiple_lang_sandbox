@@ -1,6 +1,9 @@
 import type { Request, Response } from "express";
-import { mailer } from "../../services/mailing.js";
-import { status500 } from "../../static/status-500.js";
+import { mailer } from "@utility/mailing.js";
+import { status500 } from "@static/status-500.js";
+import { logger } from '@utility/logger.js';
+
+const pageControllerLogger = logger("PageController");
 
 export class PageController {
   async home(req: Request, res: Response) {
@@ -37,7 +40,6 @@ export class PageController {
   }
 
   changeLanguage = (req: Request, res: Response) => {
-    console.log(req.query);
     const { lng } = req.query;
     res.cookie('i18next', lng);
 

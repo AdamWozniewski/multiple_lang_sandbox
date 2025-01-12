@@ -10,6 +10,8 @@ export default defineConfig({
     },
   },
   test: {
+    globals: true,
+    mockReset: true,
     dangerouslyIgnoreUnhandledErrors: true,
     include: ['./test/ut/*.spec.ts', './test/integration/*.spec.ts'],
     /**
@@ -20,6 +22,7 @@ export default defineConfig({
       '**/node_modules/**',
       // 'packages/eslint-plugin-wdio/**/*'
     ],
+    environment: 'node',
     env: {
       WDIO_SKIP_DRIVER_SETUP: '1'
     },

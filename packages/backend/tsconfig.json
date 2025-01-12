@@ -19,7 +19,10 @@
       "@mongo/*": ["./src/db/mongo/*"],
       "@sql/*": ["./src/db/sql/*"],
       "@customTypes/*": ["./src/types/*"],
-      "@interface/*": ["./src/interfaces/*"]
+      "@interface/*": ["./src/interfaces/*"],
+      "@services/*": ["./src/services/*"],
+      "@static/*": ["./src/static/*"],
+      "@utility/*": ["./src/utility/*"]
     },
     "sourceMap": true,
     "inlineSources": true,

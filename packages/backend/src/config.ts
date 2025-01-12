@@ -40,4 +40,8 @@ export const config = {
   // Monitoring
   sentryApiKey: process.env.SENTRY_API_KEY || "",
   sentryAuthToken: process.env.SENTRY_AUTH_TOKEN || "",
+
+  // OAUTH
+  oauthClientId: process.env.OAUTH_CLIENT_ID || "",
+  oauthClientSecret: process.env.OAUTH_CLIENT_SECRET || "",
 };

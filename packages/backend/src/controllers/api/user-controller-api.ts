@@ -1,15 +1,18 @@
 import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { User } from "@mongo/models/user.js";
 import { config } from "../../config.js";
-import { PRODUCTION } from "../../static/env.js";
-import { UserService } from '../../services/User-Service.js';
+import { PRODUCTION } from "@static/env.js";
+import { UserService } from "@services/User-Service.js";
+import { RoleService } from "@services/Role-Services.js";
+import { MailerService } from "@services/Mailer-Service.js";
 
 export class UserControllerApi {
   private userService: UserService;
 
   constructor() {
-    this.userService = new UserService();
+    const roleService = new RoleService();
+    const mailerService = new MailerService();
+    this.userService = new UserService(roleService, mailerService);
   }
 
   loginUser = async (req: Request, res: Response): Promise<void> => {
@@ -37,14 +40,14 @@ export class UserControllerApi {
         .json({ token, user, refreshToken });
     } catch (error: any) {
       console.log(error);
-      res.status(401).json({ message: 'error' });
+      res.status(401).json({ message: "error" });
     }
-  }
+  };
 
   refreshToken = async (req: Request, res: Response): Promise<void> => {
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
-      return res.status(401).send("Access Denied. No refresh token provided.");
+      res.status(401).send("Access Denied. No refresh token provided.");
     }
 
     try {
@@ -66,9 +69,9 @@ export class UserControllerApi {
     } catch (error) {
       return res.status(400).send("Invalid refresh token.");
     }
-  }
+  };
 
   logoutUser = async (_: Request, res: Response): Promise<void> => {
     res.clearCookie("refreshToken");
-  }
+  };
 }

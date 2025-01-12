@@ -17,13 +17,14 @@ import { routerApi } from "./routes/api.js";
 import "./db/mongo/database.ts";
 import { routerWeb } from "./routes/web.js";
 import { routerDev } from "./routes/web-dev.js";
-import { __dirname } from "./services/dirname.js";
+import { __dirname } from "./utility/dirname.js";
 import { DEVELOPMENT, PRODUCTION } from "./static/env.js";
 import helmet from "helmet";
 import i18next from "./i18n.js";
 import { handle } from "i18next-http-middleware";
 import { languageMiddleware } from './middleware/language-middleware.js';
 import { csrfTokenMiddleware, doubleCsrfProtection, handleCsrfErrors } from './middleware/csrf-middleware.js';
+import passport from './utility/passport.js';
 
 export const startApp = async () => {
   const app = express();
@@ -56,9 +57,11 @@ export const startApp = async () => {
   app.use(express.json());
   app.use(globalMiddleware);
   app.use(userMiddleware);
-
+  app.use(passport.initialize());
+  app.use(passport.session());
   // app.use(csrfTokenMiddleware);
   // app.use(doubleCsrfProtection);
+  // app.use(handleCsrfErrors);
 
   if (config.env === PRODUCTION)
     app.use(

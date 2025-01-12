@@ -1,10 +1,11 @@
 import { type Model, Schema, Types, model, type ObjectId } from 'mongoose';
-import { hashPassword, verifyPassword } from "../../../services/hash.js";
+import { hashPassword, verifyPassword } from "@utility/hash.js";
 import { validateEmail } from "../validators.js";
 import type { IUserRole } from '@mongo/models/roles.js';
 
 export interface IUser extends Document {
   _id: Types.ObjectId;
+  id: string;
   email: string;
   password: string;
   avatar?: string;
@@ -21,6 +22,10 @@ export interface IUser extends Document {
 }
 
 const userSchema = new Schema<IUser>({
+  id: {
+    type: String,
+    required: false,
+  },
   email: {
     type: String,
     required: [true, "Pole email jest wymagane"],
@@ -51,9 +56,12 @@ const userSchema = new Schema<IUser>({
 
 userSchema.pre("save", async function(next) {
   if (!this.activate) {
-    this.apiToken = hashPassword(this.id);
+    this.apiToken = await hashPassword(this._id.toString());
   }
-  this.password = hashPassword(this.password);
+  if (!this.id) {
+    this.id = this._id;
+  }
+  this.password = await hashPassword(this.password);
 
   next();
 });
@@ -82,4 +90,11 @@ userSchema.virtual("fullName").get(function () {
   return `${this.firstName || ""} ${this.lastName || ""}`;
 });
 
+userSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: (_, ret) => {
+    delete ret._id;
+  },
+});
 export const User: Model<IUser> = model<IUser>("User", userSchema);
