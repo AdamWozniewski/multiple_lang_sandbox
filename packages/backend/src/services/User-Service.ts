@@ -7,6 +7,9 @@ import { BaseService } from "./Base-Service.js";
 import type { IUserService } from "../interfaces/user-interface.js";
 import type { IRoleService } from "@interface/role-interface.js";
 import type { IMailerService } from "./Mailer-Service.js";
+import { config } from '../config.js';
+
+const localUrl = `${config.appUrl}${config.port}`
 
 export class UserService extends BaseService implements IUserService {
   private roleService: IRoleService;
@@ -24,13 +27,12 @@ export class UserService extends BaseService implements IUserService {
     const user = new User({ email, password: passwordHash, roles: userRoleId });
     const savedUser = await user.save();
 
-    const activationLink = `${process.env.APP_URL}/activate/${savedUser.id}/${savedUser.apiToken}`;
+    const activationLink = `${localUrl}/activate/${savedUser.id}/${savedUser.apiToken}`;
     await this.mailerService.sendActivationEmail(
       email as string,
       activationLink,
     );
     return user;
-    // return db.insert(userTable).values({ email, password: passwordHash });
   }
 
   async createOAuthUser(email: string): Promise<IUser> {
@@ -63,9 +65,6 @@ export class UserService extends BaseService implements IUserService {
   ): Promise<IUser | null> {
     const user = await User.findById(id);
     if (!user) throw new Error("User not found");
-    console.log(user);
-    console.log(data);
-    console.log(Object.assign(user, data));
     Object.assign(user, data);
     await user.save();
     return user;

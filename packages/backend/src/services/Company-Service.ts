@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import { Company } from "@mongo/models/company.js";
 import { BaseService } from './Base-Service.js';
+// import { Filters } from '@customTypes/filters.js';
 
 export class CompanyService extends BaseService {
   async createCompany(data: Partial<typeof Company>) {
@@ -20,7 +21,6 @@ export class CompanyService extends BaseService {
       await fs.unlink(`public/img/uploads/${company.image}`);
     }
     Object.assign(company, data);
-    console.log(Object.assign(company, data));
     return await company.save();
   }
 
@@ -47,14 +47,25 @@ export class CompanyService extends BaseService {
   }
 
   async getCompanies(filters: any) {
-    const { query, sort, countmin, countmax, currentPage, perPage } = filters;
+    const { query, sort, countmin, countmax, currentPage = 1, perPage = 10 } = filters;
     const where: any = {};
 
-    if (query) where.name = { $regex: query, $options: "i" };
+    if (query) {
+      where.name = { $regex: query, $options: "i" };
+    }
+
     if (countmin || countmax) {
       where.employeesCount = {};
       if (countmin) where.employeesCount.$gte = countmin;
       if (countmax) where.employeesCount.$lte = countmax;
+    }
+
+    let sortCriteria: Record<string, 1 | -1> = {};
+    if (sort && typeof sort === "string") {
+      const [field, order] = sort.split("|");
+      if (field && (order === "asc" || order === "desc")) {
+        sortCriteria[field] = order === "asc" ? 1 : -1;
+      }
     }
 
     const resultsCount = await Company.countDocuments(where);
@@ -62,7 +73,7 @@ export class CompanyService extends BaseService {
     const companies = await Company.find(where)
       .skip((currentPage - 1) * perPage)
       .limit(perPage)
-      .sort(sort ? { [sort.split("|")[0]]: sort.split("|")[1] } : {})
+      .sort(sortCriteria)
       .populate("user")
       .exec();
 

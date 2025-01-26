@@ -26,6 +26,4 @@ routerApi.get("/csrf-token", (_, res) => {
   res.json({ csrfToken: res.locals.csrfToken });
 });
 
-console.log();
-
 export { routerApi };

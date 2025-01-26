@@ -1,5 +1,6 @@
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
+import tailwindcss from '@tailwindcss/vite'
 import viteImagemin from "vite-plugin-imagemin";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import AutoImport from 'unplugin-auto-import/vite'
@@ -63,6 +64,7 @@ export default defineConfig({
     hmr: true,
   },
   plugins: [
+    tailwindcss(),
     AutoImport({
       imports: ['vitest'],
       dts: true,

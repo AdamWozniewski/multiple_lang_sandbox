@@ -14,6 +14,7 @@ export const config = {
   env: process.env.NODE_ENV || DEVELOPMENT,
   port: process.env.PORT || 3000,
   ssl: process.env.SSL || false,
+  appUrl: process.env.APP_URL || "",
 
   // MONGO
   db:

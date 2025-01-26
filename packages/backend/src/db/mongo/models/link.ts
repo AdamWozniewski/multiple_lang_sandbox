@@ -1,12 +1,15 @@
-import { type Model, Schema, model, } from 'mongoose';
+import { type Model, Schema, model, type ObjectId, Types } from 'mongoose';
+import type { IUser } from '@mongo/models/user.js';
+import type { LinksType } from '@customTypes/links.js';
 
-export interface ILog extends Document {
-  type: string;
-  maxUsage: number;
+export interface ILink extends Document {
+  type: LinksType;
+  maxUsage?: number;
   url: string;
+  active: boolean;
+  user?: ObjectId | IUser;
 }
-// userControllerLogger.error("Login failed", { metadata: { ip: req.ip, message: error.message, email: req.body.email } });
-const linkSchema = new Schema<ILog>({
+const linkSchema = new Schema<ILink>({
   type: {
     type: String,
     required: true,
@@ -14,11 +17,22 @@ const linkSchema = new Schema<ILog>({
   maxUsage: {
     type: Number,
     required: false,
+    default: 1,
   },
   url: {
     type: String,
     required: true,
-  }
+  },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  user: {
+    type: Types.ObjectId,
+    required: true,
+    ref: "User",
+  },
+
 });
 
 linkSchema.set("toJSON", {
@@ -29,4 +43,4 @@ linkSchema.set("toJSON", {
   },
 });
 
-export const Link: Model<ILog> = model<ILog>("Link", linkSchema);
+export const Link: Model<ILink> = model<ILink>("Link", linkSchema);

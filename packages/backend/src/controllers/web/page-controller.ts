@@ -3,21 +3,20 @@ import { mailer } from "@utility/mailing.js";
 import { status500 } from "@static/status-500.js";
 import { logger } from '@utility/logger.js';
 
-const pageControllerLogger = logger("PageController");
+// const pageControllerLogger = logger("PageController");
 
 export class PageController {
   async home(req: Request, res: Response) {
     try {
-      // const users = await db.select().from(userTable);
-      // logger.info('User accessed dashboard', {  });
       res.render("pages/home", {
         companies: [],
-        // title: req.t('title'),
         title: "req.t('title')",
         url: req.url,
       });
     } catch (_e) {
-      res.render("pages/status_error", status500);
+      res.render("pages/status_error", {
+        statusType: status500
+      });
     }
   }
 
@@ -38,12 +37,4 @@ export class PageController {
     await mailer(email, "Test", text);
     res.render("pages/subscribe-thanks");
   }
-
-  changeLanguage = (req: Request, res: Response) => {
-    const { lng } = req.query;
-    res.cookie('i18next', lng);
-
-    const redirectPath = req.get('Referrer') || '/';
-    res.redirect(redirectPath);
-  };
 }

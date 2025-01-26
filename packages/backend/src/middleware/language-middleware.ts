@@ -6,23 +6,20 @@ export const languageMiddleware = (
   next: NextFunction,
 ) => {
   const supportedLanguages = ["pl", "eng"];
-  const language = req.url.split("/")[1];
+  const urlParts = req.url.split("/").filter(Boolean);
 
-  if (!language) {
+  if (urlParts.length === 0 || !supportedLanguages.includes(urlParts[0])) {
     const defaultLanguage = "pl";
-    return res.redirect(`/${defaultLanguage}${req.url}`);
+    res.redirect(`/${defaultLanguage}${req.url}`);
   }
 
-  if (supportedLanguages.includes(language)) {
-    req.i18n.changeLanguage(language);
-    req.url = req.url.replace(`/${language}`, "");
+  const language = urlParts[0];
 
-    res.locals.t = req.t;
-    res.locals.language = req.i18n.language;
+  req.i18n.changeLanguage(language);
+  req.url = req.url.replace(`/${language}`, "");
+  res.locals.t = req.t;
+  res.locals.language = req.i18n.language;
 
-    console.log(`Language set to: ${req.i18n.language}`);
-    next();
-  } else {
-    res.status(404).send("Language not supported");
-  }
+  console.log(`Language set to: ${req.i18n.language}`);
+  next();
 };

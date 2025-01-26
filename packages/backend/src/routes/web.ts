@@ -4,8 +4,8 @@ import { PageController } from "../controllers/web/page-controller.js";
 import { UserController } from "../controllers/web/user-controller.js";
 import { isAuthMiddleware } from "../middleware/is-auth-middleware.js";
 import { upload } from "@utility/uploader.js";
-import { doubleCsrfProtection } from '../middleware/csrf-middleware.js';
-import { rolesMiddleware } from '../middleware/roles-middleware.js';
+import { doubleCsrfProtection } from "../middleware/csrf-middleware.js";
+// import { rolesMiddleware } from '../middleware/roles-middleware.js';
 
 const routerWeb = Router();
 
@@ -23,7 +23,12 @@ routerWeb.get(
   isAuthMiddleware,
   company.showCreateCompany,
 );
-routerWeb.post("/admin/company/add", doubleCsrfProtection, isAuthMiddleware, company.createCompany);
+routerWeb.post(
+  "/admin/company/add",
+  // doubleCsrfProtection,
+  isAuthMiddleware,
+  company.createCompany,
+);
 
 routerWeb.get(
   "/admin/company/:name/edit",
@@ -32,7 +37,7 @@ routerWeb.get(
 );
 routerWeb.post(
   "/admin/company/:name/edit",
-  doubleCsrfProtection,
+  // doubleCsrfProtection,
   isAuthMiddleware,
   upload.single("image"),
   company.editCompany,
@@ -59,6 +64,9 @@ routerWeb.get("/auth/:provider", user.loginWithProvider);
 routerWeb.get("/auth/:provider/callback", user.oauthCallback);
 routerWeb.post("/login", user.loginUser);
 routerWeb.post("/logout", user.logout);
+routerWeb.get("/forgot-password", user.showForgotPassword);
+routerWeb.post("/forgot-password", user.forgotPassword);
+routerWeb.post("/reset-forgot-password", user.resetForgotPassword);
 routerWeb.get("/activate/:id/:token", user.activateUser);
 
 routerWeb.get("/csv", company.getCSV);

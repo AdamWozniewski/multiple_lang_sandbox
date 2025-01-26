@@ -10,6 +10,7 @@ import { __dirname } from "./dirname.js";
 const templatePathTest = `${__dirname(
   import.meta.url,
 )}/../views/pages/mailing/subscribe.ejs`;
+
 export const mailer = async (
   email: string,
   subject: string,
@@ -18,7 +19,6 @@ export const mailer = async (
 ): Promise<void> => {
   try {
     const testAccount = await createTestAccount();
-    console.log(testAccount);
     const transporter = createTransport({
       host: config.emailHost,
       port: Number.parseInt(config.emailPort as string, 10),

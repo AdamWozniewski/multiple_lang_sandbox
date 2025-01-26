@@ -1,7 +1,8 @@
-
 <% if(name) { %>
     <h1>Firma: <%= name %></h1>
-    <a href="/admin/company/<%= name %>">Edytuj</a>
+    <% if(user) { %>
+        <a href="/admin/company/<%= name %>/edit">Edytuj</a>
+    <% } %>
 <% } else { %>
     <h1>Nie ma takiej firmy</h1>
 <% } %>

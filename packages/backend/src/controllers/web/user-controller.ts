@@ -4,22 +4,26 @@ import passport from "@utility/passport.js";
 import { UserService } from "@services/User-Service.js";
 import { RoleService } from "@services/Role-Services.js";
 import { MailerService } from "@services/Mailer-Service.js";
-
-import { ServiceNames } from '@customTypes/service-names.js';
+import { ServiceNames } from "@customTypes/service-names.js";
+import jwt from "jsonwebtoken";
+import { config } from "../../config.js";
+import { LinkService } from "@services/Link-Service.js";
 
 const userControllerLogger = logger(ServiceNames.UserService);
 
 export class UserController {
   private userService: UserService;
+  private linkService: LinkService;
+  private readonly mailerService: MailerService;
 
   constructor() {
     const roleService = new RoleService();
-    const mailerService = new MailerService();
-    this.userService = new UserService(roleService, mailerService);
+    this.mailerService = new MailerService();
+    this.linkService = new LinkService();
+    this.userService = new UserService(roleService, this.mailerService);
   }
 
   register(_req: Request, res: Response) {
-    console.log('weszlo dod register');
     res.render("pages/auth/register");
   }
 
@@ -29,13 +33,15 @@ export class UserController {
       userControllerLogger.info("User registered", {
         metadata: {
           ip: req.ip,
-          message: 'User registered',
+          message: "User registered",
           email: req.body.email,
           controller: "UserController",
           event: "user-registered",
         },
       });
-      res.set('Content-Type', 'text/html').render("pages/auth/confirm-registration");
+      res
+        .set("Content-Type", "text/html")
+        .render("pages/confirm/confirm-registration");
     } catch (error: any) {
       userControllerLogger.error("User registered failed", {
         metadata: {
@@ -72,7 +78,7 @@ export class UserController {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        roles: user?.roles
+        roles: user?.roles,
       };
       userControllerLogger.info("Login Success", {
         metadata: {
@@ -113,35 +119,27 @@ export class UserController {
   }
 
   saveProfile = async (req: Request, res: Response): Promise<void> => {
-    // const user = await User.findById(req.session.user._id);
-    // user!.email = req.body.email;
-    // user!.firstName = req.body.firstName;
-    // user!.lastName = req.body.lastName;
-    // if (req.body.password) {
-    //   user!.password = req.body.password;
-    // }
-    // try {
-    //   await user!.save();
-    //   req.session.user = user;
-    //   logger.info("saveProfile", { ip: req.body.ip });
-    //   res.redirect("/admin/profile"); // to oznacza: wróc skąd przyszedłeś
-    // } catch (error: any) {
-    //   logger.error("Error saveProfile", {
-    //     ip: req.body.ip,
-    //     stack: error.stack,
-    //   });
-    //   res.render("pages/auth/profile", {
-    //     errors: error.errors,
-    //     form: req.body,
-    //   });
-    // }
     try {
       const user = await this.userService.updateUserProfile(
         req.session.user._id,
         req.body,
       );
-      req.session.user = { _id: user?._id, email: user?.email };
-      res.redirect("/admin/profile");
+      req.session.user = {
+        _id: user?._id,
+        email: user?.email,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+      };
+      userControllerLogger.info("Update Profile", {
+        metadata: {
+          ip: req.ip,
+          message: "Update Profile",
+          email: req.session.user?.email,
+          controller: "UserController",
+          event: "update-profile",
+        },
+      });
+      res.render("pages/auth/profile", { form: req.session.user });
     } catch (error: any) {
       userControllerLogger.error("Update Profile failed", {
         metadata: {
@@ -166,18 +164,18 @@ export class UserController {
       userControllerLogger.info("User registered", {
         metadata: {
           ip: req.ip,
-          message: 'User registered',
+          message: "User registered",
           email: req.body.email,
           controller: "UserController",
           event: "user-registered",
         },
       });
-      res.render("/pages/mailing/confirm-account");
+      res.render("/pages/confirm/confirm-account");
     } catch (error: any) {
       userControllerLogger.info("User Activated failed", {
         metadata: {
           ip: req.ip,
-          message: 'User Activated failed',
+          message: "User Activated failed",
           email: req.body.email,
           controller: "UserController",
           event: "user-activated",
@@ -188,6 +186,73 @@ export class UserController {
         form: req.body,
       });
     }
+  };
+
+  showForgotPassword = (_req: Request, res: Response) => {
+    res.render("pages/auth/forgot-password");
+  };
+
+  forgotPassword = async (req: Request, res: Response) => {
+    const { email } = req.body;
+    const user = await this.userService.findUserByEmail(email);
+
+    if (!user) {
+      throw new Error("User does not exist");
+    }
+
+    const token = jwt.sign({ id: user.id }, config.jwtSecret, {
+      expiresIn: "1h",
+    });
+    const resetLink = `${process.env.CLIENT_URL}?token=${token}`;
+    try {
+      // await this.mailerService.sendResetPasswordEmail(user.email, resetLink);
+      await this.linkService.createLink({
+        type: "forgot-password",
+        url: resetLink,
+        user,
+      });
+      userControllerLogger.info("Forgot Password Send", {
+        metadata: {
+          ip: req.ip,
+          message: "Forgot Password Send",
+          email: req.body.email,
+          controller: "UserController",
+          event: "user-forgot-password",
+        },
+      });
+      res.render("pages/confirm/forgot-password-email-send-confirm");
+    } catch (error: any) {
+      userControllerLogger.error("Forgot Password Send Failed", {
+        metadata: {
+          ip: req.ip,
+          message: "Forgot Password Send",
+          email: req.body.email,
+          controller: "UserController",
+          event: "user-forgot-password",
+        },
+      });
+      res.render("pages/auth/login", {
+        errors: { message: error.message },
+        form: req.body,
+      });
+    }
+  };
+
+  resetForgotPassword = async (req: Request, res: Response) => {
+    // const { email } = req.body;
+    // const user = await this.userService.findUserByEmail(email);
+    //
+    // if (!user) {
+    //   throw new Error("User does not exist");
+    // }
+    //
+    // const token = jwt.sign({ id: user.id }, config.jwtSecret, {
+    //   expiresIn: "1h", // Token ważny przez 1 godzinę
+    // });
+    // const resetLink = `${process.env.CLIENT_URL}?token=${token}`;
+    // try {
+    //   await this.mailerService.sendResetPasswordEmail()
+    // }
   };
 
   loginWithProvider = (req: Request, res: Response, next: NextFunction) => {

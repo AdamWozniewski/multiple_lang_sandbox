@@ -23,7 +23,7 @@ import helmet from "helmet";
 import i18next from "./i18n.js";
 import { handle } from "i18next-http-middleware";
 import { languageMiddleware } from './middleware/language-middleware.js';
-import { csrfTokenMiddleware, doubleCsrfProtection, handleCsrfErrors } from './middleware/csrf-middleware.js';
+// import { csrfTokenMiddleware, doubleCsrfProtection, handleCsrfErrors } from './middleware/csrf-middleware.js';
 import passport from './utility/passport.js';
 
 export const startApp = async () => {
@@ -51,7 +51,7 @@ export const startApp = async () => {
   app.use(expressEjsLayouts);
   app.set("views", path.join(__dirname(import.meta.url), "/views"));
   app.set("layout", "layouts/main");
-  app.use(express.static("public"));
+  app.use(express.static("./public"));
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(express.json());
@@ -82,7 +82,6 @@ export const startApp = async () => {
   app.use(handle(i18next));
   app.use(languageMiddleware);
   app.use(routerWeb);
-  // app.use(handleCsrfErrors);
   app.use(function onError(_err: any, _req: any, res: any, _next: any) {
     res.statusCode = 500;
     res.end(`${res.sentry}\n`);
