@@ -7,10 +7,17 @@ export const languageMiddleware = (
 ) => {
   const supportedLanguages = ["pl", "eng"];
   const urlParts = req.url.split("/").filter(Boolean);
+  if (req.path.startsWith("/graphql")) {
+    return next();
+  }
 
   if (urlParts.length === 0 || !supportedLanguages.includes(urlParts[0])) {
     const defaultLanguage = "pl";
-    res.redirect(`/${defaultLanguage}${req.url}`);
+
+    if (!res.headersSent) {
+      return res.redirect(`/${defaultLanguage}${req.url}`);
+    }
+    return next();
   }
 
   const language = urlParts[0];
@@ -21,5 +28,5 @@ export const languageMiddleware = (
   res.locals.language = req.i18n.language;
 
   console.log(`Language set to: ${req.i18n.language}`);
-  next();
+  return next();
 };

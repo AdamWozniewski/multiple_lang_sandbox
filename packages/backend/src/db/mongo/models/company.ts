@@ -1,4 +1,4 @@
-import { model, type Model, type ObjectId, Schema, Types } from 'mongoose';
+import { model, type Model, type ObjectId, Schema, Types } from "mongoose";
 import { validateForbiddenString } from "../validators.js";
 import type { IUser } from "./user.js";
 

@@ -1,4 +1,4 @@
-import { GlobalEventEmitter } from './Global-Event-Emitter.js';
+import { GlobalEventEmitter } from "./Global-Event-Emitter.js";
 
 export class TaskEmitter extends GlobalEventEmitter {
   private totalSize: number;
@@ -14,11 +14,10 @@ export class TaskEmitter extends GlobalEventEmitter {
     this.uploadedSize += chunkSize;
 
     const progress = Math.round((this.uploadedSize / this.totalSize) * 100);
-    this.emit('progress', progress);
+    this.emit("progress", progress);
 
     if (this.uploadedSize >= this.totalSize) {
-      this.emit('complete');
+      this.emit("complete");
     }
   }
-
 }

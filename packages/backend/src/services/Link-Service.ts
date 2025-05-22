@@ -1,13 +1,24 @@
-import type { ILinkInterface } from '@interface/link-interface.js';
-import { Link } from '@mongo/models/link.js';
-import type { ILink } from '@mongo/models/link.js';
+import type { ILinkInterface } from "@interface/link-interface.js";
+import { Link } from "@mongo/models/link.js";
+import type { ILink } from "@mongo/models/link.js";
+import { BaseService } from "@services/Base-Service.js";
+import type { IMailerService } from "@interface/mail-service.js";
 
-export class LinkService implements ILinkInterface{
+export class LinkService extends BaseService implements ILinkInterface {
+  private mailerService: IMailerService;
+
+  constructor(mailerService: IMailerService) {
+    super();
+    this.mailerService = mailerService;
+  }
   async createLink(linkProps: Partial<ILink>): Promise<ILink> {
-    console.log(linkProps);
     const link = new Link(linkProps);
-
-    return await link.save();
+    await link.save();
+    await this.mailerService.sendResetPasswordEmail(
+      linkProps?.user?.email,
+      linkProps?.url as string,
+    );
+    return link;
   }
 
   async updateLink(linkProps: Partial<ILink>): Promise<ILink> {

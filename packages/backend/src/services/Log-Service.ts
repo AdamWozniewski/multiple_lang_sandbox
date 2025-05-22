@@ -1,8 +1,7 @@
 import Transport from "winston-transport";
-import { Log } from '@mongo/models/log.js'; // Zakładam, że model znajduje się w models/Log.js
+import { Log } from "@mongo/models/log.js";
 
 export class LogService extends Transport {
-
   log(info: any, callback: () => void) {
     const { timestamp, level, message, metadata } = info;
     const logEntry = new Log({
@@ -24,4 +23,3 @@ export class LogService extends Transport {
       });
   }
 }
-

@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { mailer } from "@utility/mailing.js";
 import { status500 } from "@static/status-500.js";
-import { logger } from '@utility/logger.js';
+// import { logger } from '@utility/logger.js';
 
 // const pageControllerLogger = logger("PageController");
 
@@ -15,7 +15,7 @@ export class PageController {
       });
     } catch (_e) {
       res.render("pages/status_error", {
-        statusType: status500
+        statusType: status500,
       });
     }
   }
@@ -29,7 +29,7 @@ export class PageController {
   }
 
   test__emailPage(_req: Request, res: Response) {
-    res.render('pages/mailing/__test-email-page');
+    res.render("pages/mailing/__test-email-page");
   }
 
   async test__sendEmail(req: Request, res: Response) {

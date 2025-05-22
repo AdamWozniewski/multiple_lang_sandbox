@@ -5,6 +5,7 @@ import { UserController } from "../controllers/web/user-controller.js";
 import { isAuthMiddleware } from "../middleware/is-auth-middleware.js";
 import { upload } from "@utility/uploader.js";
 import { doubleCsrfProtection } from "../middleware/csrf-middleware.js";
+import { notIsAuthMiddleware } from '../middleware/not-is-auth-middleware.js';
 // import { rolesMiddleware } from '../middleware/roles-middleware.js';
 
 const routerWeb = Router();
@@ -14,7 +15,6 @@ const company = new CompaniesController();
 const user = new UserController();
 
 routerWeb.get("/", page.home);
-
 routerWeb.get("/company/:name", company.showCompany);
 routerWeb.get("/companies", company.showCompanies);
 
@@ -59,18 +59,23 @@ routerWeb.post("/admin/profile", isAuthMiddleware, user.saveProfile);
 routerWeb.get("/register", user.register);
 routerWeb.post("/register", user.registerUser);
 
-routerWeb.get("/login", user.showLogin);
+routerWeb.get("/login", notIsAuthMiddleware, user.showLogin);
+routerWeb.post("/login", user.loginUser);
+
 routerWeb.get("/auth/:provider", user.loginWithProvider);
 routerWeb.get("/auth/:provider/callback", user.oauthCallback);
-routerWeb.post("/login", user.loginUser);
-routerWeb.post("/logout", user.logout);
-routerWeb.get("/forgot-password", user.showForgotPassword);
-routerWeb.post("/forgot-password", user.forgotPassword);
-routerWeb.post("/reset-forgot-password", user.resetForgotPassword);
-routerWeb.get("/activate/:id/:token", user.activateUser);
+routerWeb.get("/logout", user.logout);
+
+routerWeb.get("/forgot-password", notIsAuthMiddleware ,user.showForgotPassword);
+routerWeb.post("/forgot-password", notIsAuthMiddleware, user.forgotPassword);
+
+routerWeb.get("/reset-forgot-password", notIsAuthMiddleware, user.showResetForgotPassword);
+routerWeb.post("/reset-forgot-password", notIsAuthMiddleware, user.resetForgotPassword);
+
+routerWeb.get("/activate", user.activateUser);
 
 routerWeb.get("/csv", company.getCSV);
-
-routerWeb.get("*", page.notFound);
+//
+// routerWeb.get("/{*splat}", page.notFound);
 
 export { routerWeb };

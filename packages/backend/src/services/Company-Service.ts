@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import { Company } from "@mongo/models/company.js";
-import { BaseService } from './Base-Service.js';
+import { BaseService } from "./Base-Service.js";
 // import { Filters } from '@customTypes/filters.js';
 
 export class CompanyService extends BaseService {
@@ -13,7 +13,11 @@ export class CompanyService extends BaseService {
     return Company.findOne({ slug });
   }
 
-  async updateCompany(slug: string, data: Partial<typeof Company>, newImage?: string) {
+  async updateCompany(
+    slug: string,
+    data: Partial<typeof Company>,
+    newImage?: string,
+  ) {
     const company = await Company.findOne({ slug });
     if (!company) throw new Error("Company not found");
 
@@ -47,7 +51,14 @@ export class CompanyService extends BaseService {
   }
 
   async getCompanies(filters: any) {
-    const { query, sort, countmin, countmax, currentPage = 1, perPage = 10 } = filters;
+    const {
+      query,
+      sort,
+      countmin,
+      countmax,
+      currentPage = 1,
+      perPage = 10,
+    } = filters;
     const where: any = {};
 
     if (query) {

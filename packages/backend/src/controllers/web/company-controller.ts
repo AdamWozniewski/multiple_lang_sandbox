@@ -6,6 +6,11 @@ import { CompanyService } from "@services/Company-Service.js";
 
 const companiesControllerLogger = logger("CompaniesController");
 
+const controller: string = 'CompaniesController'
+enum EventCompanies {
+  COMPANY_DELETED = "company-deleted",
+}
+
 export class CompaniesController {
   private companyService: CompanyService;
 
@@ -170,7 +175,7 @@ export class CompaniesController {
           ip: req.ip,
           message: "Company deleted",
           email: req.session.user.email,
-          controller: "CompanyController",
+          controller,
           event: "company-deleted",
         },
       });
@@ -181,8 +186,8 @@ export class CompaniesController {
           ip: req.ip,
           message: error.message,
           email: req.session.user.email,
-          controller: "CompanyController",
-          event: "company-deleted",
+          controller,
+          event: EventCompanies.COMPANY_DELETED,
         },
       });
       res.status(500).send("Nie udało się usunąć firmy.");

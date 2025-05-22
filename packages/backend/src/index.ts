@@ -9,8 +9,8 @@ const startServer = async () => {
     const app = await startApp();
 
     const port = config.port || 3000;
-    app.listen(port, () => console.log(`Listening on port ${port}`));
-
+    // app.listen(port, () => console.log(`Listening on port ${port}`));
+    await new Promise<void>((resolve) => app.listen({ port }, resolve));
     if (+config.ssl) {
       createServer(
         {
@@ -27,4 +27,4 @@ const startServer = async () => {
   }
 };
 
-startServer();
+await startServer();

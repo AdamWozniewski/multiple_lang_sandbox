@@ -35,8 +35,10 @@ export const config = {
 
   // Email
   emailSender: process.env.EMAIL_SENDER || "Adam W <xx@xx.xx>",
-  emailHost: process.env.EMAIL_HOST || "smtp.ethereal.email",
-  emailPort: process.env.EMAIL_PORT || 587,
+  emailHost: process.env.EMAIL_HOST || "localhost",
+  emailPort: process.env.EMAIL_PORT || 1025,
+  emailUser: process.env.EMAIL_USER || 'postmaster@example.com',
+  emailPass: process.env.EMAIL_PASS || 'supersecret',
 
   // Monitoring
   sentryApiKey: process.env.SENTRY_API_KEY || "",

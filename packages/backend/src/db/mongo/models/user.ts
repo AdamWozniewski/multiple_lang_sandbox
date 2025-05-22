@@ -55,16 +55,21 @@ const userSchema = new Schema<IUser>({
 });
 
 userSchema.pre("save", async function(next) {
-  if (!this.activate) {
-    this.apiToken = await hashPassword(this._id.toString());
-  }
   if (!this.id) {
     this.id = this._id;
   }
-  this.password = await hashPassword(this.password);
+  if (!this.activate) {
+    this.apiToken = await hashPassword(this.id.toString());
+  }
 
   next();
 });
+
+userSchema.pre("save", async function(next) {
+  if (!this.isModified("password")) return next();
+  this.password = await hashPassword(this.password);
+});
+
 
 userSchema.post("save", (err: any, _doc: any, next: any) => {
   if (err.code === 11000) {
@@ -78,11 +83,11 @@ userSchema.post("save", (err: any, _doc: any, next: any) => {
 });
 
 userSchema.methods = {
-  comparePassword: function (password: string) {
-    return verifyPassword(password, this.password);
+  comparePassword: async function (password: string) {
+    return await verifyPassword(password, this.password);
   },
-  compareToken: function (token: string) {
-    return verifyPassword(token, this.apiToken);
+  compareToken: async function (token: string) {
+    return await verifyPassword(token, this.apiToken);
   }
 };
 

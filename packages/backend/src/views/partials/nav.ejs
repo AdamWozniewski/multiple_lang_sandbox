@@ -41,7 +41,7 @@
                             <li><a href="/eng<%= url.replace(/^\/(pl|eng)/, '') %>">English</a></li>
                         </ul>
                         <a class="rounded-md px-3 py-2 text-sm font-medium <%- url === '/' ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'; %>"
-                           aria-current="page" href="/">Strona główna</a>
+                           aria-current="page" href="/<%= language %>/">Strona główna</a>
 
                         <a class="rounded-md px-3 py-2 text-sm font-medium <%- url.includes('company') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white'; %>"
                            href="/<%= language %>/companies ">Firmy</a>

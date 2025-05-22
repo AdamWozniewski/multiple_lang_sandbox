@@ -27,6 +27,7 @@
     "wdio": "wdio run ./wdio.conf.ts"
   },
   "dependencies": {
+    "@apollo/server": "^4.11.3",
     "@libsql/client": "^0.14.0",
     "@sentry/cli": "^2.39.1",
     "@sentry/esbuild-plugin": "^2.22.7",
@@ -40,9 +41,10 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.36.4",
     "ejs": "^3.1.10",
-    "express": "^4.21.1",
+    "express": "^5.0.1",
     "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.18.1",
+    "graphql": "^16.10.0",
     "helmet": "^8.0.0",
     "i18next-fs-backend": "^2.6.0",
     "i18next-http-middleware": "^3.7.1",
@@ -63,11 +65,15 @@
     "swagger-ui-express": "^5.0.1",
     "tsconfig-paths": "^4.2.0",
     "winston": "^3.17.0",
-    "winston-daily-rotate-file": "^5.0.0"
+    "winston-daily-rotate-file": "^5.0.0",
+    "cors": "^2.8.5",
+    "body-parser": "^2.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.25.9",
     "@babel/core": "^7.26.0",
+    "@types/cors": "^2.8.17",
+    "@types/body-parser": "^1.19.5",
     "@babel/preset-env": "^7.26.0",
     "@biomejs/biome": "1.9.4",
     "@eslint/js": "^9.17.0",

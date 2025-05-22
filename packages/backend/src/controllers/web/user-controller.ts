@@ -8,9 +8,20 @@ import { ServiceNames } from "@customTypes/service-names.js";
 import jwt from "jsonwebtoken";
 import { config } from "../../config.js";
 import { LinkService } from "@services/Link-Service.js";
+import { hashPassword } from "@utility/hash.js";
 
+const localUrl: string = `${config.appUrl}${config.port}`;
 const userControllerLogger = logger(ServiceNames.UserService);
+const url: string = "";
 
+const controller: string = "UserController";
+enum EventLogin {
+  USER_REGISTERED = "user-registered",
+  LOGIN = "login",
+  UPDATE_PROFILE = "update-profile",
+  USER_ACTIVATED = "user-activated",
+  USER_FORGOT_PASSWORD = "user-forgot-password",
+}
 export class UserController {
   private userService: UserService;
   private linkService: LinkService;
@@ -19,8 +30,8 @@ export class UserController {
   constructor() {
     const roleService = new RoleService();
     this.mailerService = new MailerService();
-    this.linkService = new LinkService();
-    this.userService = new UserService(roleService, this.mailerService);
+    this.linkService = new LinkService(this.mailerService);
+    this.userService = new UserService(roleService);
   }
 
   register(_req: Request, res: Response) {
@@ -29,14 +40,19 @@ export class UserController {
 
   registerUser = async (req: Request, res: Response): Promise<void> => {
     try {
-      await this.userService.createUser(req.body);
+      const user = await this.userService.createUser(req.body);
+      const activationLink = `${localUrl}/activate?activation=${user.id}&token=${user.apiToken}`;
+      await this.mailerService.sendActivationEmail(
+        user.email as string,
+        activationLink,
+      );
       userControllerLogger.info("User registered", {
         metadata: {
           ip: req.ip,
           message: "User registered",
           email: req.body.email,
-          controller: "UserController",
-          event: "user-registered",
+          controller,
+          event: EventLogin.USER_REGISTERED,
         },
       });
       res
@@ -48,8 +64,8 @@ export class UserController {
           ip: req.ip,
           message: error.message,
           email: req.body.email,
-          controller: "UserController",
-          event: "user-registered",
+          controller,
+          event: EventLogin.USER_REGISTERED,
         },
       });
       res.render("pages/auth/register", {
@@ -66,7 +82,11 @@ export class UserController {
   loginUser = async (req: Request, res: Response) => {
     try {
       const user = await this.userService.findUserByEmail(req.body.email);
-      if (!user || !user.comparePassword(req.body.password)) {
+      const userComparedPassword = await user?.comparePassword(
+        req.body.password,
+      );
+
+      if (!user || !userComparedPassword) {
         throw new Error("Błędny login lub hasło");
       }
       if (!user.activate) {
@@ -85,8 +105,8 @@ export class UserController {
           ip: req.ip,
           message: "Login Success",
           email: req.body.email,
-          controller: "UserController",
-          event: "Login",
+          controller,
+          event: EventLogin.LOGIN,
         },
       });
       res.redirect("/");
@@ -96,8 +116,8 @@ export class UserController {
           ip: req.ip,
           message: error.message,
           email: req.body.email,
-          controller: "UserController",
-          event: "Login",
+          controller,
+          event: EventLogin.LOGIN,
         },
       });
       res.render("pages/auth/login", {
@@ -115,7 +135,7 @@ export class UserController {
   };
 
   showProfile(req: Request, res: Response) {
-    res.render("pages/auth/profile", { form: req.session.user });
+    res.status(200).render("pages/auth/profile", { form: req.session.user });
   }
 
   saveProfile = async (req: Request, res: Response): Promise<void> => {
@@ -135,8 +155,8 @@ export class UserController {
           ip: req.ip,
           message: "Update Profile",
           email: req.session.user?.email,
-          controller: "UserController",
-          event: "update-profile",
+          controller,
+          event: EventLogin.UPDATE_PROFILE,
         },
       });
       res.render("pages/auth/profile", { form: req.session.user });
@@ -146,8 +166,8 @@ export class UserController {
           ip: req.ip,
           message: error.message,
           email: req.session.user.email,
-          controller: "UserController",
-          event: "update-profile",
+          controller,
+          event: EventLogin.UPDATE_PROFILE,
         },
       });
       res.render("pages/auth/profile", {
@@ -159,26 +179,29 @@ export class UserController {
 
   activateUser = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { token, id } = req.params;
-      await this.userService.activateUser(id, token);
-      userControllerLogger.info("User registered", {
+      const { token, activation } = req.query;
+      const user = await this.userService.activateUser(
+        activation as string,
+        token as string,
+      );
+      userControllerLogger.info("User activated", {
         metadata: {
           ip: req.ip,
-          message: "User registered",
-          email: req.body.email,
-          controller: "UserController",
-          event: "user-registered",
+          message: "User activated",
+          email: user.email,
+          controller,
+          event: EventLogin.USER_ACTIVATED,
         },
       });
-      res.render("/pages/confirm/confirm-account");
+      res.render("pages/confirm/confirm-account");
     } catch (error: any) {
       userControllerLogger.info("User Activated failed", {
         metadata: {
           ip: req.ip,
           message: "User Activated failed",
-          email: req.body.email,
-          controller: "UserController",
-          event: "user-activated",
+          email: "req.body.email",
+          controller,
+          event: EventLogin.USER_ACTIVATED,
         },
       });
       res.render("pages/auth/login", {
@@ -197,15 +220,14 @@ export class UserController {
     const user = await this.userService.findUserByEmail(email);
 
     if (!user) {
-      throw new Error("User does not exist");
+      return res.render("pages/confirm/forgot-password-email-send-confirm");
     }
 
     const token = jwt.sign({ id: user.id }, config.jwtSecret, {
       expiresIn: "1h",
     });
-    const resetLink = `${process.env.CLIENT_URL}?token=${token}`;
+    const resetLink = `${process.env.CLIENT_URL}/reset-forgot-password?token=${token}`;
     try {
-      // await this.mailerService.sendResetPasswordEmail(user.email, resetLink);
       await this.linkService.createLink({
         type: "forgot-password",
         url: resetLink,
@@ -216,19 +238,19 @@ export class UserController {
           ip: req.ip,
           message: "Forgot Password Send",
           email: req.body.email,
-          controller: "UserController",
-          event: "user-forgot-password",
+          controller,
+          event: EventLogin.USER_FORGOT_PASSWORD,
         },
       });
-      res.render("pages/confirm/forgot-password-email-send-confirm");
+      return res.render("pages/confirm/forgot-password-email-send-confirm");
     } catch (error: any) {
       userControllerLogger.error("Forgot Password Send Failed", {
         metadata: {
           ip: req.ip,
           message: "Forgot Password Send",
           email: req.body.email,
-          controller: "UserController",
-          event: "user-forgot-password",
+          controller,
+          event: EventLogin.USER_FORGOT_PASSWORD,
         },
       });
       res.render("pages/auth/login", {
@@ -238,21 +260,44 @@ export class UserController {
     }
   };
 
+  showResetForgotPassword = async (req: Request, res: Response) => {
+    res.render("pages/auth/reset-forgot-password.ejs", {
+      token: req.query.token,
+    });
+  };
+
   resetForgotPassword = async (req: Request, res: Response) => {
-    // const { email } = req.body;
-    // const user = await this.userService.findUserByEmail(email);
-    //
-    // if (!user) {
-    //   throw new Error("User does not exist");
+    const { token, password } = req.body;
+
+    if (!token) {
+      return res.status(400).send("Token is required");
+    }
+
+    // if (password !== confirmPassword) {
+    //   return res.status(400).send("Passwords do not match");
     // }
-    //
-    // const token = jwt.sign({ id: user.id }, config.jwtSecret, {
-    //   expiresIn: "1h", // Token ważny przez 1 godzinę
-    // });
-    // const resetLink = `${process.env.CLIENT_URL}?token=${token}`;
-    // try {
-    //   await this.mailerService.sendResetPasswordEmail()
-    // }
+
+    try {
+      const { id } = jwt.verify(token, config.jwtSecret);
+      const user = await this.userService.findUserById(id);
+
+      if (!user) {
+        return res.status(404).send("User not found");
+      }
+      const hashedPassword = await hashPassword(password);
+      await this.userService.updateUserProfile(id, {
+        password: hashedPassword,
+      });
+
+      return res
+        .set("Content-Type", "text/html")
+        .render("pages/confirm/password-changed-confirm.ejs");
+    } catch (error: any) {
+      res.status(400).render("pages/auth/reset-forgot-password.ejs", {
+        errors: error.errors,
+        form: req.body,
+      });
+    }
   };
 
   loginWithProvider = (req: Request, res: Response, next: NextFunction) => {
