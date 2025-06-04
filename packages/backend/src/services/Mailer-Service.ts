@@ -9,4 +9,8 @@ export class MailerService implements IMailerService {
   async sendResetPasswordEmail(email: string, link: string): Promise<void> {
     await mailer(email, "Reset Password", link);
   };
+
+  async send2FAVerificationCode(email: string, link: string): Promise<void> {
+    await mailer(email, "Verification Code", link, 'verification-code');
+  }
 }

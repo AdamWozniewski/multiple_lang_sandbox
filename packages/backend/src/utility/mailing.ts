@@ -13,7 +13,7 @@ export const mailer = async (
   email: string,
   subject: string,
   content: any,
-  templatePath: string = templatePathTest(),
+  templatePath: string,
 ): Promise<void> => {
   const transporter = createTransport({
     host: config.emailHost,
@@ -29,8 +29,9 @@ export const mailer = async (
       },
     }),
   });
+  console.log(templatePathTest(templatePath));
   const emailHtml = await new Promise<string>((resolve, reject) => {
-    renderFile(templatePath, { content }, (err, data) => {
+    renderFile(templatePathTest(templatePath), { content }, (err, data) => {
       if (err) return reject(err);
       resolve(data);
     });

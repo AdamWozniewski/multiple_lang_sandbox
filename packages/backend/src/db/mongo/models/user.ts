@@ -1,7 +1,8 @@
-import { type Model, Schema, Types, model, type ObjectId } from 'mongoose';
+import { type Model, Schema, Types, model, type ObjectId } from "mongoose";
 import { hashPassword, verifyPassword } from "@utility/hash.js";
 import { validateEmail } from "../validators.js";
-import type { IUserRole } from '@mongo/models/roles.js';
+import type { IUserRole } from "@mongo/models/roles.js";
+import type { TwoFactorAuthenticationType } from "@customTypes/two-factor-authentication-type.js";
 
 export interface IUser extends Document {
   _id: Types.ObjectId;
@@ -14,6 +15,8 @@ export interface IUser extends Document {
   apiToken?: string;
   activate: boolean;
   roles: ObjectId | IUserRole;
+  twoFactorAuthentication?: boolean;
+  twoFactorAuthenticationType?: TwoFactorAuthenticationType;
 
   comparePassword(password: string): boolean;
   compareToken(token: string): boolean;
@@ -50,11 +53,21 @@ const userSchema = new Schema<IUser>({
   },
   activate: {
     type: Boolean,
-    default: false
+    default: false,
+  },
+  twoFactorAuthentication: {
+    type: Boolean,
+    default: false,
+  },
+  twoFactorAuthenticationType: {
+    type: String,
+    enum: ["qr", "ec", "ml", "pk", "bic", ''],
+    default: '',
+    required: false,
   },
 });
 
-userSchema.pre("save", async function(next) {
+userSchema.pre("save", async function (next) {
   if (!this.id) {
     this.id = this._id;
   }
@@ -65,11 +78,10 @@ userSchema.pre("save", async function(next) {
   next();
 });
 
-userSchema.pre("save", async function(next) {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await hashPassword(this.password);
 });
-
 
 userSchema.post("save", (err: any, _doc: any, next: any) => {
   if (err.code === 11000) {
@@ -88,7 +100,7 @@ userSchema.methods = {
   },
   compareToken: async function (token: string) {
     return await verifyPassword(token, this.apiToken);
-  }
+  },
 };
 
 userSchema.virtual("fullName").get(function () {

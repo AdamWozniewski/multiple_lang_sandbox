@@ -9,6 +9,10 @@ import jwt from "jsonwebtoken";
 import { config } from "../../config.js";
 import { LinkService } from "@services/Link-Service.js";
 import { hashPassword } from "@utility/hash.js";
+import type { IUser } from "@mongo/models/user.js";
+import type { IRoleService } from "@interface/role-interface.js";
+import { VerificationCodeService } from "@services/Verification-Code-Service.js";
+import { v4 as uuidv4 } from "uuid";
 
 const localUrl: string = `${config.appUrl}${config.port}`;
 const userControllerLogger = logger(ServiceNames.UserService);
@@ -25,6 +29,8 @@ enum EventLogin {
 export class UserController {
   private userService: UserService;
   private linkService: LinkService;
+  private roleService: IRoleService;
+  private verificationCodeService: VerificationCodeService;
   private readonly mailerService: MailerService;
 
   constructor() {
@@ -32,6 +38,8 @@ export class UserController {
     this.mailerService = new MailerService();
     this.linkService = new LinkService(this.mailerService);
     this.userService = new UserService(roleService);
+    this.roleService = new RoleService();
+    this.verificationCodeService = new VerificationCodeService();
   }
 
   register(_req: Request, res: Response) {
@@ -40,7 +48,8 @@ export class UserController {
 
   registerUser = async (req: Request, res: Response): Promise<void> => {
     try {
-      const user = await this.userService.createUser(req.body);
+      const roles = await this.roleService.getDefaultUserRole();
+      const user = await this.userService.createUser({ ...req.body, roles });
       const activationLink = `${localUrl}/activate?activation=${user.id}&token=${user.apiToken}`;
       await this.mailerService.sendActivationEmail(
         user.email as string,
@@ -82,9 +91,7 @@ export class UserController {
   loginUser = async (req: Request, res: Response) => {
     try {
       const user = await this.userService.findUserByEmail(req.body.email);
-      const userComparedPassword = await user?.comparePassword(
-        req.body.password,
-      );
+      const userComparedPassword = user?.comparePassword(req.body.password);
 
       if (!user || !userComparedPassword) {
         throw new Error("Błędny login lub hasło");
@@ -92,24 +99,24 @@ export class UserController {
       if (!user.activate) {
         throw new Error("Account not activated");
       }
+      if (user.twoFactorAuthentication) {
+        if (user.twoFactorAuthenticationType === 'ec') {
+          req.session.pending2FA = {
+            _id: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            roles: user?.roles,
+          };
+          return res.redirect("/verification/verification-code");
+        }
+        if (user.twoFactorAuthenticationType === 'qr') {
+          req.session.pending2FAToken = uuidv4();
+          return res.redirect("/verification/qr-code");
+        }
+      }
 
-      req.session.user = {
-        _id: user._id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        roles: user?.roles,
-      };
-      userControllerLogger.info("Login Success", {
-        metadata: {
-          ip: req.ip,
-          message: "Login Success",
-          email: req.body.email,
-          controller,
-          event: EventLogin.LOGIN,
-        },
-      });
-      res.redirect("/");
+      this.setSuccessLogin(req, res, user as IUser);
     } catch (error: any) {
       userControllerLogger.error("Login failed", {
         metadata: {
@@ -125,6 +132,97 @@ export class UserController {
         form: req.body,
       });
     }
+  };
+  emailCodeVerification = async (req: Request, res: Response) => {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const user = req.session.pending2FA;
+    if (!user) return res.redirect("/login");
+    try {
+      await this.verificationCodeService.createVerificationCode(user, code);
+      await this.mailerService.send2FAVerificationCode(
+        user.email as string,
+        code,
+      );
+      res.render("pages/auth/email-code");
+    } catch (error: any) {
+      userControllerLogger.error("Login failed", {
+        metadata: {
+          ip: req.ip,
+          message: error.message,
+          email: req.body.email,
+          controller,
+          event: EventLogin.LOGIN,
+        },
+      });
+      res.render("pages/auth/email-code", {
+        errors: { message: error.message },
+        form: req.body,
+      });
+    }
+  };
+
+  emailCodeVerificationLogin = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
+    const { email } = req.session.pending2FA;
+    const { code } = req.body;
+    try {
+      const record = await this.verificationCodeService.getVerificationCode(
+        email,
+        code,
+      );
+      if (!record) {
+        return res.render("pages/auth/email-code", {
+          errors: { message: 'Kod wygasł lub jest nieprawidłowy' },
+        });
+      }
+
+      await this.verificationCodeService.updateVerificationCode({ email, code, used: true });
+      const user = await this.userService.findUserByEmail(email);
+      this.setSuccessLogin(req, res, user as IUser);
+    } catch (error: any) {
+      userControllerLogger.error("Login failed", {
+        metadata: {
+          ip: req.ip,
+          message: error.message,
+          email: req.body.email,
+          controller,
+          event: EventLogin.LOGIN,
+        },
+      });
+      res.render("pages/auth/email-code", {
+        errors: { message: error.message },
+        form: req.body,
+      });
+    }
+  };
+
+  qrVerification = async (req: Request, res: Response) => {
+    try {
+      res.render("pages/auth/qr-code");
+    } catch (error: any) {
+      userControllerLogger.error("Login failed", {
+        metadata: {
+          ip: req.ip,
+          message: error.message,
+          email: req.body.email,
+          controller,
+          event: EventLogin.LOGIN,
+        },
+      });
+      res.render("pages/auth/email-code", {
+        errors: { message: error.message },
+        form: req.body,
+      });
+    }
+  };
+
+  qrVerificationLogin = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
+    // this.setSuccessLogin(req, res, user as IUser);
   };
 
   logout = async (req: Request, res: Response): Promise<void> => {
@@ -142,13 +240,19 @@ export class UserController {
     try {
       const user = await this.userService.updateUserProfile(
         req.session.user._id,
-        req.body,
+        {
+          ...req.body,
+          twoFactorAuthentication: req.body.twoFactorAuthentication === "on",
+          twoFactorAuthenticationType: req.body.twoFactorAuthenticationType,
+        },
       );
       req.session.user = {
         _id: user?._id,
         email: user?.email,
         firstName: user?.firstName,
         lastName: user?.lastName,
+        twoFactorAuthentication: user?.twoFactorAuthentication,
+        twoFactorAuthenticationType: user?.twoFactorAuthenticationType,
       };
       userControllerLogger.info("Update Profile", {
         metadata: {
@@ -327,4 +431,24 @@ export class UserController {
       next,
     );
   };
+
+  setSuccessLogin(req: Request, res: Response, user: IUser) {
+    req.session.user = {
+      _id: user?._id,
+      email: user?.email,
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      roles: user?.roles,
+    };
+    userControllerLogger.info("Login Success", {
+      metadata: {
+        ip: req.ip,
+        message: "Login Success",
+        email: req.body.email,
+        controller,
+        event: EventLogin.LOGIN,
+      },
+    });
+    return res.redirect("/");
+  }
 }

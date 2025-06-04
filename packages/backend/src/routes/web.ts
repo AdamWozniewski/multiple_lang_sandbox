@@ -62,6 +62,12 @@ routerWeb.post("/register", user.registerUser);
 routerWeb.get("/login", notIsAuthMiddleware, user.showLogin);
 routerWeb.post("/login", user.loginUser);
 
+routerWeb.get("/verification/verification-code", notIsAuthMiddleware, user.emailCodeVerification);
+routerWeb.post("/verification/verification-code", user.emailCodeVerificationLogin);
+
+// routerWeb.get("/verification/qr-verification", notIsAuthMiddleware, user.qrVerification);
+// routerWeb.post("/verification/qr-verification", user.qrVerificationLogin);
+
 routerWeb.get("/auth/:provider", user.loginWithProvider);
 routerWeb.get("/auth/:provider/callback", user.oauthCallback);
 routerWeb.get("/logout", user.logout);

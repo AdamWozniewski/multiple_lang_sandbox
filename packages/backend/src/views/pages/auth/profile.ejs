@@ -1,33 +1,119 @@
-<h1>Edytuj profile</h1>
-<form method="POST">
-    <div class="form-group">
-        <label for="">Email</label>
-        <input value="<%= form?.email %>" type="email" name="email" disabled class="form-control <%- errors?.email ? 'is-invalid' : '' %>
-            " id="" aria-describedby="emailHelp" placeholder="Emial">
-        <% if(errors?.email) { %>
-            <div class="invalid-feedback"><%= errors.email.message %></div>
-        <% } %>
+<div
+        data-dialog-backdrop="edit-profile-modal"
+        data-dialog-backdrop-close="true"
+        class="inset-0 z-[999] grid h-full place-items-center bg-black bg-opacity-60 duration-300"
+>
+    <div
+            data-dialog="edit-profile-modal"
+            class="relative mx-auto w-full max-w-[30rem] rounded-lg overflow-hidden shadow-sm"
+    >
+        <form method="POST" class="relative flex flex-col bg-white">
+            <!-- Nagłówek -->
+            <div class="relative m-2 items-center flex justify-center text-white h-24 rounded-md bg-slate-800">
+                <h3 class="text-2xl">Edytuj profil</h3>
+            </div>
+
+            <div class="flex flex-col gap-4 p-6">
+                <!-- Email -->
+                <div class="w-full max-w-sm min-w-[200px]">
+                    <label class="block mb-2 text-sm text-slate-600">Email</label>
+                    <input
+                            value="<%= form?.email %>"
+                            type="email"
+                            name="email"
+                            disabled
+                            class="w-full bg-gray-100 text-slate-500 text-sm border border-slate-200 rounded-md px-3 py-2 shadow-sm"
+                            placeholder="Email"
+                    />
+                    <% if(errors?.email) { %>
+                        <p class="mt-1 text-sm text-red-600"><%= errors.email.message %></p>
+                    <% } %>
+                </div>
+
+                <!-- Hasło -->
+                <div class="w-full max-w-sm min-w-[200px]">
+                    <label class="block mb-2 text-sm text-slate-600">Hasło</label>
+                    <input
+                            value="<%= form?.password %>"
+                            type="password"
+                            name="password"
+                            class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm"
+                            placeholder="Hasło"
+                    />
+                    <% if(errors?.password) { %>
+                        <p class="mt-1 text-sm text-red-600"><%= errors.password.message %></p>
+                    <% } %>
+                </div>
+
+                <!-- Imię -->
+                <div class="w-full max-w-sm min-w-[200px]">
+                    <label class="block mb-2 text-sm text-slate-600">Imię</label>
+                    <input
+                            value="<%= form?.firstName %>"
+                            type="text"
+                            name="firstName"
+                            class="w-full bg-transparent text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:border-slate-400 hover:border-slate-300"
+                            placeholder="Imię"
+                    />
+                </div>
+
+                <!-- Nazwisko -->
+                <div class="w-full max-w-sm min-w-[200px]">
+                    <label class="block mb-2 text-sm text-slate-600">Nazwisko</label>
+                    <input
+                            value="<%= form?.lastName %>"
+                            type="text"
+                            name="lastName"
+                            class="w-full bg-transparent text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:border-slate-400 hover:border-slate-300"
+                            placeholder="Nazwisko"
+                    />
+                </div>
+
+                <!-- Błąd ogólny -->
+                <% if(errors && errors.message) { %>
+                    <div class="p-3 bg-red-100 text-red-800 text-sm rounded-md">
+                        <%= errors.message %>
+                    </div>
+                <% } %>
+
+                <!-- Toggle 2FA -->
+                <div class="flex items-center justify-between pt-2">
+                    <span class="text-sm text-slate-700">Dwuskładnikowe uwierzytelnianie</span>
+                    <label class="relative inline-block w-11 h-6">
+                        <input type="checkbox" id="twoFactorAuthentication" name="twoFactorAuthentication"
+                               class="absolute1 opacity-1 w-full h-full z-10 cursor-pointer peerX" <%= form?.twoFactorAuthentication ? 'checked' : '' %> />
+                        <div class="w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-indigo-600 transition duration-300"></div>
+                        <div
+                                class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 peer-checked:translate-x-5"
+                        ></div>
+                    </label>
+                </div>
+
+                <div class="w-full max-w-sm min-w-[200px]">
+                    <span class="text-sm text-slate-700">Typ autoryzacji</span>
+                    <label class="relative inline-block w-11 h-6">
+                        <select id="twoFactorAuthenticationType" name="twoFactorAuthenticationType" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option value="" <%= !form?.twoFactorAuthenticationType ? 'selected' : '' %>>Wybierz 2FA</option>
+                            <option value="qr" <%= form?.twoFactorAuthenticationType === 'qr' ? 'selected' : '' %>>QR Code</option>
+                            <option value="ec" <%= form?.twoFactorAuthenticationType === 'ec' ? 'selected' : '' %>>Email Code</option>
+                            <option value="ml" <%= form?.twoFactorAuthenticationType === 'ml' ? 'selected' : '' %>>Magiczny link</option>
+                            <option value="pk" <%= form?.twoFactorAuthenticationType === 'pk' ? 'selected' : '' %>>Klucz sprzętowy</option>
+                            <option value="bic" <%= form?.twoFactorAuthenticationType === 'bic' ? 'selected' : '' %>>Biometryka</option>
+                        </select>
+                    </label>
+                </div>
+
+            </div>
+
+            <!-- Submit -->
+            <div class="p-6 pt-0">
+                <button
+                        type="submit"
+                        class="w-full rounded-md bg-slate-800 py-2 px-4 border border-transparent text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 active:bg-slate-700"
+                >
+                    Zapisz
+                </button>
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-        <label for="">Hasło</label>
-        <input value="<%= form?.password %>" type="password" name="password" class="form-control <%- errors?.password ? 'is-invalid' : '' %>"
-               id="" placeholder="Hasło">
-        <% if(errors?.password) { %>
-            <div class="invalid-feedback"><%= errors.password.message %></div>
-        <% } %>
-    </div>
-    <div class="form-group">
-        <label for="">Imie</label>
-        <input value="<%= form?.firstName %>" type="text" name="firstName" class="form-control"
-               id="" placeholder="Imię">
-    </div>
-    <div class="form-group">
-        <label for="">Nazwisko</label>
-        <input value="<%= form?.lastName %>" type="text" name="lastName" class="form-control"
-               id="" placeholder="nazwisko">
-    </div>
-    <% if(errors) { %>
-        <div class="alert alert-danger">Błędny login lub hasło</div>
-    <% } %>
-    <button type="submit" class="btn btn-primary">Zapisz</button>
-</form>
+</div>

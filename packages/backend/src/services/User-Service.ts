@@ -14,28 +14,27 @@ export class UserService extends BaseService implements IUserService {
     this.roleService = roleService;
   }
 
-  async createUser({ email, password }: Partial<IUser>): Promise<IUser> {
-    const userRoleId = await this.roleService.getDefaultUserRole();
-    const user = new User({ email, password, roles: userRoleId });
+  async createUser({ email, password, roles }: Partial<IUser>): Promise<IUser> {
+    const user = new User({ email, password, roles });
     await user.save();
     return user;
   }
 
-  async createOAuthUser(email: string): Promise<IUser> {
-    const existingUser = await this.findUserByEmail(email);
-    if (existingUser) {
-      return existingUser;
-    }
-
-    const userRoleId = await this.roleService.getDefaultUserRole();
-    const user = new User({
-      email,
-      password: null,
-      roles: userRoleId,
-      activate: true,
-    });
-    return await user.save();
-  }
+  // async createOAuthUser(email: string): Promise<IUser> {
+  //   const existingUser = await this.findUserByEmail(email);
+  //   if (existingUser) {
+  //     return existingUser;
+  //   }
+  //
+  //   const userRoleId = await this.roleService.getDefaultUserRole();
+  //   const user = new User({
+  //     email,
+  //     password: null,
+  //     roles: userRoleId,
+  //     activate: true,
+  //   });
+  //   return await user.save();
+  // }
 
   async findUserById(id: string): Promise<IUser | null> {
     return User.findById(id).exec();
@@ -49,6 +48,7 @@ export class UserService extends BaseService implements IUserService {
     id: string,
     data: Partial<IUser>,
   ): Promise<IUser | null> {
+    console.log(data);
     const user = await User.findById(id);
     if (!user) throw new Error("User not found");
     Object.assign(user, data);
