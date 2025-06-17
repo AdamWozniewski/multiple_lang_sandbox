@@ -24,8 +24,6 @@ export default [
     'ignorePatterns': [
       'tsconfig.json',
       'test-definition.json',
-      'wdio.conf.ts',
-      'test/wdio/*',
     ],
     'env': {
       'browser': true,

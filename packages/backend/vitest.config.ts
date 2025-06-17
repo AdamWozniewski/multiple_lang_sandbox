@@ -20,11 +20,9 @@ export default defineConfig({
     exclude: [
       'dist', '.idea', '.git', '.cache',
       '**/node_modules/**',
-      // 'packages/eslint-plugin-wdio/**/*'
     ],
     environment: 'node',
     env: {
-      WDIO_SKIP_DRIVER_SETUP: '1'
     },
     coverage: {
       enabled: false,
