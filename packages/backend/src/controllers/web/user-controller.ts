@@ -50,7 +50,8 @@ export class UserController {
     try {
       const roles = await this.roleService.getDefaultUserRole();
       const user = await this.userService.createUser({ ...req.body, roles });
-      const activationLink = `${localUrl}/activate?activation=${user.id}&token=${user.apiToken}`;
+      const token = await user.generateActivationToken();
+      const activationLink = `${localUrl}/activate?activation=${user.id}&token=${token}`;
       await this.mailerService.sendActivationEmail(
         user.email as string,
         activationLink,
@@ -68,17 +69,23 @@ export class UserController {
         .set("Content-Type", "text/html")
         .render("pages/confirm/confirm-registration");
     } catch (error: any) {
+      const renderedErrors: Record<string,string> = {};
+      for (const [path, ve] of Object.entries(error.errors)) {
+        renderedErrors[path] = (ve as any).message;
+      }
+
       userControllerLogger.error("User registered failed", {
         metadata: {
           ip: req.ip,
-          message: error.message,
+          message: JSON.stringify(renderedErrors),
           email: req.body.email,
           controller,
           event: EventLogin.USER_REGISTERED,
         },
       });
-      res.render("pages/auth/register", {
-        errors: { email: { message: error.message } },
+
+      return res.render("pages/auth/register", {
+        errors: renderedErrors,
         form: req.body,
       });
     }
@@ -91,8 +98,7 @@ export class UserController {
   loginUser = async (req: Request, res: Response) => {
     try {
       const user = await this.userService.findUserByEmail(req.body.email);
-      const userComparedPassword = user?.comparePassword(req.body.password);
-
+      const userComparedPassword = await user?.comparePassword(req.body.password);
       if (!user || !userComparedPassword) {
         throw new Error("Błędny login lub hasło");
       }
@@ -299,7 +305,7 @@ export class UserController {
       });
       res.render("pages/confirm/confirm-account");
     } catch (error: any) {
-      userControllerLogger.info("User Activated failed", {
+      userControllerLogger.error("User Activated failed", {
         metadata: {
           ip: req.ip,
           message: "User Activated failed",

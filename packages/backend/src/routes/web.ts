@@ -79,6 +79,8 @@ routerWeb.get("/reset-forgot-password", notIsAuthMiddleware, user.showResetForgo
 routerWeb.post("/reset-forgot-password", notIsAuthMiddleware, user.resetForgotPassword);
 
 routerWeb.get("/activate", user.activateUser);
+routerWeb.get("/reset-activate", () => {});
+routerWeb.post("/reset-activate", () => {});
 
 routerWeb.get("/csv", company.getCSV);
 //

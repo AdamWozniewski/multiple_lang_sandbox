@@ -1,4 +1,6 @@
 import { type Model, Schema, Types, model, type ObjectId } from "mongoose";
+import { randomBytes } from 'node:crypto';
+import uniqueValidator from 'mongoose-unique-validator';
 import { hashPassword, verifyPassword } from "@utility/hash.js";
 import { validateEmail } from "../validators.js";
 import type { IUserRole } from "@mongo/models/roles.js";
@@ -13,13 +15,15 @@ export interface IUser extends Document {
   firstName?: string;
   lastName?: string;
   apiToken?: string;
+  apiTokenExpires: Date;
   activate: boolean;
   roles: ObjectId | IUserRole;
   twoFactorAuthentication?: boolean;
   twoFactorAuthenticationType?: TwoFactorAuthenticationType;
 
   comparePassword(password: string): boolean;
-  compareToken(token: string): boolean;
+  compareToken(token: string): Promise<boolean>;
+  generateActivationToken(): Promise<string>;
 
   fullName?: string;
 }
@@ -33,9 +37,9 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: [true, "Pole email jest wymagane"],
     validate: [validateEmail, "Niepoprawny adres email"],
+    unique: true,
     trim: true,
     lowercase: true,
-    unique: true,
   },
   password: {
     type: String,
@@ -46,6 +50,7 @@ const userSchema = new Schema<IUser>({
   firstName: String,
   lastName: String,
   apiToken: String,
+  apiTokenExpires: Date,
   roles: {
     type: Types.ObjectId,
     required: true,
@@ -68,12 +73,8 @@ const userSchema = new Schema<IUser>({
 });
 
 userSchema.pre("save", async function (next) {
-  if (!this.id) {
-    this.id = this._id;
-  }
-  if (!this.activate) {
-    this.apiToken = await hashPassword(this.id.toString());
-  }
+  if (!this.id) this.id = this._id;
+  if (this.isNew && !this.activate) this.apiToken = await hashPassword(this.id.toString());
 
   next();
 });
@@ -83,24 +84,21 @@ userSchema.pre("save", async function (next) {
   this.password = await hashPassword(this.password);
 });
 
-userSchema.post("save", (err: any, _doc: any, next: any) => {
-  if (err.code === 11000) {
-    err.errors = {
-      email: {
-        message: "Taki email już istnieje",
-      },
-    };
-  }
-  next(err);
-});
-
 userSchema.methods = {
   comparePassword: async function (password: string) {
     return await verifyPassword(password, this.password);
   },
   compareToken: async function (token: string) {
+    if (!this.apiTokenExpires || this.apiTokenExpires < new Date()) return false;
     return await verifyPassword(token, this.apiToken);
   },
+  generateActivationToken: async function () {
+    const plain = randomBytes(32).toString('hex');
+    this.apiToken = await hashPassword(plain);
+    this.apiTokenExpires = new Date(Date.now() + 24 * 3600_000);
+    await this.save();
+    return plain;
+  }
 };
 
 userSchema.virtual("fullName").get(function () {
@@ -114,4 +112,9 @@ userSchema.set("toJSON", {
     delete ret._id;
   },
 });
+
+userSchema.plugin(uniqueValidator, {
+  message: 'Taki {PATH} ({VALUE}) już istnieje'
+});
+
 export const User: Model<IUser> = model<IUser>("User", userSchema);

@@ -41,6 +41,10 @@ pnpm-debug.log*
 
 # testing
 /coverage
+/allure-report
+/test-results
+/allure-results
+/playwright-report
 
 # production
 /build

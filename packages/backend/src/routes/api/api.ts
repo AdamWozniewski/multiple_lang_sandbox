@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { CompaniesControllerApi } from "../controllers/api/company-controller-api.js";
-import { UserControllerApi } from "../controllers/api/user-controller-api.js";
-import { isAuthMiddlewareJWT } from '../middleware/is-auth-api.js';
+import { CompaniesControllerApi } from "../../controllers/api/company-controller-api.js";
+import { UserControllerApi } from "../../controllers/api/user-controller-api.js";
+import { isAuthMiddlewareJWT } from '../../middleware/is-auth-api.js';
 import { upload } from "@utility/uploader.js";
 
 const routerApi = Router();

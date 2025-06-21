@@ -1,22 +1,28 @@
-import { hashPassword } from '../../src/services/hash.js';
-import * as bcrypt from 'bcrypt';
+import { describe, it, expect } from 'vitest';
+import { hashPassword, verifyPassword } from '@utility/hash.js';
 
-// Mockowanie całego modułu bcrypt
-vi.mock('bcrypt', () => ({
-  genSaltSync: vi.fn(() => 'mockSalt'),
-  hashSync: vi.fn(() => 'mockHashedPassword'),
-}));
+describe('hashPassword / verifyPassword', () => {
+  const pswd = 'SuperSecret123!';
 
-describe('hashPassword', () => {
-  it('should hash the password correctly', () => {
-    // Wywołanie funkcji do przetestowania
-    const hashedPassword = hashPassword('password123');
+  it('hashPassword - returns a different string than the original', async () => {
+    const hashed = await hashPassword(pswd);
+    expect(typeof hashed).toBe('string');
+    expect(hashed).not.toBe(pswd);
+  });
 
-    // Asercje dla mocków
-    expect(bcrypt.genSaltSync).toHaveBeenCalledWith(10); // SALT_ROUNDS
-    expect(bcrypt.hashSync).toHaveBeenCalledWith('password123', 'mockSalt');
+  it('verifyPassword - returns true for a valid password', async () => {
+    const hashed = await hashPassword(pswd);
+    expect(await verifyPassword(pswd, hashed)).toBe(true);
+  });
 
-    // Asercja dla wyniku
-    expect(hashedPassword).toBe('mockHashedPassword');
+  it('verifyPassword - returns false for invalid password', async () => {
+    const hashed = await hashPassword(pswd);
+    expect(await verifyPassword('FooBar!', hashed)).toBe(false);
+  });
+
+  it('hashPassword - generates different hashes for the same password', async () => {
+    const h1 = await hashPassword(pswd);
+    const h2 = await hashPassword(pswd);
+    expect(h1).not.toBe(h2);
   });
 });

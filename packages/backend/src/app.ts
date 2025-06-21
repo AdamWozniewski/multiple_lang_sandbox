@@ -23,10 +23,10 @@ import { isAuthMiddleware } from "./middleware/is-auth-middleware.js";
 import { rateLimiterMiddleware } from "./middleware/rate-limiter-middleware.js";
 import { userMiddleware } from "./middleware/user-middleware.js";
 import { globalMiddleware } from "./middleware/view-variables.js";
-import { routerApi } from "./routes/api.js";
+import { routerApi } from "./routes/api/api.js";
 import "./db/mongo/database.ts";
 import { routerWeb } from "./routes/web.js";
-import { routerDev } from "./routes/web-dev.js";
+import { routerDev } from "./routes/web/web-dev.js";
 import { __dirname } from "./utility/dirname.js";
 import { DEVELOPMENT, PRODUCTION } from "./static/env.js";
 

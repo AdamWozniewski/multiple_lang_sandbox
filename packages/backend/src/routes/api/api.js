@@ -1,10 +1,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.routerApi = void 0;
 var express_1 = require("express");
-var company_controller_api_js_1 = require("../controllers/api/company-controller-api.js");
+var company_controller_api_js_1 = require("../../controllers/api/company-controller-api.js");
 var uploader_js_1 = require("../services/uploader.js");
-var is_auth_api_js_1 = require("../middleware/is-auth-api.js");
-var user_controller_api_js_1 = require("../controllers/api/user-controller-api.js");
+var is_auth_api_js_1 = require("../../middleware/is-auth-api.js");
+var user_controller_api_js_1 = require("../../controllers/api/user-controller-api.js");
 var routerApi = (0, express_1.Router)();
 exports.routerApi = routerApi;
 var companies = new company_controller_api_js_1.CompaniesControllerApi();
