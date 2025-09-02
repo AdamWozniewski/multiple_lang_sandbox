@@ -1,6 +1,6 @@
 import { model, type Model, type ObjectId, Schema, Types } from "mongoose";
-import { validateForbiddenString } from "../validators.js";
-import type { IUser } from "./user.js";
+import { validateForbiddenString } from "../validators";
+import type { IUser } from "./user";
 
 export interface ICompany extends Document {
   slug: string;

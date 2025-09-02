@@ -1,9 +1,9 @@
 import * as process from "node:process";
-import dotenv from "dotenv";
+// import 'dotenv/config';
 import { getBranch, getCommitHash } from "./scripts/git-current-status.js";
 import { DEVELOPMENT } from "./static/env.js";
 
-dotenv.config();
+// dotenv.config();
 
 export const config = {
   // GIT
@@ -37,12 +37,17 @@ export const config = {
   emailSender: process.env.EMAIL_SENDER || "Adam W <xx@xx.xx>",
   emailHost: process.env.EMAIL_HOST || "localhost",
   emailPort: process.env.EMAIL_PORT || 1025,
-  emailUser: process.env.EMAIL_USER || 'postmaster@example.com',
-  emailPass: process.env.EMAIL_PASS || 'supersecret',
+  emailUser: process.env.EMAIL_USER || "postmaster@example.com",
+  emailPass: process.env.EMAIL_PASS || "supersecret",
 
   // Monitoring
+  sentryDNS: process.env.SENTRY_DNS || "",
   sentryApiKey: process.env.SENTRY_API_KEY || "",
   sentryAuthToken: process.env.SENTRY_AUTH_TOKEN || "",
+
+  // NewRelic
+  NEW_RELIC_API_KEY: process.env.NEW_RELIC_API_KEY || "",
+  NEW_RELIC_APP_NAME: process.env.NEW_RELIC_APP_NAME || "",
 
   // OAUTH
   oauthClientId: process.env.OAUTH_CLIENT_ID || "",

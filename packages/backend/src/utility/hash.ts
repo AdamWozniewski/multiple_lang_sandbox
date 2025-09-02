@@ -1,13 +1,27 @@
-import bcrypt from 'bcrypt';
+const COST = 10;
 
-const SALT_ROUNDS = 10;
+const isBun =
+  typeof globalThis !== "undefined" &&
+  typeof (globalThis as any).Bun !== "undefined" &&
+  !!(globalThis as any).Bun.password;
 
-export const hashPassword = async (password: string) => {
-  const salt = await bcrypt.genSalt(SALT_ROUNDS);
-  return await bcrypt.hash(password, salt);
-};
+export async function hashPassword(password: string, cost = COST) {
+  if (isBun) {
+    return (globalThis as any).Bun.password.hash(password, {
+      algorithm: "bcrypt",
+      cost,
+    });
+  } else {
+    const { default: bcryptjs } = await import("bcryptjs");
+    return bcryptjs.hash(password, cost);
+  }
+}
 
-export const verifyPassword = async (
-  password: string,
-  hashedPassword: string,
-) => await bcrypt.compare(password, hashedPassword);
+export async function verifyPassword(password: string, hashed: string) {
+  if (isBun) {
+    return (globalThis as any).Bun.password.verify(password, hashed);
+  } else {
+    const { default: bcryptjs } = await import("bcryptjs");
+    return bcryptjs.compare(password, hashed);
+  }
+}

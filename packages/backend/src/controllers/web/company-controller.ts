@@ -6,7 +6,7 @@ import { CompanyService } from "@services/Company-Service.js";
 
 const companiesControllerLogger = logger("CompaniesController");
 
-const controller: string = 'CompaniesController'
+const controller: string = "CompaniesController";
 enum EventCompanies {
   COMPANY_DELETED = "company-deleted",
 }
@@ -95,7 +95,8 @@ export class CompaniesController {
       perPage,
     };
 
-    const { companies, resultsCount, pagesCount } = await this.companyService.getCompanies(filters);
+    const { companies, resultsCount, pagesCount } =
+      await this.companyService.getCompanies(filters);
 
     res.render("pages/companies/companies", {
       companies,
@@ -103,7 +104,7 @@ export class CompaniesController {
       resultsCount,
       pagesCount,
     });
-  }
+  };
 
   showCreateCompany(_req: Request, res: Response) {
     res.render("pages/companies/create-company");

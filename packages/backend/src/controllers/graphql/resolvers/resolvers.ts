@@ -1,4 +1,4 @@
-import { typeDefs } from '../defs/defs.js';
+import { typeDefs } from "../defs/defs.js";
 
 export const resolvers = {
   Query: {

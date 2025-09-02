@@ -7,6 +7,38 @@
             data-dialog="sign-in-modal"
             class="relative mx-auto w-full max-w-[24rem] rounded-lg overflow-hidden shadow-sm"
     >
+        <div class="qr-box">
+            <img src="<%= qrDataUrl %>" alt="QR do zatwierdzenia" />
+            <div class="code">Kod: <strong><%= code %></strong></div>
+            <div id="timer"></div>
+        </div>
+
 
     </div>
 </div>
+<script>
+  const stream = new EventSource("<%= streamUrl %>");
+  stream.onmessage = async (e) => {
+    const { status } = JSON.parse(e.data);
+    if (status === "approved") {
+      const resp = await fetch("/auth/qr/finalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ attemptId: "<%= attemptId %>" })
+      });
+      if (resp.ok) window.location = "/dashboard";
+    }
+    if (status === "expired" || status === "denied") {
+      // pokaż info i przycisk odśwież
+      alert("Logowanie wygasło. Odśwież stronę.");
+    }
+  };
+
+  // prosty licznik
+  let left = <%= ttlSeconds %>;
+  const el = document.getElementById("timer");
+  const t = setInterval(() => {
+    el.textContent = `Wygasa za ${left}s`;
+    if (--left <= 0) clearInterval(t);
+  }, 1000);
+</script>

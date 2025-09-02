@@ -1,4 +1,4 @@
-import { boolean, pgTable, serial, text } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, serial, text } from "drizzle-orm/pg-core";
 
 export const userTable = pgTable("user", {
   id: serial("id").primaryKey().notNull().unique(),
@@ -9,5 +9,5 @@ export const userTable = pgTable("user", {
   firstName: text("firstName"),
   password: text("password").notNull(),
   activate: boolean("activate"),
-  roles: text('roles')
+  roles: text("roles"),
 });

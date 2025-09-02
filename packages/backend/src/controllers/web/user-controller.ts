@@ -1,22 +1,37 @@
 import type { NextFunction, Request, Response } from "express";
-import { logger } from "@utility/logger.js";
+import QRCode from "qrcode";
+import { randomInt } from "node:crypto";
+import { logger } from "@utility/logger";
 import passport from "@utility/passport.js";
-import { UserService } from "@services/User-Service.js";
-import { RoleService } from "@services/Role-Services.js";
-import { MailerService } from "@services/Mailer-Service.js";
-import { ServiceNames } from "@customTypes/service-names.js";
+import { UserService } from "@services/User-Service";
+import { RoleService } from "@services/Role-Services";
+import { MailerService } from "@services/Mailer-Service";
+import { ServiceNames } from "@customTypes/service-names";
 import jwt from "jsonwebtoken";
-import { config } from "../../config.js";
-import { LinkService } from "@services/Link-Service.js";
-import { hashPassword } from "@utility/hash.js";
-import type { IUser } from "@mongo/models/user.js";
-import type { IRoleService } from "@interface/role-interface.js";
-import { VerificationCodeService } from "@services/Verification-Code-Service.js";
+import { config } from '@config';
+import { LinkService } from "@services/Link-Service";
+import { hashPassword } from "@utility/hash";
+import type { IUser } from "@mongo/models/user";
+import type { IRoleService } from "@interface/role-interface";
+import { VerificationCodeService } from "@services/Verification-Code-Service";
 import { v4 as uuidv4 } from "uuid";
+import type { LoginAttempt } from "@interface/qr-code-login-attemp";
+import {
+  generateAuthenticationOptions,
+  verifyAuthenticationResponse,
+} from "@simplewebauthn/server";
+
+import { AttemptsStore } from "@utility/attempts";
 
 const localUrl: string = `${config.appUrl}${config.port}`;
 const userControllerLogger = logger(ServiceNames.UserService);
 const url: string = "";
+
+const PUBLIC_URL = "https://2096c84e8b61.ngrok-free.app";
+// const QR_SECRET = process.env.QR_SECRET!;
+// const QR_TTL_SECONDS = Number(process.env.QR_TTL_SECONDS || 120);
+const RP_ID = "2096c84e8b61.ngrok-free.app";
+const ORIGIN = "https://2096c84e8b61.ngrok-free.app";
 
 const controller: string = "UserController";
 enum EventLogin {
@@ -34,10 +49,9 @@ export class UserController {
   private readonly mailerService: MailerService;
 
   constructor() {
-    const roleService = new RoleService();
     this.mailerService = new MailerService();
     this.linkService = new LinkService(this.mailerService);
-    this.userService = new UserService(roleService);
+    this.userService = new UserService();
     this.roleService = new RoleService();
     this.verificationCodeService = new VerificationCodeService();
   }
@@ -50,7 +64,7 @@ export class UserController {
     try {
       const roles = await this.roleService.getDefaultUserRole();
       const user = await this.userService.createUser({ ...req.body, roles });
-      const token = await user.generateActivationToken();
+      const token = await this.userService.generateActivationToken(user.id);
       const activationLink = `${localUrl}/activate?activation=${user.id}&token=${token}`;
       await this.mailerService.sendActivationEmail(
         user.email as string,
@@ -69,7 +83,7 @@ export class UserController {
         .set("Content-Type", "text/html")
         .render("pages/confirm/confirm-registration");
     } catch (error: any) {
-      const renderedErrors: Record<string,string> = {};
+      const renderedErrors: Record<string, string> = {};
       for (const [path, ve] of Object.entries(error.errors)) {
         renderedErrors[path] = (ve as any).message;
       }
@@ -98,7 +112,9 @@ export class UserController {
   loginUser = async (req: Request, res: Response) => {
     try {
       const user = await this.userService.findUserByEmail(req.body.email);
-      const userComparedPassword = await user?.comparePassword(req.body.password);
+      const userComparedPassword = await user?.comparePassword(
+        req.body.password,
+      );
       if (!user || !userComparedPassword) {
         throw new Error("Błędny login lub hasło");
       }
@@ -106,18 +122,17 @@ export class UserController {
         throw new Error("Account not activated");
       }
       if (user.twoFactorAuthentication) {
-        if (user.twoFactorAuthenticationType === 'ec') {
-          req.session.pending2FA = {
-            _id: user._id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            roles: user?.roles,
-          };
+        req.session.pending2FA = {
+          _id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          roles: user?.roles,
+        };
+        if (user.twoFactorAuthenticationType === "verification-code") {
           return res.redirect("/verification/verification-code");
         }
-        if (user.twoFactorAuthenticationType === 'qr') {
-          req.session.pending2FAToken = uuidv4();
+        if (user.twoFactorAuthenticationType === "qr-code") {
           return res.redirect("/verification/qr-code");
         }
       }
@@ -139,7 +154,10 @@ export class UserController {
       });
     }
   };
-  emailCodeVerification = async (req: Request, res: Response) => {
+  /*
+   * VERIFICATION-CODE
+   * */
+  verificationCode = async (req: Request, res: Response) => {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     const user = req.session.pending2FA;
     if (!user) return res.redirect("/login");
@@ -167,7 +185,7 @@ export class UserController {
     }
   };
 
-  emailCodeVerificationLogin = async (
+  verificationCodeLogin = async (
     req: Request,
     res: Response,
   ): Promise<void> => {
@@ -180,11 +198,15 @@ export class UserController {
       );
       if (!record) {
         return res.render("pages/auth/email-code", {
-          errors: { message: 'Kod wygasł lub jest nieprawidłowy' },
+          errors: { message: "Kod wygasł lub jest nieprawidłowy" },
         });
       }
 
-      await this.verificationCodeService.updateVerificationCode({ email, code, used: true });
+      await this.verificationCodeService.updateVerificationCode({
+        email,
+        code,
+        used: true,
+      });
       const user = await this.userService.findUserByEmail(email);
       this.setSuccessLogin(req, res, user as IUser);
     } catch (error: any) {
@@ -204,9 +226,48 @@ export class UserController {
     }
   };
 
+  /*
+   * QR CODE
+   * */
+
   qrVerification = async (req: Request, res: Response) => {
     try {
-      res.render("pages/auth/qr-code");
+      const userId = String(
+        (req.session as any)?.pending2FA._id || req.user?.id,
+      );
+      console.log(userId);
+      if (!userId) throw new Error("Brak kontekstu użytkownika do QR-login");
+
+      const attemptId = uuidv4();
+      const code = randomInt(1000, 10000);
+      const now = Date.now();
+      const attempt: LoginAttempt = {
+        attemptId,
+        userId,
+        code,
+        status: "pending",
+        createdAt: now,
+        expiresAt: now + 120 * 1000,
+      };
+      AttemptsStore.save(attempt);
+
+      const token = jwt.sign(
+        { aid: attemptId, jti: uuidv4() },
+        config.jwtSecret,
+        { expiresIn: `${120}s` },
+      );
+
+      const approveUrl = `${PUBLIC_URL}/auth/approve?token=${encodeURIComponent(token)}`;
+
+      const qrDataUrl = await QRCode.toDataURL(approveUrl);
+
+      return res.render("pages/auth/qr-code", {
+        qrDataUrl,
+        attemptId,
+        code,
+        ttlSeconds: 120,
+        streamUrl: `/auth/qr/stream/${attemptId}`,
+      });
     } catch (error: any) {
       userControllerLogger.error("Login failed", {
         metadata: {
@@ -224,12 +285,175 @@ export class UserController {
     }
   };
 
-  qrVerificationLogin = async (
-    req: Request,
-    res: Response,
-  ): Promise<void> => {
-    // this.setSuccessLogin(req, res, user as IUser);
+  qrStream = (req: Request, res: Response) => {
+    console.log("weszlo do qrStream");
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+    res.flushHeaders();
+
+    const { attemptId } = req.params;
+    const ping = setInterval(() => res.write(": keep-alive\n\n"), 15000);
+
+    const tick = setInterval(() => {
+      const a = AttemptsStore.get(attemptId);
+      if (!a) return;
+      if (a.status !== "pending") {
+        res.write(`data: ${JSON.stringify({ status: a.status })}\n\n`);
+        clearInterval(tick);
+        clearInterval(ping);
+        res.end();
+      } else if (a.expiresAt <= Date.now()) {
+        a.status = "expired";
+        res.write(`data: ${JSON.stringify({ status: "expired" })}\n\n`);
+        clearInterval(tick);
+        clearInterval(ping);
+        res.end();
+      }
+    }, 1000);
+
+    req.on("close", () => {
+      clearInterval(tick);
+      clearInterval(ping);
+    });
   };
+
+  finalize = (req: Request, res: Response) => {
+    console.log("weszlo do FINALIZE");
+    const { attemptId } = req.body as { attemptId: string };
+    const a = AttemptsStore.get(attemptId);
+    if (!a || a.status !== "approved")
+      return res.status(400).json({ ok: false });
+
+    // TODO: utwórz właściwą sesję użytkownika (a.userId)
+    (req.session as any).userId = a.userId;
+    AttemptsStore.remove(attemptId);
+    return res.json({ ok: true });
+  };
+
+  approvePage = (req: Request, res: Response) => {
+    console.log("weszlo do approvedPAGE");
+    const { token } = req.query as { token: string };
+    return res.render("pages/auth/qr-code-approve", { token });
+  };
+
+  checkCode = (req: Request, res: Response): any => {
+    console.log("weszlo do CHECKCODE");
+    const { token, code } = req.body as { token: string; code: string };
+    try {
+      const { aid } = jwt.verify(token, config.jwtSecret) as { aid: string };
+      const a = AttemptsStore.get(aid);
+      if (!a)
+        return res.status(400).json({ ok: false, reason: "attempt_not_found" });
+      if (a.expiresAt <= Date.now())
+        return res.status(400).json({ ok: false, reason: "expired" });
+      if (a.status !== "pending")
+        return res
+          .status(400)
+          .json({ ok: false, reason: "not_pending", status: a.status });
+      if (String(a.code) !== String(code).trim())
+        return res.status(400).json({ ok: false, reason: "code" });
+      return res.json({ ok: true, attemptId: a.attemptId });
+    } catch (err: any) {
+      return res
+        .status(400)
+        .json({ ok: false, reason: "token", message: err.message });
+    }
+  };
+  //
+  webauthnOptions = async (req: Request, res: Response): any => {
+    console.log("weszlo do WEBAUTHHNOPTIONS");
+    const { attemptId } = req.body as { attemptId: string };
+    const a = AttemptsStore.get(attemptId);
+
+    if (!a)
+      return res.status(400).json({ ok: false, reason: "attempt_not_found" });
+    if (a.expiresAt <= Date.now())
+      return res.status(400).json({ ok: false, reason: "expired" });
+    if (a.status !== "pending")
+      return res
+        .status(400)
+        .json({ ok: false, reason: "not_pending", status: a.status });
+
+    // Bierzemy usera z próby (dev-friendly). W produkcji możesz zamiast tego wymagać req.user.id === a.userId
+    const creds = await this.getUserCredentials(a.userId); // lista credentiali użytkownika z DB
+    if (!creds?.length)
+      return res.status(400).json({ ok: false, reason: "no_credentials" });
+
+    const allowCredentials = creds.map((c) => ({
+      id: Buffer.from(c.credentialID, "base64url"), // credentialID z DB w base64url
+      type: "public-key" as const,
+      transports: ["internal"] as const,
+    }));
+
+    const options = generateAuthenticationOptions({
+      rpID: process.env.RP_ID!,
+      allowCredentials,
+      userVerification: "required",
+      timeout: 60_000,
+    });
+
+    await this.saveAttemptChallenge(attemptId, options.challenge);
+    return res.json(options); // zwracamy czyste options (200)
+  };
+  //
+  webauthnVerify = async (req: Request, res: Response) => {
+    console.log("weszlo do WEBAUTHVERIFY");
+    const { attemptId, assertion } = req.body as {
+      attemptId: string;
+      assertion: any;
+    };
+    const a = AttemptsStore.get(attemptId);
+    if (!a || a.status !== "pending")
+      return res.status(400).json({ ok: false });
+
+    const expectedChallenge = await this.loadAttemptChallenge(attemptId);
+    const authenticator = await this.loadAuthenticatorForAssertion(
+      assertion.id,
+    ); // publicKey, counter, fmt
+
+    const verification = await verifyAuthenticationResponse({
+      response: assertion,
+      expectedChallenge,
+      expectedRPID: RP_ID,
+      expectedOrigin: ORIGIN,
+      authenticator,
+      requireUserVerification: true,
+    });
+
+    if (!verification.verified) return res.status(400).json({ ok: false });
+
+    await this.updateAuthenticatorCounter(
+      assertion.id,
+      verification.authenticationInfo.newCounter,
+    );
+
+    // Sukces: oznacz próbę jako approved
+    AttemptsStore.approve(a.attemptId);
+    return res.json({ ok: true });
+  };
+
+  async getUserCredentials(userId: string) {
+    return [];
+  }
+  async saveAttemptChallenge(attemptId: string, ch: string) {
+    /* noop */
+  }
+  async loadAttemptChallenge(attemptId: string) {
+    return "";
+  }
+  async loadAuthenticatorForAssertion(credId: string) {
+    return {
+      // shape wymagany przez @simplewebauthn/server
+      credentialID: Buffer.from(credId, "base64url"),
+      credentialPublicKey: Buffer.alloc(0),
+      counter: 0,
+      transports: ["internal"] as "internal"[],
+    };
+  }
+  async updateAuthenticatorCounter(credId: string, counter: number) {
+    /* noop */
+  }
 
   logout = async (req: Request, res: Response): Promise<void> => {
     req.session.destroy(() => {
@@ -314,11 +538,30 @@ export class UserController {
           event: EventLogin.USER_ACTIVATED,
         },
       });
-      res.render("pages/auth/login", {
+      res.render("pages/utility/information-screen", {
         errors: { message: error.message },
         form: req.body,
       });
     }
+  };
+
+  showResendActivate = async (_: Request, res: Response) => {
+    res.render("pages/auth/forgot-password");
+  };
+
+  resendActivate = async (req: Request, res: Response) => {
+    const { email } = req.body;
+    const user = await this.userService.findUserByEmail(email);
+    if (!user) {
+      return res.render("pages/auth/resend-activate", { ok: false });
+    }
+    const plain = await this.userService.generateActivationToken(user.id);
+    const link = `${localUrl}/activate?activation=${user.id}&token=${plain}`;
+    await this.mailerService.sendActivationEmail(user.email, link);
+
+    return res
+      .set("Content-Type", "text/html")
+      .render("pages/confirm/confirm-registration");
   };
 
   showForgotPassword = (_req: Request, res: Response) => {
@@ -408,34 +651,6 @@ export class UserController {
         form: req.body,
       });
     }
-  };
-
-  loginWithProvider = (req: Request, res: Response, next: NextFunction) => {
-    const provider = req.params.provider;
-
-    if (!["google", "facebook"].includes(provider)) {
-      return res.status(400).send("Invalid provider");
-    }
-
-    const middleware = passport.authenticate(provider, {
-      scope: provider === "google" ? ["email", "profile"] : ["email"],
-    });
-
-    return middleware(req, res, next);
-  };
-
-  oauthCallback = (req: Request, res: Response, next: NextFunction): void => {
-    const provider = req.params.provider;
-
-    if (!["google", "facebook"].includes(provider)) {
-      res.status(400).send("Invalid provider");
-    }
-
-    passport.authenticate(provider, { failureRedirect: "/login" })(
-      req,
-      res,
-      next,
-    );
   };
 
   setSuccessLogin(req: Request, res: Response, user: IUser) {

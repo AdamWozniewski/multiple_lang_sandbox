@@ -1,32 +1,33 @@
-import * as Sentry from "@sentry/node";
-import { nodeProfilingIntegration } from "@sentry/profiling-node";
-import { config } from "./config.js";
+import { config } from '@config';
 
-Sentry.init({
-  dsn: config.sentryApiKey,
-  integrations: [nodeProfilingIntegration()],
-  registerEsmLoaderHooks: {
-    onlyIncludeInstrumentedModules: true,
-  },
-  // Tracing
-  environment: config.env,
-  profilesSampleRate: 1.0,
-  tracesSampleRate: 1.0, //  Capture 100% of the transactions
-});
-// Manually call startProfiler and stopProfiler
-// to profile the code in between
-Sentry.profiler.startProfiler();
+const isBun = !!(process as any).versions?.bun;
 
-// Starts a transaction that will also be profiled
-Sentry.startSpan(
-  {
-    name: "My First Transaction",
-  },
-  () => {
-    console.log("Profilowanie transakcji!");
-  },
-);
+if (isBun) {
+  const Sentry = await import('@sentry/bun');
 
-// Calls to stopProfiling are optional - if you don't stop the profiler, it will keep profiling
-// your application until the process exits or stopProfiling is called.
-Sentry.profiler.stopProfiler();
+  Sentry.init({
+    dsn: config.sentryDNS,
+    sendDefaultPii: true,
+    environment: config.env,
+    tracesSampleRate: 1.0,
+  });
+} else {
+  const Sentry = await import('@sentry/node');
+  const { nodeProfilingIntegration } = await import('@sentry/profiling-node');
+
+  Sentry.init({
+    dsn: config.sentryDNS,
+    sendDefaultPii: true,
+    environment: config.env,
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
+    integrations: [nodeProfilingIntegration()],
+    registerEsmLoaderHooks: { onlyIncludeInstrumentedModules: true },
+  });
+
+  Sentry.profiler.startProfiler();
+  Sentry.startSpan({ name: 'My First Transaction' }, () => {
+    console.log('Profilowanie transakcji!');
+  });
+  Sentry.profiler.stopProfiler();
+}

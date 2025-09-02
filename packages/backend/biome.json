@@ -1,25 +1,25 @@
 {
   "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true
-  },
+
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+
   "files": {
     "ignoreUnknown": false,
     "ignore": ["node_modules", "dist", "coverage"]
   },
+
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
     "lineWidth": 80,
     "lineEnding": "lf",
-    "attributePosition": "auto"
+    "attributePosition": "auto",
+    "bracketSpacing": true
   },
-  "organizeImports": {
-    "enabled": true
-  },
+
+  "organizeImports": { "enabled": true },
+
   "linter": {
     "enabled": true,
     "rules": {
@@ -32,10 +32,7 @@
         "noVar": "error"
       },
       "correctness": {
-        "noUnusedVariables": {
-          "level": "warn",
-          "fix": "safe"
-        },
+        "noUnusedVariables": { "level": "warn", "fix": "safe" },
         "noUnreachable": "error",
         "noUnusedImports": "warn"
       },
@@ -43,24 +40,40 @@
         "noGlobalEval": "error",
         "noDangerouslySetInnerHtml": "error"
       },
-      "performance": {
-        "useTopLevelRegex": "warn"
-      }
+      "performance": { "useTopLevelRegex": "warn" }
     }
   },
+
   "javascript": {
+    "globals": ["__dirname", "__filename", "module", "process"],
     "formatter": {
       "arrowParentheses": "always",
       "bracketSameLine": false,
-      "bracketSpacing": true,
       "quoteProperties": "asNeeded",
       "semicolons": "always",
       "trailingCommas": "all"
     }
   },
+
   "json": {
-    "formatter": {
-      "trailingCommas": "none"
+    "formatter": { "trailingCommas": "none" }
+  },
+
+  "overrides": [
+    {
+      "include": ["**/*.ts", "**/*.tsx"],
+      "javascript": {
+        "formatter": {
+          "semicolons": "always",
+          "trailingCommas": "all"
+        }
+      },
+      "linter": {
+        "rules": {
+          "suspicious": { "noExplicitAny": "warn" },
+          "style": { "useShorthandArrayType": "warn" }
+        }
+      }
     }
-  }
+  ]
 }

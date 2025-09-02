@@ -1,0 +1,96 @@
+<form id="step1">
+    <input name="code" placeholder="Wpisz 4-cyfrowy kod z komputera" required />
+    <button>Zatwierdź kod</button>
+</form>
+
+<script>
+  const token = "<%= token %>";
+  let attemptId = null;
+  console.log(token);
+  document.getElementById("step1").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const code = e.target.code.value;
+    const r = await fetch(`https://2096c84e8b61.ngrok-free.app/auth/approve/check-code`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, code })
+    });
+    const j = await r.json();
+    if (!j.ok) return alert("Zły kod / token.");
+    attemptId = j.attemptId;
+    startWebAuthn();
+  });
+
+  async function startWebAuthn() {
+    const optsResp = await fetch('https://2096c84e8b61.ngrok-free.app/webauthn/auth/options', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ attemptId })
+    });
+
+    if (!optsResp.ok) {
+      let err = {};
+      try { err = await optsResp.json(); } catch {}
+      console.error('options error', err);
+      const msg = {
+        attempt_not_found: 'Sesja próby nie istnieje. Wygeneruj nowy QR.',
+        expired: 'Próba wygasła. Odśwież QR.',
+        not_pending: 'Ta próba jest już zakończona. Wygeneruj nową.',
+        phone_not_logged_in: 'Zaloguj się na telefonie na to samo konto.',
+        user_mismatch: 'To nie jest to samo konto co na komputerze.',
+        no_credentials: 'Brak zarejestrowanego klucza (passkey) dla tego konta.',
+      }[err.reason] || 'Błąd pobierania opcji WebAuthn.';
+      alert(msg);
+      return;
+    }
+
+    const options = await optsResp.json();
+    // sanity-check
+    if (!options.challenge) {
+      console.error('No challenge in options:', options);
+      alert('Błędna odpowiedź serwera (brak challenge).');
+      return;
+    }
+
+    // Pomocnicze konwersje base64url -> Uint8Array
+    const b64urlToUint8 = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+
+    options.challenge = b64urlToUint8(options.challenge);
+    if (Array.isArray(options.allowCredentials)) {
+      options.allowCredentials = options.allowCredentials.map(c => ({
+        ...c,
+        id: b64urlToUint8(c.id),
+      }));
+    }
+
+    const cred = await navigator.credentials.get({ publicKey: options });
+
+    const toB64url = (buf) =>
+      btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+
+    const assertion = {
+      id: cred.id,
+      rawId: toB64url(cred.rawId),
+      type: cred.type,
+      response: {
+        authenticatorData: toB64url(cred.response.authenticatorData),
+        clientDataJSON: toB64url(cred.response.clientDataJSON),
+        signature: toB64url(cred.response.signature),
+        userHandle: cred.response.userHandle ? toB64url(cred.response.userHandle) : null,
+      }
+    };
+
+    const v = await fetch('https://2096c84e8b61.ngrok-free.app/webauthn/auth/verify', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ attemptId, assertion })
+    });
+
+    const res = await v.json().catch(() => ({}));
+    if (!v.ok || !res.ok) {
+      console.error('verify fail', res);
+      alert('Weryfikacja nieudana. Spróbuj ponownie z nowym QR.');
+      return;
+    }
+
+    document.body.innerHTML = '<h2>Zatwierdzono. Możesz wrócić do komputera.</h2>';
+  }
+</script>

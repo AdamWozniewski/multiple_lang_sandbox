@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import { mailer } from "@utility/mailing.js";
-import { status500 } from "@static/status-500.js";
+import { mailer } from "@utility/mailing";
+import { status500 } from "@static/status-500";
 // import { logger } from '@utility/logger.js';
 
 // const pageControllerLogger = logger("PageController");
@@ -34,7 +34,7 @@ export class PageController {
 
   async test__sendEmail(req: Request, res: Response) {
     const { email, text } = req.body;
-    await mailer(email, "Test", text);
+    await mailer(email, "Test", text, "");
     res.render("pages/subscribe-thanks");
   }
 }

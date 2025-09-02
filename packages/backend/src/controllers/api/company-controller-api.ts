@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import type { Request, Response } from "express";
 import mongoose from "mongoose";
-import { __dirname } from "@utility/dirname.js";
-import { Company } from "@mongo/models/company.js";
+import { __dirname } from "@utility/dirname";
+import { Company } from "@mongo/models/company";
 
 export class CompaniesControllerApi {
   async showCompanies(req: Request, res: Response) {

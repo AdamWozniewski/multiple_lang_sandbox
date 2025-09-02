@@ -14,3 +14,8 @@ Content-Type: application/json
 GET {{baseUrl}}/api/companies
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+
+### GET request
+GET {{baseUrl}}/dev/debug-sentry
+Content-Type: application/json

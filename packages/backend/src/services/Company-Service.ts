@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
-import { Company } from "@mongo/models/company.js";
-import { BaseService } from "./Base-Service.js";
+import { Company } from "@mongo/models/company";
+import { BaseService } from "./Base-Service";
 // import { Filters } from '@customTypes/filters.js';
 
 export class CompanyService extends BaseService {

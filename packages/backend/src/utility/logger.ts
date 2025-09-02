@@ -1,10 +1,10 @@
 import path from "node:path";
 import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
-import { __dirname } from "./dirname.js";
-import { LogService } from "@services/Log-Service.js";
-import { config } from "../config.js";
-import { DEVELOPMENT } from "@static/env.js";
+import { __dirname } from "./dirname";
+import { LogService } from "@services/Log-Service";
+import { config } from '@config';
+import { DEVELOPMENT } from "@static/env";
 
 const logFormat = winston.format.combine(
   winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),

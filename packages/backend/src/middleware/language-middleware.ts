@@ -7,7 +7,13 @@ export const languageMiddleware = (
 ) => {
   const supportedLanguages = ["pl", "eng"];
   const urlParts = req.url.split("/").filter(Boolean);
-  if (req.path.startsWith("/graphql")) {
+  if (
+    req.path.startsWith("/graphql") ||
+    req.path.startsWith("/auth") ||
+    req.path.startsWith("/webauthn") ||
+    req.path.startsWith("/dev/test-page")
+  ) {
+    console.log("+++++++++ WEWEWE");
     return next();
   }
 

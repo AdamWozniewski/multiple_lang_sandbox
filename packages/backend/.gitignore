@@ -8,3 +8,6 @@ drizzle
 http/http-client.private.env.json
 # Sentry Config File
 .sentryclirc
+
+*storybook.log
+storybook-static

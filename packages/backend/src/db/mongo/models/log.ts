@@ -1,4 +1,4 @@
-import { type Model, Schema, model, } from 'mongoose';
+import { type Model, Schema, model } from "mongoose";
 
 export interface ILog extends Document {
   timestamp: string;
@@ -31,7 +31,7 @@ const logSchema = new Schema<ILog>({
     type: String,
     required: true,
   },
-  message:{
+  message: {
     type: String,
     required: true,
   },

@@ -1,12 +1,18 @@
-import { type Model, Schema, Types, model, type ObjectId } from "mongoose";
-import { randomBytes } from 'node:crypto';
-import uniqueValidator from 'mongoose-unique-validator';
+import { Schema, Types, type ObjectId } from "mongoose";
+
+import uniqueValidator from "mongoose-unique-validator";
 import { hashPassword, verifyPassword } from "@utility/hash.js";
 import { validateEmail } from "../validators.js";
+import {
+  WebAuthnCredentialSchema,
+  webAuthnCredentialSchema,
+} from "@mongo/models/web-authn-credential.js";
 import type { IUserRole } from "@mongo/models/roles.js";
 import type { TwoFactorAuthenticationType } from "@customTypes/two-factor-authentication-type.js";
+import type { IWebAuthnCredential } from "@mongo/models/web-authn-credential.js";
+import { BaseModel, IBaseModel } from "@mongo/models/base-model.js";
 
-export interface IUser extends Document {
+export interface IUser extends IBaseModel {
   _id: Types.ObjectId;
   id: string;
   email: string;
@@ -20,10 +26,8 @@ export interface IUser extends Document {
   roles: ObjectId | IUserRole;
   twoFactorAuthentication?: boolean;
   twoFactorAuthenticationType?: TwoFactorAuthenticationType;
-
+  credentials?: Types.DocumentArray<IWebAuthnCredential>;
   comparePassword(password: string): boolean;
-  compareToken(token: string): Promise<boolean>;
-  generateActivationToken(): Promise<string>;
 
   fullName?: string;
 }
@@ -66,15 +70,28 @@ const userSchema = new Schema<IUser>({
   },
   twoFactorAuthenticationType: {
     type: String,
-    enum: ["qr", "ec", "ml", "pk", "bic", ''],
-    default: '',
+    enum: [
+      "qr-code",
+      "verification-code",
+      "magic-link",
+      "physical-key",
+      "biometrics",
+      "",
+    ],
+    default: "",
     required: false,
+  },
+  credentials: {
+    type: [WebAuthnCredentialSchema],
+    required: false,
+    default: undefined,
   },
 });
 
 userSchema.pre("save", async function (next) {
   if (!this.id) this.id = this._id;
-  if (this.isNew && !this.activate) this.apiToken = await hashPassword(this.id.toString());
+  if (this.isNew && !this.activate)
+    this.apiToken = await hashPassword(this.id.toString());
 
   next();
 });
@@ -88,17 +105,6 @@ userSchema.methods = {
   comparePassword: async function (password: string) {
     return await verifyPassword(password, this.password);
   },
-  compareToken: async function (token: string) {
-    if (!this.apiTokenExpires || this.apiTokenExpires < new Date()) return false;
-    return await verifyPassword(token, this.apiToken);
-  },
-  generateActivationToken: async function () {
-    const plain = randomBytes(32).toString('hex');
-    this.apiToken = await hashPassword(plain);
-    this.apiTokenExpires = new Date(Date.now() + 24 * 3600_000);
-    await this.save();
-    return plain;
-  }
 };
 
 userSchema.virtual("fullName").get(function () {
@@ -114,7 +120,13 @@ userSchema.set("toJSON", {
 });
 
 userSchema.plugin(uniqueValidator, {
-  message: 'Taki {PATH} ({VALUE}) już istnieje'
+  message: "Taki {PATH} ({VALUE}) już istnieje",
 });
 
-export const User: Model<IUser> = model<IUser>("User", userSchema);
+export class UserModel extends BaseModel<IUser> {
+  constructor() {
+    super("User", userSchema);
+  }
+}
+
+export const User = new UserModel().getModel();

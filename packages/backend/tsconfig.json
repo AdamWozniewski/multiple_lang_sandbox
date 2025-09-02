@@ -1,20 +1,10 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "target": "ESNext",
-    "rootDir": "./",
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "noEmit": false,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ES2023",
+    "lib": ["ES2023"],
     "baseUrl": "./",
-    "types": ["vitest/globals"],
     "paths": {
       "@mongo/*": ["./src/db/mongo/*"],
       "@sql/*": ["./src/db/sql/*"],
@@ -22,12 +12,22 @@
       "@interface/*": ["./src/interfaces/*"],
       "@services/*": ["./src/services/*"],
       "@static/*": ["./src/static/*"],
-      "@utility/*": ["./src/utility/*"]
+      "@utility/*": ["./src/utility/*"],
+      "@config": ["./src/config.ts"]
     },
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "verbatimModuleSyntax": true,
+    "preserveValueImports": true,
+    "types": ["bun-types", "vitest/globals"],
     "sourceMap": true,
-    "inlineSources": true,
-    "sourceRoot": "./"
+    "inlineSources": true
   },
   "include": ["./src/**/*.ts", "./test/**/*.ts"],
-  "exclude": ["node_modules", "dist", "tests"]
+  "exclude": ["node_modules", "dist"]
 }

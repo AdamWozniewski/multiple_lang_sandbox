@@ -1,11 +1,9 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
-    "./src/views/**/*.ejs", // Widoki EJS
-    "./frontend/**/*.html", // Ewentualne inne pliki HTML
+    "./views/**/*.ejs",
+    "./src/**/*.{ts,tsx,js,jsx,html}"
   ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
+  theme: { extend: {} },
+  plugins: []
 };

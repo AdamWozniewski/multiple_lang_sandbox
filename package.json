@@ -2,31 +2,30 @@
   "name": "multiple_lang_sandbox",
   "version": "1.0.0",
   "description": "multiple tech sandbox",
-  "main": "index.js",
-  "scripts": {
-    "lint": "eslint \"packages/**/{src, test}/**/*.{js,jsx,ts,tsx,json}\"",
-    "lint:fix": "eslint --fix \"packages/**/{src, test}/**/*.{js,jsx,ts,tsx,json}\"",
-
-    "format": "prettier --no-error-on-unmatched-pattern --write \"packages/**/{src,test}/**/*.{js,jsx,ts,tsx,css,md,json}\" --config .prettierrc",
-    "format:check": "prettier --no-error-on-unmatched-pattern --check \"packages/**/{src,test}/**/*.{js,jsx,ts,tsx,css,md,json}\" --config .prettierrc",
-
-    "test:e2e": "playwright test --config playwright.config.ts",
-    "allure:generate": "allure generate allure-results --clean -o allure-report",
-    "allure:open": "allure open allure-report",
-
-    "test": "vitest",
-    "test:unit": "vitest run",
-    "test:watch": "vitest --watch"
-  },
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "type": "module",
+  "packageManager": "bun@1.1.0",
+  "engines": {
+    "bun": ">=1.1.0"
+  },
+  "workspaces": ["packages/*"],
+  "hoist": true,
+  "scripts": {
+    "lint": "bunx eslint \"packages/**/{src,test}/**/*.{js,jsx,ts,tsx,json}\"",
+    "lint:fix": "bunx eslint --fix \"packages/**/{src,test}/**/*.{js,jsx,ts,tsx,json}\"",
+    "format": "bunx prettier --no-error-on-unmatched-pattern --write \"packages/**/{src,test}/**/*.{js,jsx,ts,tsx,css,md,json}\" --config .prettierrc",
+    "format:check": "bunx prettier --no-error-on-unmatched-pattern --check \"packages/**/{src,test}/**/*.{js,jsx,ts,tsx,css,md,json}\" --config .prettierrc",
+    "test:e2e": "bunx playwright test --config playwright.config.ts",
+    "allure:generate": "bunx allure generate allure-results --clean -o allure-report",
+    "allure:open": "bunx allure open allure-report",
+    "test": "bunx vitest",
+    "test:unit": "bunx vitest run",
+    "test:watch": "bunx vitest --watch"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AdamWozniewski/multiple_lang_sandbox.git"
   },
-  "hoist": true,
   "author": "adamw",
   "license": "ISC",
   "bugs": {
@@ -34,7 +33,6 @@
   },
   "homepage": "https://github.com/AdamWozniewski/multiple_lang_sandbox#readme",
   "devDependencies": {
-    "vite-tsconfig-paths": "^4.0.0",
     "@eslint/js": "^9.17.0",
     "@playwright/test": "^1.40.0",
     "@types/dotenv": "^8.2.3",
@@ -54,16 +52,19 @@
     "postcss": "^8.4.49",
     "postcss-cli": "^11.0.0",
     "postcss-import": "^16.1.0",
+    "prettier": "^3.3.3",
     "sass": "^1.81.0",
+    "sharp": "^0.34.3",
     "tailwindcss": "^3.4.15",
     "ts-jest": "^29.2.5",
-    "tsx": "^4.19.2",
+    "turbo": "^2.5.5",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.0",
-    "vitest": "^2.1.8",
     "vite": "^5.4.11",
-    "vite-plugin-imagemin": "^0.5.3",
-    "vite-plugin-static-copy": "^2.1.0"
+    "vite-plugin-image-optimizer": "^2.0.2",
+    "vite-plugin-static-copy": "^2.1.0",
+    "vite-tsconfig-paths": "^5.0.1",
+    "vitest": "^2.1.8"
   },
   "dependencies": {
     "i18next": "^24.2.0"

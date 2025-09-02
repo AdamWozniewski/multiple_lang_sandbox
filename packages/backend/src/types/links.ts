@@ -1,1 +1,4 @@
-export type LinksType = 'activate-account' | 'deactivate-account' | 'forgot-password';
+export type LinksType =
+  | "activate-account"
+  | "deactivate-account"
+  | "forgot-password";

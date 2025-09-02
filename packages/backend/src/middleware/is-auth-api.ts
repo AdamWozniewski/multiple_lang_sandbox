@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import { config } from '../config.js';
-import jwt from 'jsonwebtoken';
+import { config } from "../config.js";
+import jwt from "jsonwebtoken";
 
 export const isAuthMiddlewareJWT = (
   req: Request,
@@ -10,7 +10,7 @@ export const isAuthMiddlewareJWT = (
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     res.status(401).send({ message: "Brak tokena" });
-    return
+    return;
   }
 
   const token = authHeader.split(" ")[1];
@@ -19,7 +19,9 @@ export const isAuthMiddlewareJWT = (
 
     const now = Date.now() / 1000;
     if (payload.exp - now < 300) {
-      const newToken = jwt.sign(payload.userId, config.jwtRefreshSecret, { expiresIn: '1h' });
+      const newToken = jwt.sign(payload.userId, config.jwtRefreshSecret, {
+        expiresIn: "1h",
+      });
       res.setHeader("X-Access-Token", newToken);
     }
 
@@ -27,6 +29,6 @@ export const isAuthMiddlewareJWT = (
     next();
   } catch (err) {
     res.status(401).send({ message: "Token wygasł lub jest nieprawidłowy" });
-    return
+    return;
   }
 };

@@ -1,11 +1,11 @@
-import { model, type Model, Schema } from 'mongoose';
-import { IUser } from '@mongo/models/user.js';
+import { model, type Model, Schema } from "mongoose";
+import { IUser } from "@mongo/models/user.js";
 
 export interface IEmailCode extends Document {
-  email: string,
-  code: string,
-  expiresAt: Date,
-  used: boolean
+  email: string;
+  code: string;
+  expiresAt: Date;
+  used: boolean;
 }
 
 const emailCodeSchema = new Schema<IEmailCode>({
@@ -13,7 +13,7 @@ const emailCodeSchema = new Schema<IEmailCode>({
   code: String,
   expiresAt: {
     type: Date,
-    expires: 0
+    expires: 0,
   },
   used: {
     type: Boolean,
@@ -21,4 +21,7 @@ const emailCodeSchema = new Schema<IEmailCode>({
   },
 });
 
-export const EmailCode: Model<IEmailCode> = model<IEmailCode>("EmailCode", emailCodeSchema);
+export const EmailCode: Model<IEmailCode> = model<IEmailCode>(
+  "EmailCode",
+  emailCodeSchema,
+);

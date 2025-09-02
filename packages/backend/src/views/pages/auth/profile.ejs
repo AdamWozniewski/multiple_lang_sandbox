@@ -8,13 +8,11 @@
             class="relative mx-auto w-full max-w-[30rem] rounded-lg overflow-hidden shadow-sm"
     >
         <form method="POST" class="relative flex flex-col bg-white">
-            <!-- Nagłówek -->
             <div class="relative m-2 items-center flex justify-center text-white h-24 rounded-md bg-slate-800">
                 <h3 class="text-2xl">Edytuj profil</h3>
             </div>
 
             <div class="flex flex-col gap-4 p-6">
-                <!-- Email -->
                 <div class="w-full max-w-sm min-w-[200px]">
                     <label class="block mb-2 text-sm text-slate-600">Email</label>
                     <input
@@ -30,7 +28,6 @@
                     <% } %>
                 </div>
 
-                <!-- Hasło -->
                 <div class="w-full max-w-sm min-w-[200px]">
                     <label class="block mb-2 text-sm text-slate-600">Hasło</label>
                     <input
@@ -45,7 +42,6 @@
                     <% } %>
                 </div>
 
-                <!-- Imię -->
                 <div class="w-full max-w-sm min-w-[200px]">
                     <label class="block mb-2 text-sm text-slate-600">Imię</label>
                     <input
@@ -57,7 +53,6 @@
                     />
                 </div>
 
-                <!-- Nazwisko -->
                 <div class="w-full max-w-sm min-w-[200px]">
                     <label class="block mb-2 text-sm text-slate-600">Nazwisko</label>
                     <input
@@ -69,14 +64,12 @@
                     />
                 </div>
 
-                <!-- Błąd ogólny -->
                 <% if(errors && errors.message) { %>
                     <div class="p-3 bg-red-100 text-red-800 text-sm rounded-md">
                         <%= errors.message %>
                     </div>
                 <% } %>
 
-                <!-- Toggle 2FA -->
                 <div class="flex items-center justify-between pt-2">
                     <span class="text-sm text-slate-700">Dwuskładnikowe uwierzytelnianie</span>
                     <label class="relative inline-block w-11 h-6">
@@ -94,18 +87,17 @@
                     <label class="relative inline-block w-11 h-6">
                         <select id="twoFactorAuthenticationType" name="twoFactorAuthenticationType" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <option value="" <%= !form?.twoFactorAuthenticationType ? 'selected' : '' %>>Wybierz 2FA</option>
-                            <option value="qr" <%= form?.twoFactorAuthenticationType === 'qr' ? 'selected' : '' %>>QR Code</option>
-                            <option value="ec" <%= form?.twoFactorAuthenticationType === 'ec' ? 'selected' : '' %>>Email Code</option>
-                            <option value="ml" <%= form?.twoFactorAuthenticationType === 'ml' ? 'selected' : '' %>>Magiczny link</option>
-                            <option value="pk" <%= form?.twoFactorAuthenticationType === 'pk' ? 'selected' : '' %>>Klucz sprzętowy</option>
-                            <option value="bic" <%= form?.twoFactorAuthenticationType === 'bic' ? 'selected' : '' %>>Biometryka</option>
+                            <option value="qr-code" <%= form?.twoFactorAuthenticationType === 'qr-code' ? 'selected' : '' %>>QR Code</option>
+                            <option value="verification-code" <%= form?.twoFactorAuthenticationType === 'verification-code' ? 'selected' : '' %>>Email Code</option>
+                            <option value="magic-link" <%= form?.twoFactorAuthenticationType === 'magic-link' ? 'selected' : '' %>>Magiczny link</option>
+                            <option value="physical-key" <%= form?.twoFactorAuthenticationType === 'physical-key' ? 'selected' : '' %>>Klucz sprzętowy</option>
+                            <option value="biometrics" <%= form?.twoFactorAuthenticationType === 'biometrics' ? 'selected' : '' %>>Biometryka</option>
                         </select>
                     </label>
                 </div>
 
             </div>
 
-            <!-- Submit -->
             <div class="p-6 pt-0">
                 <button
                         type="submit"

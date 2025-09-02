@@ -29,7 +29,6 @@ export const mailer = async (
       },
     }),
   });
-  console.log(templatePathTest(templatePath));
   const emailHtml = await new Promise<string>((resolve, reject) => {
     renderFile(templatePathTest(templatePath), { content }, (err, data) => {
       if (err) return reject(err);

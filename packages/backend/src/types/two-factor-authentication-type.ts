@@ -1,7 +1,7 @@
 export type TwoFactorAuthenticationType =
-  | "qr"
-  | "ec"
-  | "ml"
-  | "pk"
-  | "bic"
-  | '';
+  | "qr-code"
+  | "verification-code"
+  | "magic-link"
+  | "physical-key"
+  | "biometrics"
+  | "";
