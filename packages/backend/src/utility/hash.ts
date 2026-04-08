@@ -1,3 +1,4 @@
+import { randomBytes, createHash } from "node:crypto";
 const COST = 10;
 
 const isBun =
@@ -24,4 +25,15 @@ export async function verifyPassword(password: string, hashed: string) {
     const { default: bcryptjs } = await import("bcryptjs");
     return bcryptjs.compare(password, hashed);
   }
+}
+
+export const base64url = (buf: Buffer) => {
+  return buf.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+export const sha256Base64url = (input: string)=> {
+  const h = createHash("sha256").update(input, "utf8").digest();
+  return base64url(h);
+}
+export const generateSecret = () => {
+  return base64url(randomBytes(32));
 }

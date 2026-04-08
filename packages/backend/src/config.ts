@@ -1,14 +1,7 @@
 import * as process from "node:process";
-// import 'dotenv/config';
-import { getBranch, getCommitHash } from "./scripts/git-current-status.js";
-import { DEVELOPMENT } from "./static/env.js";
-
-// dotenv.config();
+import { DEVELOPMENT } from '@static/env';
 
 export const config = {
-  // GIT
-  gitBranch: getBranch(),
-  gitCommitHash: getCommitHash(),
 
   // ENV
   env: process.env.NODE_ENV || DEVELOPMENT,

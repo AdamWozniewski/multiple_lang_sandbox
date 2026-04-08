@@ -1,0 +1,164 @@
+version: '3.8'
+
+networks:
+  appnet: {}
+
+volumes:
+  gitea_data:
+  jenkins-data:
+  jenkins-docker-certs:
+  mongo_data:
+  pgdata:
+  certs:
+  certbot-web:
+
+services:
+  # === Bazy ===
+  mongo:
+    image: ${MONGO_IMAGE:-mongo:7}
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-example}
+    # host-only (tunel)
+    ports:
+      - "127.0.0.1:${MONGO_HOST_PORT:-27017}:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    restart: unless-stopped
+    networks: [appnet]
+
+  postgresqldb:
+    image: ${POSTGRES_IMAGE:-postgres:16}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+    # host-only (tunel)
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks: [appnet]
+
+  # === Narzędzia admin (odpalane tylko gdy potrzebujesz) ===
+  mongo-express:
+    image: ${MONGO_EXPRESS_IMAGE:-mongo-express:1.0-20}
+    profiles: ["tunnel"]
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_USER:-admin}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PASSWORD:-example}
+      ME_CONFIG_BASICAUTH_USERNAME: ${ME_BASICAUTH_USER:-admin}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${ME_BASICAUTH_PASS:-example}
+    # host-only (tunel)
+    ports:
+      - "127.0.0.1:${MONGO_EXPRESS_PORT:-8081}:8081"
+    depends_on: [ mongo ]
+    restart: unless-stopped
+    networks: [appnet]
+
+  adminer:
+    image: ${ADMINER_IMAGE:-adminer}
+    profiles: ["tunnel"]
+    # host-only (tunel)
+    ports:
+      - "127.0.0.1:${ADMINER_PORT:-8082}:8080"
+    restart: unless-stopped
+    networks: [appnet]
+
+  # === Git + CI ===
+  gitea:
+    image: ${GITEA_IMAGE:-gitea/gitea:1.22}
+    environment:
+      - GITEA__webhook__ALLOWED_HOST_LIST=jenkins
+      - GITEA__webhook__SKIP_TLS_VERIFY=true
+    # UI/SSH tylko przez tunel
+    ports:
+      - "127.0.0.1:${GITEA_HTTP_PORT:-3001}:3000"
+      - "127.0.0.1:${GITEA_SSH_PORT:-2222}:22"
+    volumes:
+      - gitea_data:/data
+    restart: unless-stopped
+    networks: [appnet]
+
+  docker:         # Docker daemon dla Jenkinsa (DIND)
+    image: ${DIND_IMAGE:-docker:24-dind}
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR: /certs
+    volumes:
+      - jenkins-docker-certs:/certs/client
+    restart: unless-stopped
+    networks: [appnet]
+
+  jenkins:
+    build:
+      context: .
+      dockerfile: images/jenkins.Dockerfile
+    container_name: jenkins-blueocean
+    environment:
+      DOCKER_HOST: tcp://docker:2376
+      DOCKER_CERT_PATH: /certs/client
+      DOCKER_TLS_VERIFY: '1'
+    # UI tylko przez tunel
+    ports:
+      - "127.0.0.1:${JENKINS_HTTP_PORT:-8080}:8080"
+      - "127.0.0.1:${JENKINS_JNLP_PORT:-50000}:50000"
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - jenkins-docker-certs:/certs/client:ro
+    depends_on: [ docker ]
+    restart: on-failure
+    networks: [appnet]
+
+  # === Twoja app (na razie tylko backend) ===
+  backend:
+    build:
+      context: ./packages/backend
+      dockerfile: ${BACKEND_DOCKERFILE:-Dockerfile}
+    env_file:
+      - "${APP_ENV_FILE:-.env}"
+    depends_on: [ postgresqldb, mongo ]
+    expose:
+      - "${BACKEND_PORT:-3001}"
+    restart: unless-stopped
+    networks: [appnet]
+
+  # next:
+  #   build:
+  #     context: ./packages/fullstack
+  #   env_file: [ ${APP_ENV_FILE:-.env} ]
+  #   depends_on: [ postgresqldb ]
+  #   expose:
+  #     - "${NEXT_PORT:-3000}"
+  #   restart: unless-stopped
+  #   networks: [appnet]
+
+  # === Publiczny reverse proxy (prod) ===
+  nginx:
+    build:
+      context: .
+      dockerfile: ./images/nginx.Dockerfile
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-_}
+      BACKEND_UPSTREAM: ${BACKEND_UPSTREAM:-backend:3001}
+    depends_on: [ backend ]
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - certbot-web:/var/www/certbot
+      - certs:/etc/letsencrypt:ro
+    restart: unless-stopped
+    networks: [ appnet ]
+
+  certbot:
+    image: ${CERTBOT_IMAGE:-certbot/certbot}
+    profiles: ["prod"]
+    volumes:
+      - certbot-web:/var/www/certbot
+      - certs:/etc/letsencrypt
+    entrypoint: ["sh","-c","trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h & wait $!; done"]
+    networks: [appnet]

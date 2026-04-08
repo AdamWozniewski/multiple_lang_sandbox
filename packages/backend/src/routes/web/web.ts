@@ -15,8 +15,8 @@ const company = new CompaniesController();
 const user = new UserController();
 
 routerWeb.get("/", page.home);
-routerWeb.get("/company/:name", company.showCompany);
 routerWeb.get("/companies", company.showCompanies);
+routerWeb.get("/company/:name", company.showCompany);
 
 routerWeb.get(
   "/admin/company/add",
@@ -76,12 +76,16 @@ routerWeb.get(
   notIsAuthMiddleware,
   user.qrVerification,
 );
-routerWeb.get("/auth/qr/stream/:attemptId", user.qrStream);
-routerWeb.post("/auth/qr/finalize", user.finalize);
-routerWeb.get("/auth/approve", user.approvePage);
-routerWeb.post("/auth/approve/check-code", user.checkCode);
-routerWeb.post("/webauthn/auth/options", user.webauthnOptions);
-routerWeb.post("/webauthn/auth/verify", user.webauthnVerify);
+routerWeb.get("/m/qr", user.qrMobileFakePage);
+routerWeb.get("/verification/qr-code/stream/:attemptId", user.qrStream);
+routerWeb.post("/verification/qr-code/pair", user.qrMobilePair);
+routerWeb.post("/verification/qr-code/approve", user.qrMobileApprove);
+routerWeb.post("/verification/qr-code/finalize", user.qrFinalize);
+
+// MAGIC-LINK
+routerWeb.get("/verification/magic-link", user.magicLinkPage);
+routerWeb.post("/verification/magic-link", user.magicLinkSendEmail);
+routerWeb.get("/verification/magic-link/verification", user.magicLingVerification);
 
 routerWeb.get("/logout", user.logout);
 

@@ -1,96 +1,57 @@
-<form id="step1">
-    <input name="code" placeholder="Wpisz 4-cyfrowy kod z komputera" required />
-    <button>Zatwierdź kod</button>
-</form>
-
+<h2>Fake Mobile Approver</h2>
+<div id="status">Start…</div>
+<pre id="debug"></pre>
 <script>
-  const token = "<%= token %>";
-  let attemptId = null;
-  console.log(token);
-  document.getElementById("step1").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const code = e.target.code.value;
-    const r = await fetch(`https://2096c84e8b61.ngrok-free.app/auth/approve/check-code`, {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ token, code })
-    });
-    const j = await r.json();
-    if (!j.ok) return alert("Zły kod / token.");
-    attemptId = j.attemptId;
-    startWebAuthn();
-  });
-
-  async function startWebAuthn() {
-    const optsResp = await fetch('https://2096c84e8b61.ngrok-free.app/webauthn/auth/options', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ attemptId })
-    });
-
-    if (!optsResp.ok) {
-      let err = {};
-      try { err = await optsResp.json(); } catch {}
-      console.error('options error', err);
-      const msg = {
-        attempt_not_found: 'Sesja próby nie istnieje. Wygeneruj nowy QR.',
-        expired: 'Próba wygasła. Odśwież QR.',
-        not_pending: 'Ta próba jest już zakończona. Wygeneruj nową.',
-        phone_not_logged_in: 'Zaloguj się na telefonie na to samo konto.',
-        user_mismatch: 'To nie jest to samo konto co na komputerze.',
-        no_credentials: 'Brak zarejestrowanego klucza (passkey) dla tego konta.',
-      }[err.reason] || 'Błąd pobierania opcji WebAuthn.';
-      alert(msg);
-      return;
-    }
-
-    const options = await optsResp.json();
-    // sanity-check
-    if (!options.challenge) {
-      console.error('No challenge in options:', options);
-      alert('Błędna odpowiedź serwera (brak challenge).');
-      return;
-    }
-
-    // Pomocnicze konwersje base64url -> Uint8Array
-    const b64urlToUint8 = (s) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
-
-    options.challenge = b64urlToUint8(options.challenge);
-    if (Array.isArray(options.allowCredentials)) {
-      options.allowCredentials = options.allowCredentials.map(c => ({
-        ...c,
-        id: b64urlToUint8(c.id),
-      }));
-    }
-
-    const cred = await navigator.credentials.get({ publicKey: options });
-
-    const toB64url = (buf) =>
-      btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-
-    const assertion = {
-      id: cred.id,
-      rawId: toB64url(cred.rawId),
-      type: cred.type,
-      response: {
-        authenticatorData: toB64url(cred.response.authenticatorData),
-        clientDataJSON: toB64url(cred.response.clientDataJSON),
-        signature: toB64url(cred.response.signature),
-        userHandle: cred.response.userHandle ? toB64url(cred.response.userHandle) : null,
-      }
-    };
-
-    const v = await fetch('https://2096c84e8b61.ngrok-free.app/webauthn/auth/verify', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ attemptId, assertion })
-    });
-
-    const res = await v.json().catch(() => ({}));
-    if (!v.ok || !res.ok) {
-      console.error('verify fail', res);
-      alert('Weryfikacja nieudana. Spróbuj ponownie z nowym QR.');
-      return;
-    }
-
-    document.body.innerHTML = '<h2>Zatwierdzono. Możesz wrócić do komputera.</h2>';
+  function b64urlToJson(b64url) {
+    const pad = '='.repeat((4 - (b64url.length % 4)) % 4);
+    const b64 = (b64url + pad).replace(/-/g, '+').replace(/_/g, '/');
+    const json = atob(b64);
+    return JSON.parse(json);
   }
+
+  async function postJson(url, body) {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await result.json().catch(() => ({}));
+    if (!result.ok) throw new Error(JSON.stringify(data));
+    return data;
+  }
+  (async () => {
+    const lng = "<%= language ;%>";
+    const verificationQRCodeURL = "/verification/qr-code";
+    const statusEl = document.getElementById("status");
+    const debugEl = document.getElementById("debug");
+
+    const hash = location.hash || "";
+    const match = hash.match(/p=([^&]+)/);
+    if (!match) {
+      statusEl.textContent = "Brak payloadu w #p=";
+      return;
+    }
+
+    const payload = b64urlToJson(match[1]);
+    debugEl.textContent = JSON.stringify(payload, null, 2);
+    const { api, attemptId, secret } = payload;
+    const deviceId = "fake-mobile-" + Math.random().toString(16).slice(2);
+
+    statusEl.textContent = "Pairing…";
+    await postJson(api + `/${lng}${verificationQRCodeURL}/pair`, {
+      attemptId,
+      secret,
+      deviceId
+    });
+
+    statusEl.textContent = "Approving…";
+    await postJson(api + `/${lng}${verificationQRCodeURL}/approve`, {
+      attemptId,
+      deviceId
+    });
+
+    statusEl.textContent = "✅ Approved. Możesz wrócić do przeglądarki na komputerze.";
+  })().catch(err => {
+    document.getElementById("status").textContent = "❌ Error: " + err.message;
+  });
 </script>

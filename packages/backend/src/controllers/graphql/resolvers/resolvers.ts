@@ -4,4 +4,7 @@ export const resolvers = {
   Query: {
     users: () => typeDefs,
   },
+  Mutation: {
+  },
+  Subscription: {}
 };

@@ -11,13 +11,4 @@ export const userTable = pgTable("user", {
   activate: boolean("activate").notNull(),
   apiToken: varchar("apiToken").notNull(),
 });
-// _id: Types.ObjectId;
-// id: string;
-// email: string;
-// password: string;
-// avatar?: string;
-// firstName?: string;
-// lastName?: string;
-// apiToken?: string;
-// activate: boolean;
-// roles: ObjectId | IUserRole;
+

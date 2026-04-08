@@ -1,4 +1,4 @@
-import { config } from "./config.js";
+import { config } from '@config';
 
 exports.config = {
   app_name: [config.NEW_RELIC_APP_NAME],

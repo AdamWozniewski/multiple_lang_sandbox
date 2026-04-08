@@ -7,7 +7,7 @@ const roleService = new RoleService();
 
 export const resolvers = {
   Query: {
-    user: async (_: any, { id }: { id: string }, ctx: any) => {
+    user: async (_: any, { id }: { id: string }, _ctx: any) => {
       return await User.findById(id);
     },
     users: async (_parent, _args, _ctx) => {

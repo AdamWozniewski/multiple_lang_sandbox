@@ -1,6 +1,6 @@
 import { renderFile } from "ejs";
 import { createTransport } from "nodemailer";
-import { config } from "../config.js";
+import { config } from '@config';
 import { __dirname } from "./dirname.js";
 import { PRODUCTION } from "@static/env.js";
 
@@ -13,7 +13,7 @@ export const mailer = async (
   email: string,
   subject: string,
   content: any,
-  templatePath: string,
+  templatePath?: string,
 ): Promise<void> => {
   const transporter = createTransport({
     host: config.emailHost,

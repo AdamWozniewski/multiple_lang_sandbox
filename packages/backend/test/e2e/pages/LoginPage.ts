@@ -5,12 +5,13 @@ export class LoginPage {
   constructor(private page: Page) {}
 
   async goto() {
-    await this.page.goto("/login");
+    await this.page.goto("/pl/login");
   }
 
   async fillForm(email: string, password: string) {
     await this.page.fill('input[name="email"]', email);
     await this.page.fill('input[name="password"]', password);
+
   }
 
   async submit() {

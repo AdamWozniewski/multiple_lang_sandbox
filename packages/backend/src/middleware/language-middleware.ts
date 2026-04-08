@@ -11,9 +11,10 @@ export const languageMiddleware = (
     req.path.startsWith("/graphql") ||
     req.path.startsWith("/auth") ||
     req.path.startsWith("/webauthn") ||
-    req.path.startsWith("/dev/test-page")
+    req.path.startsWith("/dev") ||
+    // req.path.startsWith("/dev/health") ||
+    req.path.startsWith("/mobile")
   ) {
-    console.log("+++++++++ WEWEWE");
     return next();
   }
 

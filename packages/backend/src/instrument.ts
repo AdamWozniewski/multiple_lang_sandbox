@@ -1,6 +1,6 @@
 import { config } from '@config';
 
-const isBun = !!(process as any).versions?.bun;
+const isBun = !!process.versions?.bun;
 
 if (isBun) {
   const Sentry = await import('@sentry/bun');
@@ -21,7 +21,7 @@ if (isBun) {
     environment: config.env,
     tracesSampleRate: 1.0,
     profilesSampleRate: 1.0,
-    integrations: [nodeProfilingIntegration()],
+    integrations: [nodeProfilingIntegration() as any],
     registerEsmLoaderHooks: { onlyIncludeInstrumentedModules: true },
   });
 

@@ -7,9 +7,9 @@
             data-dialog="sign-in-modal"
             class="relative mx-auto w-full max-w-[24rem] rounded-lg overflow-hidden shadow-sm"
     >
-        <div class="qr-box">
+        <div class="qr-box bg-white">
             <img src="<%= qrDataUrl %>" alt="QR do zatwierdzenia" />
-            <div class="code">Kod: <strong><%= code %></strong></div>
+
             <div id="timer"></div>
         </div>
 
@@ -17,28 +17,48 @@
     </div>
 </div>
 <script>
-  const stream = new EventSource("<%= streamUrl %>");
-  stream.onmessage = async (e) => {
-    const { status } = JSON.parse(e.data);
-    if (status === "approved") {
-      const resp = await fetch("/auth/qr/finalize", {
+  const attemptId = "<%= attemptId %>";
+  const streamUrl = "<%= streamUrl %>";
+  const lng = "<%= language ;%>";
+
+  console.log("[PC] attemptId:", attemptId);
+  console.log("[PC] streamUrl:", streamUrl);
+  const es = new EventSource(streamUrl);
+  es.onmessage = async (ev) => {
+    const msg = JSON.parse(ev.data);
+    console.log("[PC] SSE:", msg);
+
+    if (msg.status === "approved") {
+      es.close();
+
+      const finalizeUrl = `/${lng}/verification/qr-code/finalize`;
+
+      const res = await fetch(finalizeUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ attemptId: "<%= attemptId %>" })
+        credentials: "include",
+        body: JSON.stringify({ attemptId }),
       });
-      if (resp.ok) window.location = "/dashboard";
+
+      const data = await res.json().catch(() => ({}));
+      console.log("[PC] finalize:", res.status, data);
+
+      if (res.ok && data.ok) {
+        window.location.href = "/";
+      } else {
+        alert("Finalize failed: " + JSON.stringify(data));
+      }
     }
-    if (status === "expired" || status === "denied") {
-      // pokaż info i przycisk odśwież
-      alert("Logowanie wygasło. Odśwież stronę.");
+
+    if (msg.status === "expired" || msg.status === "denied") {
+      es.close();
+      alert("QR wygasł lub odrzucony");
     }
   };
 
-  // prosty licznik
-  let left = <%= ttlSeconds %>;
-  const el = document.getElementById("timer");
-  const t = setInterval(() => {
-    el.textContent = `Wygasa za ${left}s`;
-    if (--left <= 0) clearInterval(t);
-  }, 1000);
+  es.onerror = (e) => {
+    console.error("[PC] SSE error", e);
+  };
 </script>
+
+

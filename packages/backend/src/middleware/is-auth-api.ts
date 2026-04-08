@@ -27,7 +27,7 @@ export const isAuthMiddlewareJWT = (
 
     req.user = payload;
     next();
-  } catch (err) {
+  } catch (_err: any) {
     res.status(401).send({ message: "Token wygasł lub jest nieprawidłowy" });
     return;
   }

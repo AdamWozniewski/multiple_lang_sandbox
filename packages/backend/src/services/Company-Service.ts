@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import { Company } from "@mongo/models/company";
 import { BaseService } from "./Base-Service";
+import type { Filters } from '@customTypes/filters';
 // import { Filters } from '@customTypes/filters.js';
 
 export class CompanyService extends BaseService {
@@ -10,7 +11,12 @@ export class CompanyService extends BaseService {
   }
 
   async findCompanyBySlug(slug: string) {
-    return Company.findOne({ slug });
+    try {
+      return await Company.findOne({ slug });
+    }
+    catch (error: any) {
+      throw new Error(error);
+    }
   }
 
   async updateCompany(
@@ -46,11 +52,15 @@ export class CompanyService extends BaseService {
     if (company.image) {
       await fs.unlink(`public/img/uploads/${company.image}`);
       company.image = undefined;
-      await company.save();
+      try {
+        await company.save();
+      } catch (e: any) {
+        throw new Error(e);
+      }
     }
   }
 
-  async getCompanies(filters: any) {
+  async getCompanies(filters: Filters) {
     const {
       query,
       sort,

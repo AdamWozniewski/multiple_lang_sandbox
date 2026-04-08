@@ -7,4 +7,8 @@ export interface LoginAttempt {
   status: AttemptStatus;
   createdAt: number;
   expiresAt: number;
+  browserSessionId: string;
+  secretHash: string;
+  pairedDeviceId?: string;
+  failCount: number;
 }

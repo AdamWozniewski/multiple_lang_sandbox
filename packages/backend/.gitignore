@@ -1,4 +1,5 @@
-.env
+./.env.production
+./.env
 dist
 node_modules
 migrations
@@ -6,8 +7,8 @@ logs
 drizzle
 ./src/**/*.js
 http/http-client.private.env.json
-# Sentry Config File
 .sentryclirc
 
 *storybook.log
 storybook-static
+

@@ -28,7 +28,7 @@ const linkSchema = new Schema<ILink>({
     default: true,
   },
   user: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: true,
     ref: "User",
   },

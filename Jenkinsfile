@@ -13,6 +13,10 @@ pipeline {
   triggers {
     cron("H 5 * * 1")
   }
+  options {
+    timestamps()
+    ansiColor('xterm')
+  }
   tools {
     nodejs 'nodejs-24-1-0'
   }

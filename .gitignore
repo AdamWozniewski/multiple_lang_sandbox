@@ -25,6 +25,7 @@ terraform.tf*
 /test/e2e/screenshots/
 # local env files
 .env
+.env.production
 
 # Log files
 npm-debug.log*
@@ -53,3 +54,5 @@ pnpm-debug.log*
 
 # files
 /packages/backend/savedFiles
+
+./.env

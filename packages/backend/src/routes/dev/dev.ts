@@ -3,6 +3,7 @@ import { PageController } from "../../controllers/web/page-controller.js";
 
 const routerDev = Router();
 const page = new PageController();
+routerDev.get("/health", (_req, res) => res.json({ ok: true }));
 routerDev.get("/test-page", page.notFound);
 routerDev.get("/test-mailing", page.test__emailPage);
 routerDev.post("/test-mailing", page.test__sendEmail);

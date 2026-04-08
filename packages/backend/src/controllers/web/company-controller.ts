@@ -18,68 +18,23 @@ export class CompaniesController {
     this.companyService = new CompanyService();
   }
 
-  showCompany(req: Request, res: Response) {
-    res.render("pages/companies/company", {
-      name: req.params.name,
-      title: "Kompanie",
-    });
+  showCompany = async(req: Request, res: Response) => {
+    const { name } = req.params;
+    try {
+      const company = await this.companyService.findCompanyBySlug(name)
+      res.render("pages/companies/company", {
+        name: company?.name,
+        slug: company?.slug,
+        image: company?.image,
+        title: "Kompanie",
+      });
+    } catch (error: any) {
+      res.redirect("/companies", {
+        error
+      });
+    }
   }
 
-  // async showCompanies(req: Request, res: Response) {
-  //   const { query, sort, countmin, countmax, page } = req.query;
-  //   const currentPage = Number.parseInt(page as string, 10) || 1;
-  //   const perPage = 2;
-  //   const where: any = {};
-  //
-  //   if (query) {
-  //     where.name = {
-  //       $regex: query || "",
-  //       $options: "i",
-  //     };
-  //   }
-  //
-  //   if (countmin || countmax) {
-  //     where.employeesCount = {};
-  //     if (countmin) {
-  //       where.employeesCount.$gte = countmin;
-  //     }
-  //     if (countmax) {
-  //       where.employeesCount.$lte = countmax;
-  //     }
-  //   }
-  //
-  //   let q = Company.find(where);
-  //   const resultsCount = await Company.countDocuments(where);
-  //   const pagesCount = Math.ceil(resultsCount / perPage);
-  //
-  //   q = q.skip((currentPage - 1) * perPage);
-  //   q = q.limit(perPage);
-  //
-  //   // if (sort && typeof sort === "string") {
-  //   //     const s = sort.split('|');
-  //   //     q = q.sort({
-  //   //         [s[0]]: s[1]
-  //   //     });
-  //   // }
-  //   if (sort && typeof sort === "string") {
-  //     const s: string[] = sort.split("|");
-  //     if (s.length === 2 && (s[1] === "asc" || s[1] === "desc")) {
-  //       q = q.sort({
-  //         [s[0]]: s[1],
-  //       });
-  //     } else {
-  //       console.warn("Nieprawidłowa wartość sortowania:", s[1]);
-  //     }
-  //   }
-  //
-  //   const companies = await q.populate("user").exec();
-  //   res.render("pages/companies/companies", {
-  //     companies,
-  //     currentPage,
-  //     resultsCount,
-  //     pagesCount,
-  //   });
-  // }
   showCompanies = async (req: Request, res: Response) => {
     const { query, sort, countmin, countmax, page } = req.query;
 
@@ -200,13 +155,13 @@ export class CompaniesController {
 
     try {
       await this.companyService.deleteImage(name);
-      res.redirect("/company");
+      res.redirect(`/company/${name}`);
     } catch (error: any) {
       res.status(500).send("Nie udało się usunąć obrazu firmy.");
     }
   };
 
-  async getCSV(req: Request, res: Response) {
+  async getCSV(_req: Request, res: Response) {
     const fields = [
       { label: "Name", value: "name" },
       { label: "Slug", value: "slug" },

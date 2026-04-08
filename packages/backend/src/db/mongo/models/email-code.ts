@@ -1,5 +1,4 @@
 import { model, type Model, Schema } from "mongoose";
-import { IUser } from "@mongo/models/user.js";
 
 export interface IEmailCode extends Document {
   email: string;

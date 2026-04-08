@@ -3,7 +3,6 @@ import i18next from "i18next";
 import Backend from "i18next-fs-backend";
 import { LanguageDetector } from "i18next-http-middleware";
 
-// const localesPath = path.resolve(process.cwd(), "./src/locales/{{lng}}/translation.json");
 const localesPath = path.resolve(
   process.cwd(),
   "./src/locales/{{lng}}/{{ns}}.json",

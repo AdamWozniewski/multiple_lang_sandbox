@@ -6,13 +6,14 @@ export interface ICompany extends Document {
   slug: string;
   name: string;
   employeesCount: number;
-  user: ObjectId | IUser;
+  user: Types.ObjectId | IUser;
   image?: string;
 }
 
 const companySchema = new Schema<ICompany>({
   slug: {
     type: String,
+    unique: true,
     required: [true, "pole slug jest wymagane"],
     minlength: 3,
     maxlength: [6, "maksymalna liczba znaków to 6"],
@@ -27,7 +28,7 @@ const companySchema = new Schema<ICompany>({
     min: 1,
   },
   user: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     required: true,
     ref: "User",
   },

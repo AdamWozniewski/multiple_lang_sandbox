@@ -65,7 +65,7 @@ export class UserControllerApi {
 
       res.send({ accessToken: newAccessToken });
     } catch (error) {
-      return res.status(400).send("Invalid refresh token.");
+      res.status(400).send("Invalid refresh token.");
     }
   };
 

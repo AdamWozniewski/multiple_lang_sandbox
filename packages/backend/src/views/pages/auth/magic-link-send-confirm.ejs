@@ -1,0 +1,26 @@
+<div
+        data-dialog-backdrop="sign-in-modal"
+        data-dialog-backdrop-close="true"
+        class="inset-0 z-[999] grid h-full place-items-center bg-black bg-opacity-60 duration-300"
+>
+    <div
+            data-dialog="sign-in-modal"
+            class="relative mx-auto w-full max-w-[24rem] rounded-lg overflow-hidden shadow-sm"
+    >
+        <form method="POST" class="relative flex flex-col bg-white">
+            <div class="relative m-2 items-center flex justify-center text-white h-24 rounded-md bg-slate-800">
+                <h3 class="text-2xl">
+                    Magic Link - wysłano
+                </h3>
+            </div>
+            <div class="flex flex-col gap-4 p-6">
+                <div class="w-full max-w-sm min-w-[200px]">
+                    Jeżeli email istnieje w naszej bazie, zostanie wysłany na nią link
+                </div>
+                <% if(errors) { %>
+                    <div class="alert alert-danger"><%= errors.message %></div>
+                <% } %>
+            </div>
+        </form>
+    </div>
+</div>
