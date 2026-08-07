@@ -1,0 +1,11 @@
+<% if(company.name) { %>
+    <h1>Firma: <%= company.name %></h1>
+    <h1>Slug : <%= company.slug %></h1>
+        <pre><%- user.id.toString() === company.user.toString() ? 'TAK' : 'NIE' %></pre>
+    <img src="<%= company.image %>" alt="">
+    <% if(user.id.toString() === company.user.toString()) { %>
+        <a href="/<%= language ;%>/admin/company/<%= company.name %>/edit">Edytuj</a>
+    <% } %>
+<% } else { %>
+    <h1>Nie ma takiej firmy</h1>
+<% } %>

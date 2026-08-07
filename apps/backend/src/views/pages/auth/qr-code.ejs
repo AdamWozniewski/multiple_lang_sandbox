@@ -1,0 +1,64 @@
+<div
+        data-dialog-backdrop="edit-profile-modal"
+        data-dialog-backdrop-close="true"
+        class="inset-0 z-[999] grid h-full place-items-center bg-black bg-opacity-60 duration-300"
+>
+    <div
+            data-dialog="sign-in-modal"
+            class="relative mx-auto w-full max-w-[24rem] rounded-lg overflow-hidden shadow-sm"
+    >
+        <div class="qr-box bg-white">
+            <img src="<%= qrDataUrl %>" alt="QR do zatwierdzenia" />
+
+            <div id="timer"></div>
+        </div>
+
+
+    </div>
+</div>
+<script>
+  const attemptId = "<%= attemptId %>";
+  const streamUrl = "<%= streamUrl %>";
+  const lng = "<%= language ;%>";
+
+  console.log("[PC] attemptId:", attemptId);
+  console.log("[PC] streamUrl:", streamUrl);
+  const es = new EventSource(streamUrl);
+  es.onmessage = async (ev) => {
+    const msg = JSON.parse(ev.data);
+    console.log("[PC] SSE:", msg);
+
+    if (msg.status === "approved") {
+      es.close();
+
+      const finalizeUrl = `/${lng}/verification/qr-code/finalize`;
+
+      const res = await fetch(finalizeUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ attemptId }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+      console.log("[PC] finalize:", res.status, data);
+
+      if (res.ok && data.ok) {
+        window.location.href = "/";
+      } else {
+        alert("Finalize failed: " + JSON.stringify(data));
+      }
+    }
+
+    if (msg.status === "expired" || msg.status === "denied") {
+      es.close();
+      alert("QR wygasł lub odrzucony");
+    }
+  };
+
+  es.onerror = (e) => {
+    console.error("[PC] SSE error", e);
+  };
+</script>
+
+

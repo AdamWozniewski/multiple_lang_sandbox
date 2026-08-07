@@ -1,0 +1,28 @@
+### [C]reate user
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "email": "adam2@w.pl",
+  "password": "123A",
+  "confirmPassword": "123A"
+
+}
+
+### [L]ogin user
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "adam2@w.pl",
+  "password": "123A"
+
+}
+
+### [L]ogin user
+GET http://localhost:3000/auth/logout
+Content-Type: application/json
+
+### [L]ogin user
+POST http://localhost:3000/auth/refresh
+Content-Type: application/json

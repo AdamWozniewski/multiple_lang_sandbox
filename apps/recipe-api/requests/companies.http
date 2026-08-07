@@ -1,0 +1,32 @@
+### Create company
+POST http://localhost:3000/companies
+Content-Type: application/json
+
+{
+    "name": "broccoli 4",
+    "servings": 1
+}
+
+###
+
+GET http://localhost:3000/companies
+
+###
+
+GET http://localhost:3000/companies/1
+
+###
+
+PUT http://localhost:3000/companies
+Content-Type: application/json
+
+{
+  "id": 3,
+  "name": "new name",
+  "servings": 3
+}
+
+###
+
+DELETE http://localhost:3000/companies/1
+Content-Type: application/json

@@ -1,0 +1,35 @@
+<div
+        data-dialog-backdrop="edit-profile-modal"
+        data-dialog-backdrop-close="true"
+        class="inset-0 z-[999] grid h-full place-items-center bg-black bg-opacity-60 duration-300"
+>
+    <div
+            data-dialog="sign-in-modal"
+            class="relative mx-auto w-full max-w-[24rem] rounded-lg overflow-hidden shadow-sm"
+    >
+        <form method="POST" class="relative flex flex-col bg-white">
+            <div class="w-full max-w-sm min-w-[200px]">
+                <label class="block mb-2 text-sm text-slate-600">Kod Weryfikacyjny</label>
+                <input
+                        type="text"
+                        name="code"
+                        class="w-full bg-transparent text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 shadow-sm focus:outline-none focus:border-slate-400 hover:border-slate-300"
+                        placeholder="Kod weryfikacyjny"
+                />
+                <% if(errors && errors.message) { %>
+                    <div class="p-3 bg-red-100 text-red-800 text-sm rounded-md">
+                        <%= errors.message %>
+                    </div>
+                <% } %>
+            </div>
+            <div class="p-6 pt-0">
+                <button
+                        type="submit"
+                        class="w-full rounded-md bg-slate-800 py-2 px-4 border border-transparent text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 active:bg-slate-700"
+                >
+                    Zapisz
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

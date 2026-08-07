@@ -1,0 +1,63 @@
+
+<div
+        data-dialog-backdrop="sign-in-modal"
+        data-dialog-backdrop-close="true"
+        class="inset-0 z-[999] grid h-full place-items-center  bg-opacity-60 duration-300"
+>
+<form class="relative flex flex-col bg-white" method="POST" <% if(showFile) { %>enctype="multipart/form-data"<% } %>>
+    <div class="relative m-2 items-center flex justify-center text-white h-24 rounded-md bg-slate-800">
+        <h3 class="text-2xl">
+            Dodaj Firmę
+        </h3>
+    </div>
+    <input type="hidden">
+    <div class="flex flex-col gap-4 p-6">
+        <div class="w-full max-w-sm min-w-[200px]">
+            <label class="block mb-2 text-sm text-slate-600">Nazwa</label>
+            <input value="<%= form?.name %>" type="text" name="name"
+                   class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow form-control <%- errors?.name ? 'is-invalid' : '' %> %>
+            " id="" aria-describedby="emailHelp" placeholder="Nazwa">
+            <small id="emailHelp" class="form-text text-muted">Przynajmniej 3 znaki</small>
+            <% if(errors?.name) { %>
+                <div class="invalid-feedback"><%= errors.name.message %></div>
+            <% } %>
+        </div>
+
+    </div>
+    <div class="flex flex-col gap-4 p-6">
+        <div class="w-full max-w-sm min-w-[200px]">
+            <label for="" class="block mb-2 text-sm text-slate-600">Slug</label>
+            <input value="<%= form?.slug %>" type="text" name="slug"
+                   class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow form-control <%- errors?.slug ? 'is-invalid' : '' %>"
+                   id="" placeholder="Slug">
+            <% if(errors?.slug) { %>
+                <div class="invalid-feedback"><%= errors.slug.message %></div>
+            <% } %>
+        </div>
+    </div>
+    <% if(showFile) { %>
+        <% if(form.image) { %>
+            <div class="row">
+                <div class="col">
+                    <img src="/img/uploads/<%- form.image %>" alt="">
+                    <a href="/admin/company/<%- form.slug %>/delete-img" class="btn btn-sm btn-danger">usuń zdjęcie</a>
+                </div>
+            </div>
+        <% } %>
+        <div class="mt-3 form-group">
+            <label for="">Image</label>
+            <input type="file" name="image" id="image" class="form-control">
+        </div>
+    <% } %>
+    <div class="flex flex-col gap-4 p-6">
+        <div class="w-full max-w-sm min-w-[200px]">
+            <label class="block mb-2 text-sm text-slate-600" for="">Liczba pracowników</label>
+            <input value="<%= form?.employeesCount %>" type="number" name="employeesCount" class="w-full bg-transparent placeholder:text-slate-400 text-slate-700 text-sm border border-slate-200 rounded-md px-3 py-2 transition duration-300 ease focus:outline-none focus:border-slate-400 hover:border-slate-300 shadow-sm focus:shadow form-control <%- errors?.name ? 'is-invalid' : '' %> %" id="">
+        </div>
+    </div>
+    <button class="w-full rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+            type="submit">
+        <%- button %>
+    </button>
+</form>
+</div>

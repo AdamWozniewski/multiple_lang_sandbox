@@ -1,0 +1,20 @@
+import { mailer } from '@utility/mailing';
+import type { IMailerService } from '@interface/mail-service.js';
+
+export class MailerService implements IMailerService {
+  async sendActivationEmail(email: string, link: string): Promise<void> {
+    await mailer(email, 'Activation Account', link);
+  }
+
+  async sendResetPasswordEmail(email: string, link: string): Promise<void> {
+    await mailer(email, 'Reset Password', link);
+  }
+
+  async send2FAVerificationCode(email: string, link: string): Promise<void> {
+    await mailer(email, 'Verification Code', link, 'verification-code');
+  }
+
+  async sendMagicLinkEmail(email: string, link: string): Promise<void> {
+    await mailer(email, 'Magic Link', link, 'magic-link-mail');
+  }
+}

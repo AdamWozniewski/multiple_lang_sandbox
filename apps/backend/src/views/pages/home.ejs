@@ -1,0 +1,12 @@
+<div class="container">
+        <h1 class="">Strona główna <%= t('title') %></h1>
+        <% if(user) { %>
+                <p>Zalogowano</p>
+                <p>User: <%- user.email%></p>
+                <p>UserID: <%- user._id%></p>
+                <p>ROLES: <%- user.roles.role%></p>
+        <% } %>
+
+        <%- contentFor('sidebar')%>
+        <h2>SideBar</h2>
+</div>

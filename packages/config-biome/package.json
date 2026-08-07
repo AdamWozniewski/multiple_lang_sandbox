@@ -1,0 +1,7 @@
+{
+  "name": "@repo/config-biome",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "files": ["biome.json"]
+}

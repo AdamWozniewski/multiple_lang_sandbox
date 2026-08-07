@@ -1,0 +1,57 @@
+<h2>Fake Mobile Approver</h2>
+<div id="status">Start…</div>
+<pre id="debug"></pre>
+<script>
+  function b64urlToJson(b64url) {
+    const pad = '='.repeat((4 - (b64url.length % 4)) % 4);
+    const b64 = (b64url + pad).replace(/-/g, '+').replace(/_/g, '/');
+    const json = atob(b64);
+    return JSON.parse(json);
+  }
+
+  async function postJson(url, body) {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await result.json().catch(() => ({}));
+    if (!result.ok) throw new Error(JSON.stringify(data));
+    return data;
+  }
+  (async () => {
+    const lng = "<%= language ;%>";
+    const verificationQRCodeURL = "/verification/qr-code";
+    const statusEl = document.getElementById("status");
+    const debugEl = document.getElementById("debug");
+
+    const hash = location.hash || "";
+    const match = hash.match(/p=([^&]+)/);
+    if (!match) {
+      statusEl.textContent = "Brak payloadu w #p=";
+      return;
+    }
+
+    const payload = b64urlToJson(match[1]);
+    debugEl.textContent = JSON.stringify(payload, null, 2);
+    const { api, attemptId, secret } = payload;
+    const deviceId = "fake-mobile-" + Math.random().toString(16).slice(2);
+
+    statusEl.textContent = "Pairing…";
+    await postJson(api + `/${lng}${verificationQRCodeURL}/pair`, {
+      attemptId,
+      secret,
+      deviceId
+    });
+
+    statusEl.textContent = "Approving…";
+    await postJson(api + `/${lng}${verificationQRCodeURL}/approve`, {
+      attemptId,
+      deviceId
+    });
+
+    statusEl.textContent = "✅ Approved. Możesz wrócić do przeglądarki na komputerze.";
+  })().catch(err => {
+    document.getElementById("status").textContent = "❌ Error: " + err.message;
+  });
+</script>
