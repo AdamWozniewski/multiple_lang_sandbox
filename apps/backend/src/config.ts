@@ -1,14 +1,13 @@
-import * as process from 'node:process';
-import { DEVELOPMENT } from '@static/env';
+import * as process from "node:process";
+import { DEVELOPMENT } from "@static/env";
 
 export const config = {
-
   // ENV
   env: process.env.NODE_ENV || DEVELOPMENT,
   port: process.env.PORT || 3000,
   ssl: process.env.SSL || false,
-  appUrl: process.env.APP_URL || '',
-  publicUrl: process.env.PUBLIC_URL || '',
+  appUrl: process.env.APP_URL || "",
+  publicUrl: process.env.PUBLIC_URL || "",
 
   // MONGO
   db:
@@ -16,35 +15,37 @@ export const config = {
     `mongodb://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@${process.env.MONGO_DB_ADDRESS}/${process.env.MONGO_DB_NAME}?authSource=admin`,
 
   // SQL
-  db_sql: process.env.DATABASE_SQL || `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
+  db_sql:
+    process.env.DATABASE_SQL ||
+    `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
 
   // SESSION
-  secretSession: process.env.SESSION_SECRET || '',
+  secretSession: process.env.SESSION_SECRET || "",
 
   // JWT
-  jwtSecret: process.env.JWT_SECRET || '',
-  jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || '',
+  jwtSecret: process.env.JWT_SECRET || "",
+  jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || "",
 
   // CSRF
-  csrfToken: process.env.CSRF_TOKEN || '',
+  csrfToken: process.env.CSRF_TOKEN || "",
 
   // Email
-  emailSender: process.env.EMAIL_SENDER || 'Adam W <xx@xx.xx>',
-  emailHost: process.env.EMAIL_HOST || 'localhost',
+  emailSender: process.env.EMAIL_SENDER || "Adam W <xx@xx.xx>",
+  emailHost: process.env.EMAIL_HOST || "localhost",
   emailPort: process.env.EMAIL_PORT || 1025,
-  emailUser: process.env.EMAIL_USER || 'postmaster@example.com',
-  emailPass: process.env.EMAIL_PASS || 'supersecret',
+  emailUser: process.env.EMAIL_USER || "postmaster@example.com",
+  emailPass: process.env.EMAIL_PASS || "supersecret",
 
   // Monitoring
-  sentryDNS: process.env.SENTRY_DNS || '',
-  sentryApiKey: process.env.SENTRY_API_KEY || '',
-  sentryAuthToken: process.env.SENTRY_AUTH_TOKEN || '',
+  sentryDNS: process.env.SENTRY_DNS || "",
+  sentryApiKey: process.env.SENTRY_API_KEY || "",
+  sentryAuthToken: process.env.SENTRY_AUTH_TOKEN || "",
 
   // NewRelic
-  NEW_RELIC_API_KEY: process.env.NEW_RELIC_API_KEY || '',
-  NEW_RELIC_APP_NAME: process.env.NEW_RELIC_APP_NAME || '',
+  NEW_RELIC_API_KEY: process.env.NEW_RELIC_API_KEY || "",
+  NEW_RELIC_APP_NAME: process.env.NEW_RELIC_APP_NAME || "",
 
   // OAUTH
-  oauthClientId: process.env.OAUTH_CLIENT_ID || '',
-  oauthClientSecret: process.env.OAUTH_CLIENT_SECRET || '',
+  oauthClientId: process.env.OAUTH_CLIENT_ID || "",
+  oauthClientSecret: process.env.OAUTH_CLIENT_SECRET || "",
 };

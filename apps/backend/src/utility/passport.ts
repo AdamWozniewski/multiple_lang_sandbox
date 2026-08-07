@@ -1,5 +1,5 @@
-import passport from 'passport';
-import { UserService } from '@services/User-Service.js';
+import { UserService } from "@services/User-Service.js";
+import passport from "passport";
 
 const userService = new UserService();
 

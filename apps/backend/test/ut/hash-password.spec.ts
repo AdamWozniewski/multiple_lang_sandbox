@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import { hashPassword, verifyPassword } from "@utility/hash";
+import { describe, expect, it } from "vitest";
 
 describe("hashPassword / verifyPassword", () => {
   const pswd = "SuperSecret123!";

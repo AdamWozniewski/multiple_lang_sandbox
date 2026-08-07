@@ -1,6 +1,6 @@
-import { type Model, Schema, model, type ObjectId, Types } from 'mongoose';
-import type { IUser } from '@mongo/models/user';
-import type { LinksType } from '@customTypes/links';
+import type { LinksType } from "@customTypes/links";
+import type { IUser } from "@mongo/models/user";
+import { type Model, model, type ObjectId, Schema, Types } from "mongoose";
 
 export interface ILink extends Document {
   type: LinksType;
@@ -42,11 +42,11 @@ const linkSchema = new Schema<ILink>({
   user: {
     type: Schema.Types.ObjectId,
     required: true,
-    ref: 'User',
+    ref: "User",
   },
 });
 
-linkSchema.set('toJSON', {
+linkSchema.set("toJSON", {
   virtuals: true,
   versionKey: false,
   transform: (_, ret) => {
@@ -54,4 +54,4 @@ linkSchema.set('toJSON', {
   },
 });
 
-export const Link: Model<ILink> = model<ILink>('Link', linkSchema);
+export const Link: Model<ILink> = model<ILink>("Link", linkSchema);

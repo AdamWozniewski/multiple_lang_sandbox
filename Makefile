@@ -14,8 +14,8 @@ install-all:
 
 start-sql:
 	docker compose start mongodb mongo_express redis mailhog
-	cd packages/backend && bun run dev:server
+	cd apps/backend && bun run dev:server
 
 start-mongo:
 	docker compose start mongo mongo-express redis mailhog
-	#cd packages/backend && bun run dev:server
+	#cd apps/backend && bun run dev:server

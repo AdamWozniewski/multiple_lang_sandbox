@@ -3,35 +3,17 @@
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "target": "ES2023",
-    "lib": [
-      "ES2023"
-    ],
+    "lib": ["ES2023"],
     "baseUrl": "./",
     "paths": {
-      "@mongo/*": [
-        "./src/db/mongo/*"
-      ],
-      "@sql/*": [
-        "./src/db/sql/*"
-      ],
-      "@customTypes/*": [
-        "./src/types/*"
-      ],
-      "@interface/*": [
-        "./src/interfaces/*"
-      ],
-      "@services/*": [
-        "./src/services/*"
-      ],
-      "@static/*": [
-        "./src/static/*"
-      ],
-      "@utility/*": [
-        "./src/utility/*"
-      ],
-      "@config": [
-        "./src/config.ts"
-      ]
+      "@mongo/*": ["./src/db/mongo/*"],
+      "@sql/*": ["./src/db/sql/*"],
+      "@customTypes/*": ["./src/types/*"],
+      "@interface/*": ["./src/interfaces/*"],
+      "@services/*": ["./src/services/*"],
+      "@static/*": ["./src/static/*"],
+      "@utility/*": ["./src/utility/*"],
+      "@config": ["./src/config.ts"]
     },
     "strict": true,
     "skipLibCheck": true,
@@ -42,19 +24,10 @@
     "noEmit": true,
     "verbatimModuleSyntax": true,
     "preserveValueImports": true,
-    "types": [
-      "bun-types",
-      "vitest/globals"
-    ],
+    "types": ["bun-types", "vitest/globals"],
     "sourceMap": true,
     "inlineSources": true
   },
-  "include": [
-    "./src/**/*.ts",
-    "./test/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["./src/**/*.ts", "./test/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }

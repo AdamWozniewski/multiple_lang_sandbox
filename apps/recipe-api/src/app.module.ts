@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { RecipeModule } from './recipe/recipe.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { Module } from "@nestjs/common";
 // import { UserModule } from './auth/user/user.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { databaseConfig } from './config/database.config';
-import { envValidationConfig } from './config/envValidation.config';
-import { AuthModule } from './auth/auth.module';
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { AuthModule } from "./auth/auth.module";
+import { databaseConfig } from "./config/database.config";
+import { envValidationConfig } from "./config/envValidation.config";
+import { RecipeModule } from "./recipe/recipe.module";
 
 @Module({
   imports: [
@@ -17,7 +17,6 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
       envFilePath: [`.env.${process.env.NODE_ENV}`],
       validationSchema: envValidationConfig,
-
     }),
     // UserModule,
     AuthModule,
@@ -25,5 +24,4 @@ import { AuthModule } from './auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-}
+export class AppModule {}

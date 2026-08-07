@@ -1,45 +1,42 @@
 // import "./newrelic";
-import './instrument';
-import http from 'node:http';
-import path from 'node:path';
-import * as Sentry from '@sentry/node';
-import cookieParser from 'cookie-parser';
-import helmet from 'helmet';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import { handle } from 'i18next-http-middleware';
+import "./instrument";
+import { readFile } from "node:fs/promises";
+import http from "node:http";
+import path from "node:path";
+import { config } from "@config";
+import * as Sentry from "@sentry/node";
+import bodyParser from "body-parser";
+import MongoStore from "connect-mongo";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 // import { runDBAdmin } from "./db/sql/init.ts";
-import express from 'express';
-import expressEjsLayouts from 'express-ejs-layouts';
-import expressSession from 'express-session';
-import { readFile } from 'node:fs/promises';
-import { serve, setup } from 'swagger-ui-express';
-import MongoStore from 'connect-mongo';
-import { config } from '@config';
-import { isAuthMiddleware } from './middleware/is-auth-middleware';
-import { rateLimiterMiddleware } from './middleware/rate-limiter-middleware';
-import { userMiddleware } from './middleware/user-middleware';
-import { globalMiddleware } from './middleware/view-variables';
-import './db/mongo/database.ts';
-import { routerWeb } from './routes/web/web';
-import { routerDev } from './routes/dev/dev';
-import { __dirname } from '@utility/dirname';
-import { DEVELOPMENT, PRODUCTION } from '@static/env';
-import i18next from './i18n';
-import { languageMiddleware } from './middleware/language-middleware';
+import express from "express";
+import expressEjsLayouts from "express-ejs-layouts";
+import expressSession from "express-session";
+import helmet from "helmet";
+import { handle } from "i18next-http-middleware";
+import { serve, setup } from "swagger-ui-express";
+import { isAuthMiddleware } from "./middleware/is-auth-middleware";
+import { rateLimiterMiddleware } from "./middleware/rate-limiter-middleware";
+import { userMiddleware } from "./middleware/user-middleware";
+import { globalMiddleware } from "./middleware/view-variables";
+import "./db/mongo/database.ts";
+import { connectMongoDB } from "@mongo/database";
+import { DEVELOPMENT, PRODUCTION } from "@static/env";
+import { __dirname } from "@utility/dirname";
+import i18next from "./i18n";
+import { languageMiddleware } from "./middleware/language-middleware";
+import { sentryMiddleware } from "./middleware/sentry-middleware";
+import { routerDev } from "./routes/dev/dev";
+import { setupGraphQL } from "./routes/graphql/graphql";
+import { routerWeb } from "./routes/web/web";
 // import { csrfTokenMiddleware, doubleCsrfProtection, handleCsrfErrors } from './middleware/csrf-middleware.js';
-import passport from './utility/passport';
-import { setupGraphQL } from './routes/graphql/graphql';
-import { sentryMiddleware } from './middleware/sentry-middleware';
-import { connectMongoDB } from '@mongo/database';
+import passport from "./utility/passport";
 
 export const startApp = async () => {
-
   try {
     await connectMongoDB();
-  } catch (e: any) {
-
-  }
+  } catch (_e: any) {}
   const app = express();
   const httpServer = http.createServer(app);
   const PROD = config.env === PRODUCTION;
@@ -61,32 +58,34 @@ export const startApp = async () => {
       cookie: {
         maxAge: 86400000,
         secure: PROD,
-        sameSite: 'strict',
+        sameSite: "strict",
         httpOnly: true,
       },
     }),
   );
 
   const swaggerDocument = JSON.parse(
-    (await readFile(new URL('./../docs/swagger.json', import.meta.url))) as any,
+    (await readFile(new URL("./../docs/swagger.json", import.meta.url))) as any,
   );
 
-
-  app.disable('etag');
-  app.set('view engine', 'ejs');
+  app.disable("etag");
+  app.set("view engine", "ejs");
   app.use(expressEjsLayouts);
-  app.set('views', path.join(__dirname(import.meta.url), '/views'));
-  app.set('layout', 'layouts/main');
+  app.set("views", path.join(__dirname(import.meta.url), "/views"));
+  app.set("layout", "layouts/main");
 
-  app.use(express.static('./public', {
-    ...(PROD && {
-      etag: true,
-      lastModified: true,
-      immutable: true,
-      maxAge: '1y',
-      setHeaders: (res, path) => path.endsWith('.html') && res.setHeader('Cache-Control', 'no-cache'),
+  app.use(
+    express.static("./public", {
+      ...(PROD && {
+        etag: true,
+        lastModified: true,
+        immutable: true,
+        maxAge: "1y",
+        setHeaders: (res, path) =>
+          path.endsWith(".html") && res.setHeader("Cache-Control", "no-cache"),
+      }),
     }),
-  }));
+  );
   app.use(globalMiddleware);
   app.use(userMiddleware);
   app.use(passport.initialize());
@@ -97,34 +96,35 @@ export const startApp = async () => {
   // app.use(handleCsrfErrors);
 
   if (PROD) {
-    app.enable('view cache');
-    app.use(helmet({
-      contentSecurityPolicy: {
-        useDefaults: true,
-        directives: {
-          defaultSrc: ['\'self\''],
-          scriptSrc: ['\'self\'', 'cdn.jsdelivr.net'],
-          styleSrc: ['\'self\'', 'cdn.jsdelivr.net', '\'unsafe-inline\''],
-          imgSrc: ['\'self\'', 'data:'],
-          connectSrc: ['\'self\''],
+    app.enable("view cache");
+    app.use(
+      helmet({
+        contentSecurityPolicy: {
+          useDefaults: true,
+          directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "cdn.jsdelivr.net"],
+            styleSrc: ["'self'", "cdn.jsdelivr.net", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:"],
+            connectSrc: ["'self'"],
+          },
         },
-      },
-      crossOriginEmbedderPolicy: false,
-    }));
+        crossOriginEmbedderPolicy: false,
+      }),
+    );
   }
 
   Sentry.setupExpressErrorHandler(app);
   app.use(rateLimiterMiddleware);
-  app.use('/admin', isAuthMiddleware);
+  app.use("/admin", isAuthMiddleware);
   // app.use("/api", routerApi);
   if (DEV) {
-    app.use('/api-docs', serve, setup(swaggerDocument));
-    app.use('/dev', routerDev);
-
+    app.use("/api-docs", serve, setup(swaggerDocument));
+    app.use("/dev", routerDev);
   }
   app.use(
     handle(i18next, {
-      ignoreRoutes: ['/graphql'],
+      ignoreRoutes: ["/graphql"],
     }),
   );
   app.use(languageMiddleware);

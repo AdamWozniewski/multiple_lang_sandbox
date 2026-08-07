@@ -1,5 +1,5 @@
-import { randomInt } from 'node:crypto';
-import type { LoginAttempt } from '@interface/qr-code-login-attemp.js';
+import { randomInt } from "node:crypto";
+import type { LoginAttempt } from "@interface/qr-code-login-attemp.js";
 
 const attempts = new Map<string, LoginAttempt>();
 
@@ -12,11 +12,11 @@ export const AttemptsStore = {
   },
   approve(id: string) {
     const a = attempts.get(id);
-    if (a) a.status = 'approved';
+    if (a) a.status = "approved";
   },
   deny(id: string) {
     const a = attempts.get(id);
-    if (a) a.status = 'denied';
+    if (a) a.status = "denied";
   },
   remove(id: string) {
     attempts.delete(id);
@@ -24,7 +24,7 @@ export const AttemptsStore = {
   sweep() {
     const now = Date.now();
     for (const a of attempts.values()) {
-      if (a.expiresAt <= now && a.status === 'pending') a.status = 'expired';
+      if (a.expiresAt <= now && a.status === "pending") a.status = "expired";
       if (a.expiresAt + 60_000 < now) attempts.delete(a.attemptId);
     }
   },

@@ -1,7 +1,7 @@
-import fs from 'node:fs/promises';
-import { Company } from '@mongo/models/company';
-import { BaseService } from './Base-Service';
-import type { Filters } from '@customTypes/filters';
+import fs from "node:fs/promises";
+import type { Filters } from "@customTypes/filters";
+import { Company } from "@mongo/models/company";
+import { BaseService } from "./Base-Service";
 
 export class CompanyService extends BaseService {
   async createCompany(data: Partial<typeof Company>) {
@@ -23,7 +23,7 @@ export class CompanyService extends BaseService {
     newImage?: string,
   ) {
     const company = await Company.findOne({ slug });
-    if (!company) throw new Error('Company not found');
+    if (!company) throw new Error("Company not found");
 
     if (newImage && company.image) {
       await fs.unlink(`public/img/uploads/${company.image}`);
@@ -45,7 +45,7 @@ export class CompanyService extends BaseService {
   async deleteImage(slug: string) {
     const company = await Company.findOne({ slug });
 
-    if (!company) throw new Error('Company not found');
+    if (!company) throw new Error("Company not found");
 
     if (company.image) {
       await fs.unlink(`public/img/uploads/${company.image}`);
@@ -70,7 +70,7 @@ export class CompanyService extends BaseService {
     const where: any = {};
 
     if (query) {
-      where.name = { $regex: query, $options: 'i' };
+      where.name = { $regex: query, $options: "i" };
     }
 
     if (countMin || countMax) {
@@ -80,10 +80,10 @@ export class CompanyService extends BaseService {
     }
 
     const sortCriteria: Record<string, 1 | -1> = {};
-    if (sort && typeof sort === 'string') {
-      const [field, order] = sort.split('|');
-      if (field && (order === 'asc' || order === 'desc')) {
-        sortCriteria[field] = order === 'asc' ? 1 : -1;
+    if (sort && typeof sort === "string") {
+      const [field, order] = sort.split("|");
+      if (field && (order === "asc" || order === "desc")) {
+        sortCriteria[field] = order === "asc" ? 1 : -1;
       }
     }
 
@@ -94,10 +94,15 @@ export class CompanyService extends BaseService {
       .skip((currentPage - 1) * perPage)
       .limit(perPage)
       .sort(sortCriteria)
-      .populate('user')
+      .populate("user")
       .exec();
 
-    return { companies, resultsCount, pagesCount, companiesAll: companiesAll.length };
+    return {
+      companies,
+      resultsCount,
+      pagesCount,
+      companiesAll: companiesAll.length,
+    };
   }
 
   async getAllCompanies() {

@@ -1,15 +1,13 @@
-import { Schema, Types, type ObjectId } from 'mongoose';
-import uniqueValidator from 'mongoose-unique-validator';
-import { hashPassword, verifyPassword } from '@utility/hash.js';
-import { validateEmail } from '../validators.js';
-import {
-  WebAuthnCredentialSchema,
-} from '@mongo/models/web-authn-credential.js';
-import type { IUserRole } from '@mongo/models/roles.js';
-import type { TwoFactorAuthenticationType } from '@customTypes/two-factor-authentication-type.js';
-import type { IWebAuthnCredential } from '@mongo/models/web-authn-credential.js';
-import type { IBaseModel } from '@mongo/models/base-model.js';
-import { BaseModel } from '@mongo/models/base-model.js';
+import type { TwoFactorAuthenticationType } from "@customTypes/two-factor-authentication-type.js";
+import type { IBaseModel } from "@mongo/models/base-model.js";
+import { BaseModel } from "@mongo/models/base-model.js";
+import type { IUserRole } from "@mongo/models/roles.js";
+import type { IWebAuthnCredential } from "@mongo/models/web-authn-credential.js";
+import { WebAuthnCredentialSchema } from "@mongo/models/web-authn-credential.js";
+import { hashPassword, verifyPassword } from "@utility/hash.js";
+import { type ObjectId, Schema, type Types } from "mongoose";
+import uniqueValidator from "mongoose-unique-validator";
+import { validateEmail } from "../validators.js";
 
 export interface IUser extends IBaseModel {
   _id: Types.ObjectId;
@@ -39,8 +37,8 @@ const userSchema = new Schema<IUser>({
   },
   email: {
     type: String,
-    required: [true, 'Pole email jest wymagane'],
-    validate: [validateEmail, 'Niepoprawny adres email'],
+    required: [true, "Pole email jest wymagane"],
+    validate: [validateEmail, "Niepoprawny adres email"],
     unique: true,
     trim: true,
     lowercase: true,
@@ -48,7 +46,7 @@ const userSchema = new Schema<IUser>({
   password: {
     type: String,
     required: true,
-    minlength: [4, 'hasło powinno posiadać przynajmniej 4 znaki'],
+    minlength: [4, "hasło powinno posiadać przynajmniej 4 znaki"],
   },
   avatar: String,
   firstName: String,
@@ -58,7 +56,7 @@ const userSchema = new Schema<IUser>({
   roles: {
     type: Schema.Types.ObjectId,
     required: true,
-    ref: 'UserRole',
+    ref: "UserRole",
     unique: false,
   },
   activate: {
@@ -72,14 +70,14 @@ const userSchema = new Schema<IUser>({
   twoFactorAuthenticationType: {
     type: String,
     enum: [
-      'qr-code',
-      'verification-code',
-      'magic-link',
-      'physical-key',
-      'biometrics',
-      '',
+      "qr-code",
+      "verification-code",
+      "magic-link",
+      "physical-key",
+      "biometrics",
+      "",
     ],
-    default: '',
+    default: "",
     required: false,
   },
   // credentials: {
@@ -89,33 +87,33 @@ const userSchema = new Schema<IUser>({
   // },
 });
 
-userSchema.pre('save', async function(next) {
-  console.log(this)
+userSchema.pre("save", async function (next) {
+  console.log(this);
   if (!this.id) this.id = this._id.toString();
   if (this.isNew && !this.activate)
     this.apiToken = await hashPassword(this.id.toString());
-  console.log('jest dalej')
+  console.log("jest dalej");
   next();
 });
 
-userSchema.pre('save', async function(next) {
-  console.log('JEST W 2');
-  if (!this.isModified('password')) return next();
+userSchema.pre("save", async function (next) {
+  console.log("JEST W 2");
+  if (!this.isModified("password")) return next();
   this.password = await hashPassword(this.password);
-  console.log('Poszło dalej');
+  console.log("Poszło dalej");
 });
 
 userSchema.methods = {
-  comparePassword: async function(password: string) {
+  comparePassword: async function (password: string) {
     return await verifyPassword(password, this.password);
   },
 };
 
-userSchema.virtual('fullName').get(function() {
-  return `${this.firstName || ''} ${this.lastName || ''}`;
+userSchema.virtual("fullName").get(function () {
+  return `${this.firstName || ""} ${this.lastName || ""}`;
 });
 
-userSchema.set('toJSON', {
+userSchema.set("toJSON", {
   virtuals: true,
   versionKey: false,
   transform: (_, ret) => {
@@ -124,12 +122,12 @@ userSchema.set('toJSON', {
 });
 
 userSchema.plugin(uniqueValidator, {
-  message: 'Taki {PATH} ({VALUE}) już istnieje',
+  message: "Taki {PATH} ({VALUE}) już istnieje",
 });
 
 export class UserModel extends BaseModel<IUser> {
   constructor() {
-    super('User', userSchema);
+    super("User", userSchema);
   }
 }
 

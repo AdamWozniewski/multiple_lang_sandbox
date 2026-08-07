@@ -1,4 +1,4 @@
-import { EventEmitter } from 'node:events';
+import { EventEmitter } from "node:events";
 
 export class GlobalEventEmitter extends EventEmitter {
   public data: any[] = [];
@@ -9,11 +9,11 @@ export class GlobalEventEmitter extends EventEmitter {
   }
 
   startTask() {
-    this.emit('taskStarted');
+    this.emit("taskStarted");
   }
 
   endTask() {
-    this.emit('taskCompleted');
+    this.emit("taskCompleted");
   }
 
   getData() {

@@ -1,13 +1,13 @@
-import { faker } from '@faker-js/faker';
-import { DataSource } from 'typeorm';
-import { User } from '../../../auth/user/user.entity';
-import { Products } from '../../../recipe/products/product.entity';
-import { Company } from '../../../recipe/companies/company.entity';
-import { IngredientEntity } from '../../../recipe/ingredients/ingredient.entity';
-import { createRandomUser } from '../factories/user.factory';
-import { createRandomProduct } from '../factories/product.factory';
-import { createRandomCompany } from '../factories/company.factory';
-import { createRandomIngredient } from '../factories/ingredient.factory';
+import { faker } from "@faker-js/faker";
+import type { DataSource } from "typeorm";
+import { User } from "../../../auth/user/user.entity";
+import { Company } from "../../../recipe/companies/company.entity";
+import { IngredientEntity } from "../../../recipe/ingredients/ingredient.entity";
+import { Products } from "../../../recipe/products/product.entity";
+import { createRandomCompany } from "../factories/company.factory";
+import { createRandomIngredient } from "../factories/ingredient.factory";
+import { createRandomProduct } from "../factories/product.factory";
+import { createRandomUser } from "../factories/user.factory";
 
 export async function seed(dataSource: DataSource) {
   const userRepo = dataSource.getRepository(User);

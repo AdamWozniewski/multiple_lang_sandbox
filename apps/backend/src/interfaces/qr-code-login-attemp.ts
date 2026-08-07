@@ -1,4 +1,4 @@
-import type { AttemptStatus } from '@customTypes/qr-code-attemp-status.js';
+import type { AttemptStatus } from "@customTypes/qr-code-attemp-status.js";
 
 export interface LoginAttempt {
   attemptId: string;

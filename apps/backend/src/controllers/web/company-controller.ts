@@ -1,8 +1,8 @@
-import type { Request, Response } from "express";
-import { Parser } from "json2csv";
-import { logger } from "@utility/logger.js";
 import { Company } from "@mongo/models/company.js";
 import { CompanyService } from "@services/Company-Service.js";
+import { logger } from "@utility/logger.js";
+import type { Request, Response } from "express";
+import { Parser } from "json2csv";
 
 const companiesControllerLogger = logger("CompaniesController");
 
@@ -18,20 +18,20 @@ export class CompaniesController {
     this.companyService = new CompanyService();
   }
 
-  showCompany = async(req: Request, res: Response) => {
+  showCompany = async (req: Request, res: Response) => {
     const { name } = req.params;
     try {
-      const company = await this.companyService.findCompanyBySlug(name)
+      const company = await this.companyService.findCompanyBySlug(name);
       res.render("pages/companies/company", {
         company,
         title: "Kompanie",
       });
     } catch (error: any) {
       res.redirect("/companies", {
-        error
+        error,
       });
     }
-  }
+  };
 
   showCompanies = async (req: Request, res: Response) => {
     const { query, sort, countmin, countmax, page } = req.query;
@@ -56,7 +56,7 @@ export class CompaniesController {
       currentPage,
       resultsCount,
       pagesCount,
-      companiesAll
+      companiesAll,
     });
   };
 
@@ -97,7 +97,7 @@ export class CompaniesController {
   editCompany = async (req: Request, res: Response) => {
     const { name } = req.params;
     const { slug, employeesCount } = req.body;
-    const userId = req.session.user.id;
+    const _userId = req.session.user.id;
 
     const updateData: any = { name, slug, employeesCount };
 
@@ -155,7 +155,7 @@ export class CompaniesController {
     try {
       await this.companyService.deleteImage(name);
       res.redirect(`/company/${name}`);
-    } catch (error: any) {
+    } catch (_error: any) {
       res.status(500).send("Nie udało się usunąć obrazu firmy.");
     }
   };
@@ -176,7 +176,7 @@ export class CompaniesController {
       res.header("Content-Disposition", 'attachment; filename="companies.csv"');
 
       res.send(csv);
-    } catch (error: any) {
+    } catch (_error: any) {
       res.status(500).send("Nie udało się wygenerować pliku CSV.");
     }
   }

@@ -1,6 +1,6 @@
-import { PubSub } from "graphql-subscriptions";
 import { User } from "@mongo/models/user.js";
 import { RoleService } from "@services/Role-Services.js";
+import { PubSub } from "graphql-subscriptions";
 
 const pubSub = new PubSub();
 const roleService = new RoleService();

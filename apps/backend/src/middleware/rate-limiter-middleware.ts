@@ -1,5 +1,5 @@
-import type { NextFunction, Request, Response } from 'express';
-import { RateLimiterMemory } from 'rate-limiter-flexible';
+import type { NextFunction, Request, Response } from "express";
+import { RateLimiterMemory } from "rate-limiter-flexible";
 
 const rateLimiter = new RateLimiterMemory({
   points: 1000,
@@ -14,5 +14,5 @@ export const rateLimiterMiddleware = (
   rateLimiter
     .consume(req?.ip as string)
     .then(() => next())
-    .catch(() => res.status(429).send('Too many reqs'));
+    .catch(() => res.status(429).send("Too many reqs"));
 };

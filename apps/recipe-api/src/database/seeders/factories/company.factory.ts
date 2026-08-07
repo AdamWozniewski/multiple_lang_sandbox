@@ -1,5 +1,5 @@
-import { faker } from '@faker-js/faker';
-import { Company } from '../../../recipe/companies/company.entity';
+import { faker } from "@faker-js/faker";
+import type { Company } from "../../../recipe/companies/company.entity";
 
 export function createRandomCompany(): Partial<Company> {
   return {

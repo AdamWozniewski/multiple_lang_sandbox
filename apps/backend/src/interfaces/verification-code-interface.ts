@@ -1,5 +1,5 @@
-import type { IUser } from '@mongo/models/user';
-import type { IEmailCode } from '@mongo/models/email-code';
+import type { IEmailCode } from "@mongo/models/email-code";
+import type { IUser } from "@mongo/models/user";
 
 export interface IVerificationCodeInterface {
   createVerificationCode(

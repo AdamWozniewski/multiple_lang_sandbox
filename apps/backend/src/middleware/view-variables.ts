@@ -1,5 +1,5 @@
-import type { NextFunction, Request, Response } from 'express';
-import { getBranch, getCommitHash } from '../scripts/git-current-status';
+import type { NextFunction, Request, Response } from "express";
+import { getBranch, getCommitHash } from "../scripts/git-current-status";
 
 export const globalMiddleware = async (
   req: Request,
@@ -12,8 +12,8 @@ export const globalMiddleware = async (
   res.locals.errors = null;
   res.locals.form = {};
   res.locals.query = req.query;
-  res.locals.gitBranch = 'branch || \'master\'';
+  res.locals.gitBranch = "branch || 'master'";
   // res.locals.gitBranch = branch;
-  res.locals.gitCommitHash = 'hash || \'xxx\'';
+  res.locals.gitCommitHash = "hash || 'xxx'";
   next();
 };

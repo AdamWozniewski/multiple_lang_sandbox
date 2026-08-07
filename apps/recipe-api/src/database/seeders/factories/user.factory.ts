@@ -1,5 +1,5 @@
-import { faker } from '@faker-js/faker';
-import { User } from '../../../auth/user/user.entity';
+import { faker } from "@faker-js/faker";
+import type { User } from "../../../auth/user/user.entity";
 
 export function createRandomUser(): Partial<User> {
   return {

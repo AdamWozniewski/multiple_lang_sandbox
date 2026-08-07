@@ -1,13 +1,13 @@
-import { renderFile } from 'ejs';
-import { createTransport } from 'nodemailer';
-import { config } from '@config';
-import { __dirname } from './dirname.js';
-import { PRODUCTION } from '@static/env.js';
+import { config } from "@config";
+import { PRODUCTION } from "@static/env.js";
+import { renderFile } from "ejs";
+import { createTransport } from "nodemailer";
+import { __dirname } from "./dirname.js";
 
 const templatePathTest = (template?: string) =>
   `${__dirname(
     import.meta.url,
-  )}/../views/pages/mailing/${template || 'subscribe'}.ejs`;
+  )}/../views/pages/mailing/${template || "subscribe"}.ejs`;
 
 export const mailer = async (
   email: string,

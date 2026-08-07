@@ -1,5 +1,5 @@
-import Transport from 'winston-transport';
-import { Log } from '@mongo/models/log.js';
+import { Log } from "@mongo/models/log.js";
+import Transport from "winston-transport";
 
 export class LogService extends Transport {
   log(info: any, callback: () => void) {
@@ -7,9 +7,9 @@ export class LogService extends Transport {
     const logEntry = new Log({
       timestamp,
       level,
-      controller: metadata.controller || 'unknown',
-      event: metadata.event || 'unknown',
-      ip: metadata.ip || 'unknown',
+      controller: metadata.controller || "unknown",
+      event: metadata.event || "unknown",
+      ip: metadata.ip || "unknown",
       message,
       email: metadata.email || undefined,
     });
@@ -18,7 +18,7 @@ export class LogService extends Transport {
       .save()
       .then(() => callback())
       .catch((err) => {
-        console.error('Failed to save log to MongoDB:', err);
+        console.error("Failed to save log to MongoDB:", err);
         callback();
       });
   }

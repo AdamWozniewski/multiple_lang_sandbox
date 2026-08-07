@@ -1,25 +1,23 @@
-import { expect } from '@playwright/test';
-import type { Page } from '@playwright/test';
+import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 
 export class LoginPage {
-  constructor(private page: Page) {
-  }
+  constructor(private page: Page) {}
 
   async goto() {
-    await this.page.goto('/pl/login');
+    await this.page.goto("/pl/login");
   }
 
   async fillForm(email: string, password: string) {
     await this.page.fill('input[name="email"]', email);
     await this.page.fill('input[name="password"]', password);
-
   }
 
   async submit() {
     await this.page.click('button[type="submit"]');
   }
 
-  async expectFieldValidation(field: 'email' | 'password') {
+  async expectFieldValidation(field: "email" | "password") {
     const msg = await this.page.$eval(
       `input[name="${field}"]`,
       (el: HTMLInputElement) => el.validationMessage,
@@ -28,7 +26,7 @@ export class LoginPage {
   }
 
   async expectError(expectedText?: string) {
-    const alert = this.page.locator('div.alert.alert-danger');
+    const alert = this.page.locator("div.alert.alert-danger");
     await expect(alert).toBeVisible({ timeout: 10_000 });
     if (expectedText) {
       await expect(alert).toContainText(expectedText, { timeout: 10_000 });

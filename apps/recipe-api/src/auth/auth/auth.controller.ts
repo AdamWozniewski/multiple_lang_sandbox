@@ -10,14 +10,14 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateUserDto } from '../user/dto/create-user.dto';
-import { User } from '../user/user.entity';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { LoginUserDto } from '../user/dto/login-user.dto';
-import { RefreshAuthGuard } from './refresh.guard';
+import type { ConfigService } from '@nestjs/config';
+import type { JwtService } from '@nestjs/jwt';
+import type { CreateUserDto } from '../user/dto/create-user.dto';
+import type { LoginUserDto } from '../user/dto/login-user.dto';
+import type { User } from '../user/user.entity';
+import type { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt.guard';
+import { RefreshAuthGuard } from './refresh.guard';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)

@@ -1,0 +1,43 @@
+[1mstorybook v9.1.3
+[22m
+info => Cleaning outputDir: [36mC:\Users\Adam\AppData\Local\Temp\chromatic--7880-6wlBofPsfS65[39m
+info => Loading presets
+info => Building manager..
+[34mAttention:[39m Storybook now collects completely anonymous telemetry regarding usage. This information is used to shape Storybook's roadmap and prioritize features.
+You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+[36mhttps://storybook.js.org/telemetry[39m
+
+info => Building preview..
+[36mvite v5.4.19 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 94 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[32massets/context-C0qIqeS4.png               [39m[1m[2m  6.12 kB[22m[1m[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[32massets/styling-Bk6zjRzU.png               [39m[1m[2m  7.24 kB[22m[1m[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[32miframe.html                               [39m[1m[2m 17.98 kB[22m[1m[22m[2m │ gzip:   5.12 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[32massets/docs---vsFbMi.png                  [39m[1m[2m 27.88 kB[22m[1m[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[32massets/share-DGA-UcQf.png                 [39m[1m[2m 40.77 kB[22m[1m[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[32massets/accessibility-W_h2acOZ.png         [39m[1m[2m 42.34 kB[22m[1m[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[32massets/figma-plugin-CH2hELiO.png          [39m[1m[2m 44.25 kB[22m[1m[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[32massets/theming-D6WJLNoW.png               [39m[1m[2m 44.37 kB[22m[1m[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[32massets/testing-cbzR9l9r.png               [39m[1m[2m 49.31 kB[22m[1m[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[32massets/addon-library-BWUCAmyN.png         [39m[1m[2m467.37 kB[22m[1m[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[35massets/Header-g99zxxam.css                [39m[1m[2m  0.50 kB[22m[1m[22m[2m │ gzip:   0.30 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[35massets/Button-gkziOddO.css                [39m[1m[2m  0.52 kB[22m[1m[22m[2m │ gzip:   0.30 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[35massets/Page-BJGj0mJw.css                  [39m[1m[2m  0.91 kB[22m[1m[22m[2m │ gzip:   0.38 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36massets/Button-DfOyXSeq.js                 [39m[1m[2m  0.37 kB[22m[1m[22m[2m │ gzip:   0.26 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36massets/index-CGM8iUA6.js                  [39m[1m[2m  0.48 kB[22m[1m[22m[2m │ gzip:   0.31 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36massets/Header.stories-bs1WBAFH.js         [39m[1m[2m  0.82 kB[22m[1m[22m[2m │ gzip:   0.44 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36massets/preload-helper-C1FmrZbK.js         [39m[1m[2m  1.14 kB[22m[1m[22m[2m │ gzip:   0.68 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36massets/Header-DJ0BezeJ.js                 [39m[1m[2m  1.16 kB[22m[1m[22m[2m │ gzip:   0.64 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36massets/Button.stories-Bh7WjPV_.js         [39m[1m[2m  1.56 kB[22m[1m[22m[2m │ gzip:   0.59 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36massets/Page.stories-B1FNJe9Z.js           [39m[1m[2m  3.73 kB[22m[1m[22m[2m │ gzip:   1.64 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36massets/Configure-Dxqz_eE3.js              [39m[1m[2m 25.56 kB[22m[1m[22m[2m │ gzip:  10.88 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36mvite-inject-mocker-entry.js               [39m[1m[2m 29.18 kB[22m[1m[22m[2m │ gzip:  10.08 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36massets/Color-AVL7NMMY-68i8C8Hw.js         [39m[1m[2m 29.33 kB[22m[1m[22m[2m │ gzip:  10.90 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36massets/DocsRenderer-PQXLIZUC-DpArAV6J.js  [39m[1m[2m174.91 kB[22m[1m[22m[2m │ gzip:  55.61 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36massets/blocks-CuE0rcLU.js                 [39m[1m[33m675.72 kB[39m[22m[2m │ gzip: 220.62 kB[22m
+[2mC:/Users/Adam/AppData/Local/Temp/chromatic--7880-6wlBofPsfS65/[22m[36massets/iframe-vhlg74Yx.js                 [39m[1m[33m945.27 kB[39m[22m[2m │ gzip: 255.78 kB[22m
+[32m✓ built in 6.08s[39m
+info => Output directory: C:\Users\Adam\AppData\Local\Temp\chromatic--7880-6wlBofPsfS65

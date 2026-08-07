@@ -2,8 +2,8 @@
 services:
   mongo:
     image: mongo:latest
-    container_name: mongodb
-    restart: no
+    container_name: sandbox-mongodb
+    restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: example
@@ -15,8 +15,8 @@ services:
 
   mongo-express:
     image: mongo-express:latest
-    container_name: mongo_express
-    restart: no
+    container_name: sandbox-mongo-express
+    restart: unless-stopped
     environment:
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: example
@@ -27,34 +27,50 @@ services:
     depends_on:
       - mongo
 
-  redis:
-    image: redis:latest
-    restart: no
-    container_name: redis
-    ports:
-      - "6379:6379"
 
-  postgresqldb:
-    image: postgres:latest
-    restart: no
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: sandbox-postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_PASSWORD: admin
-      POSTGRES_USER: admin
-      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   adminer:
     image: adminer
-    restart: no
+    restart: unless-stopped
     ports:
       - 8082:8080
 
+  redis:
+    image: redis:7-alpine
+    container_name: sandbox-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ 'CMD', 'redis-cli', 'ping' ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   mailhog:
     image: mailhog/mailhog
-    container_name: mailhog
-    restart: no
+    container_name: sandbox-mailhog
+    restart: unless-stopped
     logging:
       driver: 'none'
     ports:
@@ -63,7 +79,8 @@ services:
 
   gitea:
     image: gitea/gitea:1.22
-    restart: no
+    container_name: sandbox-gitea
+    restart: unless-stopped
     ports:
       - "127.0.0.1:3001:3000"
       - "127.0.0.1:2222:22"
@@ -77,7 +94,7 @@ services:
     build:
       context: .
       dockerfile: images/jenkins.Dockerfile
-    container_name: jenkins-blueocean
+    container_name: sandbox-jenkins
     restart: no
     networks:
       - jenkins
@@ -91,6 +108,7 @@ services:
     volumes:
       - jenkins-data:/var/jenkins_home
       - jenkins-docker-certs:/certs/client:ro
+
 #  gitlab:
 #    image: gitlab/gitlab-ce:latest
 #    container_name: gitlab
@@ -110,18 +128,18 @@ services:
 #      - gitlab_logs:/var/log/gitlab
 #      - gitlab_data:/var/opt/gitlab
 
-#  nginx:
-#    build:
-#      context: ./docker/nginx
-#
-#    ports:
-#      - "80:80"
-#      - "443:443"
-#    volumes:
-#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-#      - ./certbot-web:/var/www/certbot
-#      - ./certs:/etc/letsencrypt:ro
-#    restart: unless-stopped
+  nginx:
+    build:
+      context: ./docker/nginx
+    container_name: sandbox-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot-web:/var/www/certbot
+      - ./certs:/etc/letsencrypt:ro
+    restart: unless-stopped
 
 #  next:
 #    build:
@@ -133,11 +151,16 @@ services:
 
 #  backend:
 #    build:
-#      context: ./packages/backend
+#      context: ./images/backend
 #      dockerfile: Dockerfile
 #    env_file: [ .env.example ]
 #
 #    restart: unless-stopped
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
 volumes:
   #  gitlab_config:
   #  gitlab_logs:
@@ -148,5 +171,7 @@ volumes:
   mongo_data:
     driver: local
   pgdata:
+  redis-data:
+      driver: local
 networks:
   jenkins:

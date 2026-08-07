@@ -1,13 +1,13 @@
-import fs from 'node:fs';
-import type { Request, Response } from 'express';
-import mongoose from 'mongoose';
-import { __dirname } from '@utility/dirname';
-import { Company } from '@mongo/models/company';
+import fs from "node:fs";
+import { Company } from "@mongo/models/company";
+import { __dirname } from "@utility/dirname";
+import type { Request, Response } from "express";
+import mongoose from "mongoose";
 
 export class CompaniesControllerApi {
   async showCompanies(req: Request, res: Response) {
     const companies = await Company.find();
-    res.header('content-type', 'application/json');
+    res.header("content-type", "application/json");
     res.json({ companies });
   }
 
@@ -27,7 +27,7 @@ export class CompaniesControllerApi {
       if (e instanceof mongoose.Error.ValidationError) {
         res.status(422).json({ error: e.errors });
       } else {
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: "Internal server error" });
       }
     }
   }
@@ -38,7 +38,7 @@ export class CompaniesControllerApi {
       slug: name,
     });
     if (!company) {
-      res.status(404).json({ message: 'Company not found' });
+      res.status(404).json({ message: "Company not found" });
       return;
     }
     if (req.body.name) company.slug = req.body.name;
@@ -50,8 +50,7 @@ export class CompaniesControllerApi {
         `${__dirname(import.meta.url)}/../../public/img/uploads/${
           company.image
         }`,
-        () => {
-        },
+        () => {},
       );
     }
     if (req.file?.filename) {
@@ -65,7 +64,7 @@ export class CompaniesControllerApi {
       if (e instanceof mongoose.Error.ValidationError) {
         res.status(422).json({ error: e.errors });
       } else {
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: "Internal server error" });
       }
     }
   }
@@ -85,7 +84,7 @@ export class CompaniesControllerApi {
               error: `Błąd podczas usuwania pliku obrazu: ${e?.message}`,
             });
           } else {
-            res.status(500).json({ message: 'Internal server error' });
+            res.status(500).json({ message: "Internal server error" });
           }
         }
       }
@@ -96,7 +95,7 @@ export class CompaniesControllerApi {
       if (e instanceof mongoose.Error.ValidationError) {
         res.status(422).json({ error: e.errors });
       } else {
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: "Internal server error" });
       }
     }
   }

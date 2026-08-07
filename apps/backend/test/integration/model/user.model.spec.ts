@@ -1,14 +1,14 @@
-import mongoose from 'mongoose';
-import { MongoMemoryServer } from 'mongodb-memory-server';
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
-import { User } from '@mongo/models/user.js';
+import { User } from "@mongo/models/user.js";
+import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from "mongoose";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 let mongo: MongoMemoryServer;
-const VALID_PASS = 'abcd';
+const VALID_PASS = "abcd";
 
 beforeAll(async () => {
   mongo = await MongoMemoryServer.create();
-  await mongoose.connect(mongo.getUri(), { dbName: 'test' });
+  await mongoose.connect(mongo.getUri(), { dbName: "test" });
 });
 
 afterAll(async () => {
@@ -18,10 +18,10 @@ afterAll(async () => {
 
 beforeEach(() => User.deleteMany({}));
 
-describe('User Model - Integration Tests', () => {
-  it('creates user with hash and apiToken', async () => {
+describe("User Model - Integration Tests", () => {
+  it("creates user with hash and apiToken", async () => {
     const u = await User.create({
-      email: 'a@a.pl',
+      email: "a@a.pl",
       password: VALID_PASS,
       roles: new mongoose.Types.ObjectId(),
     });
@@ -30,19 +30,19 @@ describe('User Model - Integration Tests', () => {
     expect(u.activate).toBe(false);
   });
 
-  it('validates invalid email', async () => {
+  it("validates invalid email", async () => {
     await expect(
       User.create({
-        email: 'no-email',
+        email: "no-email",
         password: VALID_PASS,
         roles: new mongoose.Types.ObjectId(),
       }),
     ).rejects.toThrow(/Niepoprawny adres email/);
   });
 
-  it('enforces email uniqueness', async () => {
+  it("enforces email uniqueness", async () => {
     const payload = {
-      email: 'b@b.pl',
+      email: "b@b.pl",
       password: VALID_PASS,
       roles: new mongoose.Types.ObjectId(),
     };
@@ -51,30 +51,30 @@ describe('User Model - Integration Tests', () => {
       mongoose.Error.ValidationError,
     );
     await expect(User.create(payload)).rejects.toHaveProperty(
-      'errors.email.message',
+      "errors.email.message",
       `Taki email (${payload.email}) już istnieje`,
     );
   });
 
-  it('virtual fullName returns the full name', async () => {
+  it("virtual fullName returns the full name", async () => {
     const u = new User({
-      email: 'c@c.pl',
+      email: "c@c.pl",
       password: VALID_PASS,
       roles: new mongoose.Types.ObjectId(),
-      firstName: 'Jan',
-      lastName: 'Kowalski',
+      firstName: "Jan",
+      lastName: "Kowalski",
     });
     await u.save();
-    expect(u.fullName).toBe('Jan Kowalski');
+    expect(u.fullName).toBe("Jan Kowalski");
   });
 
-  it('comparePassword correctly verifies', async () => {
+  it("comparePassword correctly verifies", async () => {
     const u = await User.create({
-      email: 'd@d.pl',
+      email: "d@d.pl",
       password: VALID_PASS,
       roles: new mongoose.Types.ObjectId(),
     });
     expect(await u.comparePassword(VALID_PASS)).toBe(true);
-    expect(await u.comparePassword('xxxx')).toBe(false);
+    expect(await u.comparePassword("xxxx")).toBe(false);
   });
 });

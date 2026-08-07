@@ -1,4 +1,4 @@
-import { model, type Model, Schema } from "mongoose";
+import { type Model, model, Schema } from "mongoose";
 
 export interface IWebAuthnCredential extends Document {
   createdAt: Date;

@@ -1,10 +1,10 @@
 import { forwardRef, HttpException, Inject, Injectable } from '@nestjs/common';
-import { Products } from './product.entity';
-import { CreateProductsDto } from './dto/create-products.dto';
-import { UpdateProductsDto } from './dto/update-products.dto';
-import { CompaniesService } from '../companies/companies.service';
-import { Repository, UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import type { Repository, UpdateResult } from 'typeorm';
+import { CompaniesService } from '../companies/companies.service';
+import type { CreateProductsDto } from './dto/create-products.dto';
+import type { UpdateProductsDto } from './dto/update-products.dto';
+import { Products } from './product.entity';
 
 @Injectable()
 export class ProductsService {

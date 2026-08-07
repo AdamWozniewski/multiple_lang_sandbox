@@ -1,13 +1,18 @@
-import { defineConfig } from 'vitest/config';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import tsconfigPaths from "vite-tsconfig-paths";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
-    environment: 'node',
-    include: ['src/**/*.test.ts', 'test/**/*.test.ts', 'test/**/*.spec.ts', 'src/**/*.spec.ts'],
-    reporters: 'default',
-    coverage: { reporter: ['text', 'html'], reportsDirectory: 'coverage' },
+    environment: "node",
+    include: [
+      "src/**/*.test.ts",
+      "test/**/*.test.ts",
+      "test/**/*.spec.ts",
+      "src/**/*.spec.ts",
+    ],
+    reporters: "default",
+    coverage: { reporter: ["text", "html"], reportsDirectory: "coverage" },
   },
-  resolve: { conditions: ['node'] },
+  resolve: { conditions: ["node"] },
 });

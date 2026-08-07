@@ -1,9 +1,9 @@
-import { config } from '@config';
+import { config } from "@config";
 
 const isBun = !!process.versions?.bun;
 
 if (isBun) {
-  const Sentry = await import('@sentry/bun');
+  const Sentry = await import("@sentry/bun");
 
   Sentry.init({
     dsn: config.sentryDNS,
@@ -12,8 +12,8 @@ if (isBun) {
     tracesSampleRate: 1.0,
   });
 } else {
-  const Sentry = await import('@sentry/node');
-  const { nodeProfilingIntegration } = await import('@sentry/profiling-node');
+  const Sentry = await import("@sentry/node");
+  const { nodeProfilingIntegration } = await import("@sentry/profiling-node");
 
   Sentry.init({
     dsn: config.sentryDNS,
@@ -26,8 +26,8 @@ if (isBun) {
   });
 
   Sentry.profiler.startProfiler();
-  Sentry.startSpan({ name: 'My First Transaction' }, () => {
-    console.log('Profilowanie transakcji!');
+  Sentry.startSpan({ name: "My First Transaction" }, () => {
+    console.log("Profilowanie transakcji!");
   });
   Sentry.profiler.stopProfiler();
 }

@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdateProductsDto {
   @IsNumber()
@@ -8,7 +8,7 @@ export class UpdateProductsDto {
   name: string;
 
   @IsString()
-  unit: 'kg' | 'g' | 'tsp' | 'sp' | 'pinch' | 'ml' | 'l' | 'item';
+  unit: "kg" | "g" | "tsp" | "sp" | "pinch" | "ml" | "l" | "item";
 
   @IsNumber()
   amount: number;

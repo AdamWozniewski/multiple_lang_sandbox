@@ -1,12 +1,13 @@
 // import { userTable } from "@sql/models/index.js";
 // import { db } from "@sql/db.js";
-import { User } from '@mongo/models/user.js';
-import type { IUser } from '@mongo/models/user.js';
-import { BaseService } from './Base-Service.js';
-import type { IUserService } from '@interface/user-interface';
-import { randomBytes } from 'node:crypto';
-import { hashPassword, verifyPassword } from '@utility/hash.js';
-import { config } from '@config';
+
+import { randomBytes } from "node:crypto";
+import { config } from "@config";
+import type { IUserService } from "@interface/user-interface";
+import type { IUser } from "@mongo/models/user.js";
+import { User } from "@mongo/models/user.js";
+import { hashPassword, verifyPassword } from "@utility/hash.js";
+import { BaseService } from "./Base-Service.js";
 
 const localUrl: string = `${config.appUrl}${config.port}`;
 
@@ -19,9 +20,9 @@ export class UserService extends BaseService implements IUserService {
 
   async generateActivationToken(id: string): Promise<string> {
     const user = await User.findById(id);
-    if (!user) throw new Error('User not found');
+    if (!user) throw new Error("User not found");
 
-    const plain = randomBytes(32).toString('hex');
+    const plain = randomBytes(32).toString("hex");
     user.apiToken = await hashPassword(plain);
     user.apiTokenExpires = new Date(Date.now() + 24 * 3600_000);
     await user.save();
@@ -31,8 +32,8 @@ export class UserService extends BaseService implements IUserService {
 
   async generateMagicLinkToken(id: string): Promise<{ [key: string]: any }> {
     const user: IUser | null = await User.findById(id);
-    if (!user) throw new Error('User not found');
-    const plain: string = randomBytes(32).toString('hex');
+    if (!user) throw new Error("User not found");
+    const plain: string = randomBytes(32).toString("hex");
     const token: string = await hashPassword(plain);
     return {
       token,
@@ -54,7 +55,7 @@ export class UserService extends BaseService implements IUserService {
     data: Partial<IUser>,
   ): Promise<IUser | null> {
     const user = await User.findById(id);
-    if (!user) throw new Error('User not found');
+    if (!user) throw new Error("User not found");
     Object.assign(user, data);
     await user.save();
     return user;
@@ -68,11 +69,11 @@ export class UserService extends BaseService implements IUserService {
       user.apiTokenExpires < new Date() ||
       !(await verifyPassword(token, user.apiToken))
     ) {
-      throw new Error('Invalid user');
+      throw new Error("Invalid user");
     }
 
     user.activate = true;
-    user.apiToken = '';
+    user.apiToken = "";
     user.apiTokenExpires = null;
     await user.save();
 

@@ -1,25 +1,32 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Products } from '../products/product.entity';
-import { Company } from '../companies/company.entity';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import { Company } from "../companies/company.entity";
+import { Products } from "../products/product.entity";
 
 @Entity()
 export class IngredientEntity extends BaseEntity {
-
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
-    type: 'decimal',
+    type: "decimal",
   })
   amount: number;
 
   @ManyToOne(
-    () => Products, (product: Products) => product.ingredients
+    () => Products,
+    (product: Products) => product.ingredients,
   )
-  product: Products
+  product: Products;
 
   @ManyToOne(
-    () => Company, (company: Company) => company.ingredients
+    () => Company,
+    (company: Company) => company.ingredients,
   )
-  company: Company
+  company: Company;
 }

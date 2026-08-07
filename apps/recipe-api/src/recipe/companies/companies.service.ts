@@ -1,10 +1,10 @@
 import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
-import { Company } from './company.entity';
-import { UpdateCompaniesDto } from './dto/update-companies.dto';
-import { CreateCompaniesDto } from './dto/create-companies.dto';
-import { ProductsService } from '../products/products.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
+import type { Repository, UpdateResult } from 'typeorm';
+import { ProductsService } from '../products/products.service';
+import { Company } from './company.entity';
+import type { CreateCompaniesDto } from './dto/create-companies.dto';
+import type { UpdateCompaniesDto } from './dto/update-companies.dto';
 
 @Injectable()
 export class CompaniesService {

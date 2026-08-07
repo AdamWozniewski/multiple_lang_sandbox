@@ -1,27 +1,27 @@
-import type { Server } from 'node:http';
-import { ApolloServer } from '@apollo/server';
-import { ApolloServerPluginLandingPageGraphQLPlayground } from '@apollo/server-plugin-landing-page-graphql-playground';
-import { expressMiddleware } from '@apollo/server/express4';
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import { ApolloServerPluginLandingPageProductionDefault } from '@apollo/server/plugin/landingPage/default';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { MapperKind, getDirective, mapSchema } from '@graphql-tools/utils';
-import { Link } from '@mongo/models/link';
-import { UserRole } from '@mongo/models/roles';
-import { User } from '@mongo/models/user';
-import { DEVELOPMENT } from '@static/env';
-import cors from 'cors';
-import express from 'express';
-import type { Application } from 'express';
-import { defaultFieldResolver } from 'graphql';
-import type { GraphQLSchema } from 'graphql';
-import { useServer } from 'graphql-ws/use/ws';
-import jwt from 'jsonwebtoken';
-import { WebSocketServer } from 'ws';
-import { config } from '@config';
-import { resolvers } from './resolvers';
-import { typeDefs } from './type-defs';
-import { models } from 'mongoose';
+import type { Server } from "node:http";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { ApolloServerPluginLandingPageProductionDefault } from "@apollo/server/plugin/landingPage/default";
+import { ApolloServerPluginLandingPageGraphQLPlayground } from "@apollo/server-plugin-landing-page-graphql-playground";
+import { config } from "@config";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { getDirective, MapperKind, mapSchema } from "@graphql-tools/utils";
+import { Link } from "@mongo/models/link";
+import { UserRole } from "@mongo/models/roles";
+import { User } from "@mongo/models/user";
+import { DEVELOPMENT } from "@static/env";
+import cors from "cors";
+import type { Application } from "express";
+import express from "express";
+import type { GraphQLSchema } from "graphql";
+import { defaultFieldResolver } from "graphql";
+import { useServer } from "graphql-ws/use/ws";
+import jwt from "jsonwebtoken";
+import { models } from "mongoose";
+import { WebSocketServer } from "ws";
+import { resolvers } from "./resolvers";
+import { typeDefs } from "./type-defs";
 
 export type ModelMap = Record<string, any>;
 const isDev = config.env === DEVELOPMENT;
@@ -29,13 +29,13 @@ const isDev = config.env === DEVELOPMENT;
 const applyAuthDirective = (schema: GraphQLSchema): GraphQLSchema => {
   return mapSchema(schema, {
     [MapperKind.OBJECT_FIELD]: (fieldConfig) => {
-      const auth = getDirective(schema, fieldConfig, 'auth')?.[0];
+      const auth = getDirective(schema, fieldConfig, "auth")?.[0];
       if (!auth) return fieldConfig;
       const { resolve = defaultFieldResolver } = fieldConfig;
-      fieldConfig.resolve = async function(src, args, ctx, info) {
+      fieldConfig.resolve = async (src, args, ctx, info) => {
         const user = ctx.user;
         if (!user || !auth.roles.includes(user.role)) {
-          throw new Error('Brak dostępu');
+          throw new Error("Brak dostępu");
         }
         return resolve(src, args, ctx, info);
       };
@@ -76,12 +76,12 @@ export const setupGraphQL = async (app: Application, httpServer: Server) => {
   }) => {
     const base = { User, Link, UserRole };
     if (isDev) {
-      return { ...base, user: { id: 'dev-admin', role: 'admin' } };
+      return { ...base, user: { id: "dev-admin", role: "admin" } };
     }
     let token: string | null = null;
     if (params.req) {
-      const authHeader = String(params.req.headers.authorization || '');
-      if (authHeader.startsWith('Bearer ')) {
+      const authHeader = String(params.req.headers.authorization || "");
+      if (authHeader.startsWith("Bearer ")) {
         token = authHeader.slice(7);
       }
     } else if (params.connectionParams?.token) {
@@ -103,20 +103,20 @@ export const setupGraphQL = async (app: Application, httpServer: Server) => {
   };
 
   app.use(
-    '/graphql',
+    "/graphql",
     cors<cors.CorsRequest>(),
     (req, _res, next) => {
-      if (req.method === 'GET') req.body = {};
+      if (req.method === "GET") req.body = {};
       next();
     },
-    express.json({ type: '*/*' }),
+    express.json({ type: "*/*" }),
     expressMiddleware(server, { context: createContext }),
   );
 
   if (isDev) {
     const wsServer = new WebSocketServer({
       server: httpServer,
-      path: '/graphql',
+      path: "/graphql",
     });
     const cleanup = useServer({ schema, context: createContext }, wsServer);
     wsCleanup = cleanup.dispose;

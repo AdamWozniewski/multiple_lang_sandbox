@@ -1,6 +1,6 @@
-import type { Model } from 'mongoose';
-import { model, Schema } from 'mongoose';
-import type { Role } from '@customTypes/roles.js';
+import type { Role } from "@customTypes/roles.js";
+import type { Model } from "mongoose";
+import { model, Schema } from "mongoose";
 
 export interface IUserRole extends Document {
   _id: Schema.Types.ObjectId;
@@ -10,12 +10,12 @@ export interface IUserRole extends Document {
 const roleSchema = new Schema<IUserRole>({
   role: {
     type: [String],
-    enum: ['user', 'semi-admin', 'admin'],
-    default: ['user'],
+    enum: ["user", "semi-admin", "admin"],
+    default: ["user"],
   },
 });
 
 export const UserRole: Model<IUserRole> = model<IUserRole>(
-  'UserRole',
+  "UserRole",
   roleSchema,
 );

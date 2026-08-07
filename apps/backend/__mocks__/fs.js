@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 export const promises = {
   writeFile: vi.fn((path, data) => {

@@ -1,4 +1,4 @@
-import { type Model, Schema, model } from 'mongoose';
+import { type Model, model, Schema } from "mongoose";
 
 export interface ILog extends Document {
   timestamp: string;
@@ -41,7 +41,7 @@ const logSchema = new Schema<ILog>({
   },
 });
 
-logSchema.set('toJSON', {
+logSchema.set("toJSON", {
   virtuals: true,
   versionKey: false,
   transform: (_, ret) => {
@@ -51,4 +51,4 @@ logSchema.set('toJSON', {
 
 logSchema.index({ timestamp: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 14 });
 
-export const Log: Model<ILog> = model<ILog>('Log', logSchema);
+export const Log: Model<ILog> = model<ILog>("Log", logSchema);

@@ -1,12 +1,13 @@
-import { BaseService } from '@services/Base-Service';
-import type { IVerificationCodeInterface } from '@interface/verification-code-interface';
-import { EmailCode } from '@mongo/models/email-code';
-import type { IEmailCode } from '@mongo/models/email-code';
-import type { IUser } from '@mongo/models/user';
+import type { IVerificationCodeInterface } from "@interface/verification-code-interface";
+import type { IEmailCode } from "@mongo/models/email-code";
+import { EmailCode } from "@mongo/models/email-code";
+import type { IUser } from "@mongo/models/user";
+import { BaseService } from "@services/Base-Service";
 
 export class VerificationCodeService
   extends BaseService
-  implements IVerificationCodeInterface {
+  implements IVerificationCodeInterface
+{
   async createVerificationCode(
     user: Partial<IUser>,
     code: string,
@@ -32,10 +33,10 @@ export class VerificationCodeService
   }
 
   async updateVerificationCode({
-                                 email,
-                                 code,
-                                 used,
-                               }: Partial<IEmailCode>): Promise<void> {
+    email,
+    code,
+    used,
+  }: Partial<IEmailCode>): Promise<void> {
     await EmailCode.updateOne({
       email,
       code,

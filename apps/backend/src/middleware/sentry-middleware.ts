@@ -1,4 +1,4 @@
-import type { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from "express";
 
 export const sentryMiddleware = (
   err: Error,
@@ -8,9 +8,13 @@ export const sentryMiddleware = (
 ) => {
   res.statusCode = 500;
   console.error(err);
-  res.status(500).send(process.env.NODE_ENV === 'production'
-    ? 'Internal Server Error'
-    : `<pre>${err.stack}</pre>`);
+  res
+    .status(500)
+    .send(
+      process.env.NODE_ENV === "production"
+        ? "Internal Server Error"
+        : `<pre>${err.stack}</pre>`,
+    );
 
   // const eventId = (res as any).sentry;
   // res.status(500).render("error", {
