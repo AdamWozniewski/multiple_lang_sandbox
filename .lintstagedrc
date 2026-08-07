@@ -1,3 +1,4 @@
 {
-  "*": "echo \" Root file \""
+  "*.{ts,tsx,js,jsx}": ["biome check --write"],
+  "*.json": ["biome format --write"]
 }
