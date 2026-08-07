@@ -1,1 +1,9 @@
+echo "\033[1;34m🔍 Sprawdzam kod (Biome)...\033[0m"
 bunx lint-staged
+
+if [ $? -eq 0 ]; then
+  echo "\033[1;32m✅ OK\033[0m"
+else
+  echo "\033[1;31m❌ NOT_OK\033[0m"
+  exit 1
+fi

@@ -1,1 +1,9 @@
+echo "\033[1;34m TEST \033[0m"
 bun run test
+
+if [$? -eq 0]: then
+    echo "\033[1;32m✅ TEST OK\033[0m"
+else
+    echo "\033[1;31m❌ TEST_NOT_OK \033[0m"
+    exit 1
+fi
