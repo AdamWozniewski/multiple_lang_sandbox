@@ -22,6 +22,7 @@ bun.lock
 /apps/**/logs
 /apps/**/migrations
 /apps/**/.env
+/apps/**/.sentryclirc
 
 .terraform/*
 .terraform*

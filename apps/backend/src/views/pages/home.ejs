@@ -1,12 +1,47 @@
-<div class="container">
-        <h1 class="">Strona główna <%= t('title') %></h1>
-        <% if(user) { %>
-                <p>Zalogowano</p>
-                <p>User: <%- user.email%></p>
-                <p>UserID: <%- user._id%></p>
-                <p>ROLES: <%- user.roles.role%></p>
-        <% } %>
+<div class="flex flex-col gap-6">
+    <div>
+        <h1 class="heading-page"><%= t('title') %></h1>
+        <p class="text-muted">Strona główna</p>
+    </div>
 
-        <%- contentFor('sidebar')%>
-        <h2>SideBar</h2>
+    <% if(user) { %>
+        <%= JSON.stringify(user)%>
+        <div class="card">
+            <div class="card-body">
+                <h2 class="heading-section">Zalogowano jako</h2>
+                <dl class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div class="rounded-lg bg-slate-950/60 p-4 ring-1 ring-white/5">
+                        <dt class="field-help">E-mail</dt>
+                        <dd class="mt-1 truncate text-sm font-medium text-slate-100"><%- user.email %></dd>
+                    </div>
+                    <div class="rounded-lg bg-slate-950/60 p-4 ring-1 ring-white/5">
+                        <dt class="field-help">User ID</dt>
+                        <dd class="mt-1 truncate font-mono text-sm text-slate-100"><%- user.id %></dd>
+                    </div>
+                    <div class="rounded-lg bg-slate-950/60 p-4 ring-1 ring-white/5">
+                        <dt class="field-help">Rola</dt>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="card">
+            <div class="card-body">
+                <p class="text-sm text-slate-400">Nie jesteś zalogowany. <a class="link" href="/<%= language %>/login">Zaloguj się</a>, aby zobaczyć więcej.</p>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<%- contentFor('sidebar')%>
+<div class="flex flex-col gap-4">
+    <h2 class="heading-section">SideBar</h2>
+    <p class="field-help">Przykład użycia <code class="rounded bg-slate-800 px-1 py-0.5 font-mono text-[11px] text-slate-300">contentFor('sidebar')</code> z <code class="rounded bg-slate-800 px-1 py-0.5 font-mono text-[11px] text-slate-300">layouts/main.ejs</code>.</p>
+    <nav class="flex flex-col gap-1">
+        <a href="/<%= language %>/" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">Dashboard</a>
+        <a href="/<%= language %>/companies" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">Firmy</a>
+        <% if(user) { %>
+            <a href="/<%= language %>/admin/profile" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">Profil</a>
+        <% } %>
+    </nav>
 </div>

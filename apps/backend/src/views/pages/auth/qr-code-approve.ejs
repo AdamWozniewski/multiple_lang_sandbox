@@ -1,6 +1,10 @@
-<h2>Fake Mobile Approver</h2>
-<div id="status">Start…</div>
-<pre id="debug"></pre>
+<div class="notice-shell">
+    <div class="notice-card text-left">
+        <h2 class="heading-section mb-3 text-center">Fake Mobile Approver</h2>
+        <div id="status" class="rounded-lg bg-slate-800 px-4 py-3 text-center text-sm font-medium text-slate-200">Start…</div>
+        <pre id="debug" class="mt-3 max-h-48 overflow-auto rounded-lg bg-slate-950 p-3 text-xs text-slate-100"></pre>
+    </div>
+</div>
 <script>
   function b64urlToJson(b64url) {
     const pad = '='.repeat((4 - (b64url.length % 4)) % 4);

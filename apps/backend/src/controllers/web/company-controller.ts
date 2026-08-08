@@ -34,7 +34,7 @@ export class CompaniesController {
   };
 
   showCompanies = async (req: Request, res: Response) => {
-    const { query, sort, countmin, countmax, page } = req.query;
+    const { query, sort, countMin, countMax, page } = req.query;
 
     const currentPage = Number.parseInt(page as string, 10) || 1;
     const perPage = 2;
@@ -42,8 +42,8 @@ export class CompaniesController {
     const filters = {
       query,
       sort,
-      countmin: countmin ? Number(countmin) : undefined,
-      countmax: countmax ? Number(countmax) : undefined,
+      countMin: countMin ? Number(countMin) : undefined,
+      countMax: countMax ? Number(countMax) : undefined,
       currentPage,
       perPage,
     };

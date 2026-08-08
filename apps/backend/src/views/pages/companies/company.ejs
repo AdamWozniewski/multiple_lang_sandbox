@@ -1,11 +1,34 @@
-<% if(company.name) { %>
-    <h1>Firma: <%= company.name %></h1>
-    <h1>Slug : <%= company.slug %></h1>
-        <pre><%- user.id.toString() === company.user.toString() ? 'TAK' : 'NIE' %></pre>
-    <img src="<%= company.image %>" alt="">
-    <% if(user.id.toString() === company.user.toString()) { %>
-        <a href="/<%= language ;%>/admin/company/<%= company.name %>/edit">Edytuj</a>
+<div class="page-container max-w-2xl">
+    <% if(company.name) { %>
+        <pre><%= JSON.stringify(company) %></pre>
+        <pre><%= JSON.stringify(user) %></pre>
+        <div class="card overflow-hidden">
+            <% if(company.image) { %>
+                <div class="h-56 w-full overflow-hidden bg-slate-800">
+                    <img src="<%= company.image %>" alt="<%= company.name %>" class="h-full w-full object-cover" />
+                </div>
+            <% } %>
+            <div class="card-body">
+                <div>
+                    <h1 class="heading-page"><%= company.name %></h1>
+                    <p class="text-muted">Slug: <%= company.slug %></p>
+                </div>
+
+
+                <div class="flex items-center gap-2">
+                    <span class="field-help">Właściciel: <%= company.user.toString()%></span>
+                    <span class="badge-indigo"><%- user && (user.id.toString() === company.user.toString()) ? 'Tak' : 'Nie' %></span>
+                </div>
+                <% if(user && (user.id.toString() === company.user.toString())) { %>
+                    <div>
+                        <a href="/<%= language ;%>/admin/company/<%= company.name %>/edit" class="btn-primary">Edytuj</a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="notice-card mx-auto">
+            <h1 class="heading-section">Nie ma takiej firmy</h1>
+        </div>
     <% } %>
-<% } else { %>
-    <h1>Nie ma takiej firmy</h1>
-<% } %>
+</div>

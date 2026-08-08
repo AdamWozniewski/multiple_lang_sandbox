@@ -1,25 +1,27 @@
-<div class="col-3">
-    <div class="mb-3">
-        <label for="sort" class="form-label">Sortuj według</label>
-        <select name="sort" id="sort" class="form-control">
-            <option value="">Domyslnie</option>
+<div class="flex flex-col gap-4 border-t border-slate-100 pt-4">
+    <h2 class="heading-section">Filtry</h2>
+
+    <div class="field">
+        <label for="sort" class="field-label">Sortuj według</label>
+        <select name="sort" id="sort" class="field-input">
+            <option value="">Domyślnie</option>
             <option value="name|asc" <%- query.sort === 'name|asc' ? 'selected' : '' %>>A-Z</option>
             <option value="name|desc" <%- query.sort === 'name|dsc' ? 'selected' : '' %>>Z-A</option>
-            <option value="employeesCount|asc" <%- query.sort === 'employeesCount|asc' ? 'selected' : '' %>>Ilosci
+            <option value="employeesCount|asc" <%- query.sort === 'employeesCount|asc' ? 'selected' : '' %>>Liczba
                 pracowników rosnąco
             </option>
-            <option value="employeesCount|desc" <%- query.sort === 'employeesCount|desc' ? 'selected' : '' %>>Ilosci
+            <option value="employeesCount|desc" <%- query.sort === 'employeesCount|desc' ? 'selected' : '' %>>Liczba
                 pracowników malejąco
             </option>
         </select>
     </div>
-    <div class="mb-3">
-        <label for="countmin" class="form-label">Minimalna liczb apracowników</label>
-        <input class="form-control" type="number" value="<%- query.countmin %>" id="countmin" name="countmin">
+    <div class="field">
+        <label for="countmin" class="field-label">Minimalna liczba pracowników</label>
+        <input class="field-input" type="number" value="<%- query.countmin %>" id="countmin" name="countmin">
     </div>
-    <div class="mb-3">
-        <label for="countmax" class="form-label">Maksymalna liczb apracowników</label>
-        <input class="form-control" type="number" value="<%- query.countmax %>" id="countmax" name="countmax">
+    <div class="field">
+        <label for="countmax" class="field-label">Maksymalna liczba pracowników</label>
+        <input class="field-input" type="number" value="<%- query.countmax %>" id="countmax" name="countmax">
     </div>
-    <button class="btn btn-primary">Sortuj</button>
+    <button class="btn-primary btn-block">Filtruj</button>
 </div>

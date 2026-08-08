@@ -47,7 +47,7 @@ export class UserService extends BaseService implements IUserService {
   }
 
   async findUserByEmail(email: string): Promise<IUser | null> {
-    return User.findOne({ email }).exec();
+    return User.findOne({ email }).populate("roles").exec();
   }
 
   async updateUserProfile(
@@ -64,8 +64,7 @@ export class UserService extends BaseService implements IUserService {
   async activateUser(id: string, token: string): Promise<IUser> {
     const user = (await this.findUserById(id)) as InstanceType<typeof User>;
     if (
-      !user ||
-      !user.apiTokenExpires ||
+      !user?.apiTokenExpires ||
       user.apiTokenExpires < new Date() ||
       !(await verifyPassword(token, user.apiToken))
     ) {

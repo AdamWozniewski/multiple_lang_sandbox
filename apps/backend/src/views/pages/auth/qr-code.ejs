@@ -1,19 +1,15 @@
-<div
-        data-dialog-backdrop="edit-profile-modal"
-        data-dialog-backdrop-close="true"
-        class="inset-0 z-[999] grid h-full place-items-center bg-black bg-opacity-60 duration-300"
->
-    <div
-            data-dialog="sign-in-modal"
-            class="relative mx-auto w-full max-w-[24rem] rounded-lg overflow-hidden shadow-sm"
-    >
-        <div class="qr-box bg-white">
-            <img src="<%= qrDataUrl %>" alt="QR do zatwierdzenia" />
-
-            <div id="timer"></div>
+<div class="auth-shell">
+    <div class="w-full max-w-sm card">
+        <div class="card-header">
+            <h3 class="card-header-title">Zaloguj się przez QR</h3>
         </div>
-
-
+        <div class="card-body items-center text-center">
+            <div class="rounded-xl bg-white p-4 shadow-sm">
+                <img src="<%= qrDataUrl %>" alt="QR do zatwierdzenia" class="h-56 w-56" />
+            </div>
+            <p class="text-muted">Zeskanuj kod telefonem, aby zatwierdzić logowanie</p>
+            <div id="timer" class="text-sm font-medium text-slate-300"></div>
+        </div>
     </div>
 </div>
 <script>
@@ -60,5 +56,3 @@
     console.error("[PC] SSE error", e);
   };
 </script>
-
-

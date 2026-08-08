@@ -11,7 +11,7 @@ export class CompanyService extends BaseService {
 
   async findCompanyBySlug(slug: string) {
     try {
-      return await Company.findOne({ slug });
+      return await Company.findOne({ slug }).populate("user", "fullName");
     } catch (error: any) {
       throw new Error(error);
     }

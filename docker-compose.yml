@@ -5,10 +5,10 @@ services:
     container_name: sandbox-mongodb
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
     ports:
-      - "27017:27017"
+      - "${MONGO_HOST_PORT}:${MONGO_HOST_PORT}"
     volumes:
       - mongo_data:/data/db
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
@@ -18,16 +18,14 @@ services:
     container_name: sandbox-mongo-express
     restart: unless-stopped
     environment:
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: example
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_ROOT_USER}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_ROOT_PASSWORD}
       ME_CONFIG_BASICAUTH_ENABLED: true
-      ME_CONFIG_MONGODB_URL: "mongodb://admin:example@mongodb:27017/?authSource=admin"
+      ME_CONFIG_MONGODB_URL: "mongodb://admin:example@mongo:${MONGO_HOST_PORT}/?authSource=admin"
     ports:
       - "8081:8081"
     depends_on:
       - mongo
-
-
 
   postgres:
     image: postgres:16-alpine
@@ -38,7 +36,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - '5432:5432'
+      - '${POSTGRES_HOST_PORT}:${POSTGRES_HOST_PORT}'
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -58,9 +56,9 @@ services:
     container_name: sandbox-redis
     restart: unless-stopped
     ports:
-      - '6379:6379'
+      - '${REDIS_PORT}:${REDIS_PORT}'
     volumes:
-      - redis_data:/data
+      - redis-data:/data
     healthcheck:
       test: [ 'CMD', 'redis-cli', 'ping' ]
       interval: 5s
@@ -87,8 +85,15 @@ services:
     environment:
       - GITEA__webhook__ALLOWED_HOST_LIST=jenkins
       - GITEA__webhook__SKIP_TLS_VERIFY=true
+#      - GITEA__database__DB_TYPE=postgres
+#      - GITEA__database__HOST=db:5432
+#      - GITEA__database__NAME=gitea
+#      - GITEA__database__USER=gitea
+#      - GITEA__database__PASSWD=gitea
     volumes:
       - gitea_data:/data
+#    depends_on:
+#      - postgres
 
   jenkins:
     build:
@@ -103,8 +108,8 @@ services:
       DOCKER_CERT_PATH: /certs/client
       DOCKER_TLS_VERIFY: '1'
     ports:
-      - "8080:8080"
-      - "50000:50000"
+      - "8083:8080"
+      - "50001:50000"
     volumes:
       - jenkins-data:/var/jenkins_home
       - jenkins-docker-certs:/certs/client:ro
@@ -128,18 +133,18 @@ services:
 #      - gitlab_logs:/var/log/gitlab
 #      - gitlab_data:/var/opt/gitlab
 
-  nginx:
-    build:
-      context: ./docker/nginx
-    container_name: sandbox-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./certbot-web:/var/www/certbot
-      - ./certs:/etc/letsencrypt:ro
-    restart: unless-stopped
+#  nginx:
+#    build:
+#      context: ./docker/nginx
+#    container_name: sandbox-nginx
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+#      - ./certbot-web:/var/www/certbot
+#      - ./certs:/etc/letsencrypt:ro
+#    restart: unless-stopped
 
 #  next:
 #    build:

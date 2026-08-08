@@ -1,10 +1,16 @@
 <%- include('../partials/header', {title: 'abc'}) %>
 <%- include('../partials/nav') %>
 
-<div class="bg-cyan-950 h-full">
-    <%- body %>
+<div class="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-7xl flex-col gap-6 bg-slate-950 px-4 py-8 sm:px-6 lg:flex-row lg:px-8">
+    <main class="min-w-0 flex-1">
+        <%- body %>
+    </main>
+
+    <aside class="w-full shrink-0 lg:w-64">
+        <div class="card p-5 lg:sticky lg:top-8">
+            <%- defineContent('sidebar') %>
+        </div>
+    </aside>
 </div>
 
-<hr>
-<%- defineContent('sidebar') %>
 <%- include('../partials/footer') %>
