@@ -4,31 +4,29 @@ import type {
   TypeOrmModuleAsyncOptions,
   TypeOrmModuleOptions,
 } from "@nestjs/typeorm";
-import * as dotenv from "dotenv";
-
-const env = process.env.NODE_ENV || "development";
-const dotenv_path = path.resolve(process.cwd(), `.env.${env}`);
-const result = dotenv.config({ path: dotenv_path });
-
-if (result.error) {
-}
+import {
+  POSTGRES_DB_DATABASE,
+  POSTGRES_DB_HOST,
+  POSTGRES_DB_PASSWORD,
+  POSTGRES_DB_PORT,
+  POSTGRES_DB_USERNAME,
+} from '../utility/statics';
 
 export class TypeOrmConfig {
   static getOrmConfig(configService: ConfigService): TypeOrmModuleOptions {
     return {
-      type: "better-sqlite3", // configService.get<string>.('DB_HOST')
-      database: "./database/my-db.sqlite3",
+      type: 'postgres',
+      host: configService.get<string>(POSTGRES_DB_HOST, 'localhost'),
+      port: configService.get<number>(POSTGRES_DB_PORT, 5432),
+      username: configService.get<string>(POSTGRES_DB_USERNAME),
+      password: configService.get<string>(POSTGRES_DB_PASSWORD),
+      database: configService.get<string>(POSTGRES_DB_DATABASE),
       autoLoadEntities: true,
-      synchronize: false, // NIE DO PROD
-
+      synchronize: false,
       migrationsRun: false,
-      entities: ["dist/**/*.entity{.ts,.js}"],
-      migrations: ["deist/migrations/**/*{.ts,.js}"],
     };
   }
 }
-
-export default TypeOrmConfig.getOrmConfig(new ConfigService());
 
 export const databaseConfig: TypeOrmModuleAsyncOptions = {
   imports: [ConfigModule],

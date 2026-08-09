@@ -73,7 +73,10 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.ts", "**/*.tsx"],
+      "includes": [
+        "**/*.ts",
+        "**/*.tsx"
+      ],
       "linter": {
         "rules": {
           "suspicious": {

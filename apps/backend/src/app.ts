@@ -32,6 +32,9 @@ import { setupGraphQL } from "./routes/graphql/graphql";
 import { routerWeb } from "./routes/web/web";
 // import { csrfTokenMiddleware, doubleCsrfProtection, handleCsrfErrors } from './middleware/csrf-middleware.js';
 import passport from "./utility/passport";
+import * as console from 'node:console';
+
+console.log(process.env.NEST_PORT)
 
 export const startApp = async () => {
   try {
@@ -47,6 +50,8 @@ export const startApp = async () => {
   app.use(cookieParser());
   app.use(cors());
 
+  console.log('==========')
+  console.log(config.db)
   app.use(
     expressSession({
       secret: config.secretSession,

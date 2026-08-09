@@ -7,7 +7,6 @@
     "lib": ["ES2023"],
     "noEmit": true,
     "verbatimModuleSyntax": true,
-    "preserveValueImports": true,
     "sourceMap": true,
     "inlineSources": true
   }

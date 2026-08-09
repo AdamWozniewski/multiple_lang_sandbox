@@ -5,7 +5,7 @@
   "license": "UNLICENSED",
   "files": [
     "base.json",
-    "bun.json",
+    "express.json",
     "nextjs.json",
     "nestjs.json"
   ]

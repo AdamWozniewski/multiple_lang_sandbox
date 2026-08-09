@@ -1,7 +1,5 @@
 <div class="page-container max-w-2xl">
     <% if(company.name) { %>
-        <pre><%= JSON.stringify(company) %></pre>
-        <pre><%= JSON.stringify(user) %></pre>
         <div class="card overflow-hidden">
             <% if(company.image) { %>
                 <div class="h-56 w-full overflow-hidden bg-slate-800">
@@ -16,7 +14,7 @@
 
 
                 <div class="flex items-center gap-2">
-                    <span class="field-help">Właściciel: <%= company.user.toString()%></span>
+                    <span class="field-help">Właściciel: <%= company.user?.fullName %></span>
                     <span class="badge-indigo"><%- user && (user.id.toString() === company.user.toString()) ? 'Tak' : 'Nie' %></span>
                 </div>
                 <% if(user && (user.id.toString() === company.user.toString())) { %>

@@ -1,13 +1,14 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
-import type { ConfigService } from "@nestjs/config";
-import { PassportStrategy } from "@nestjs/passport";
-import { ExtractJwt, Strategy } from "passport-jwt";
-import type { AuthService } from "./auth.service";
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { AuthService } from './auth.service';
+import { ConfigService } from '@nestjs/config';
+import {JWT_REFRESH_SECRET_TOKEN, REFRESH_TOKEN} from '../../utility/statics';
 
 @Injectable()
 export class RefreshJwtStrategy extends PassportStrategy(
   Strategy,
-  "refresh-jwt",
+  'refresh-jwt',
 ) {
   constructor(
     private readonly authService: AuthService,
@@ -16,17 +17,17 @@ export class RefreshJwtStrategy extends PassportStrategy(
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req) => {
-          return req?.cookies?.["refresh_token"];
+          return req?.cookies?.[REFRESH_TOKEN];
         },
       ]),
 
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>("JWT_REFRESH_SECRET_TOKEN")!,
+      secretOrKey: configService.get<string>(JWT_REFRESH_SECRET_TOKEN)!,
     });
   }
 
   async validate(payload: { user_id }) {
-    const user = this.authService.validateUser(payload.user_id);
+    const user = await this.authService.validateUser(payload.user_id);
     if (!user) {
       throw new UnauthorizedException();
     }

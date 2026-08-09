@@ -5,10 +5,12 @@ import { IngredientEntity } from "../recipe/ingredients/ingredient.entity";
 import { Products } from "../recipe/products/product.entity";
 
 export default new DataSource({
-  type: "better-sqlite3",
-  database: "./database/my-db.sqlite3",
-  // entities: ['dist/**/*.entity.js'],
+  type: 'postgres',
+  host: process.env.POSTGRES_DB_HOST || 'localhost',
+  port: Number(process.env.POSTGRES_DB_PORT) || 5432,
+  username: process.env.POSTGRES_DB_USERNAME,
+  password: process.env.POSTGRES_DB_PASSWORD,
+  database: process.env.POSTGRES_DB_DATABASE,
   entities: [Products, IngredientEntity, Company, User],
-  migrations: ["dist/migrations/**/*.js"],
-  // synchronize: true
+  migrations: [__dirname + '/../database/migrations/*{.ts,.js}'],
 });
