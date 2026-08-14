@@ -126,7 +126,7 @@ userSchema.set("toJSON", {
   virtuals: true,
   versionKey: false,
   transform: (_, ret) => {
-    delete ret._id;
+    Reflect.deleteProperty(ret, "_id");
   },
 });
 

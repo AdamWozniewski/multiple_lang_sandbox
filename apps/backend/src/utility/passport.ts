@@ -3,7 +3,7 @@ import passport from "passport";
 
 const userService = new UserService();
 
-passport.serializeUser(({ id }, done) => {
+passport.serializeUser(({ id } , done) => {
   done(null, id);
 });
 

@@ -3,6 +3,7 @@ import { validateForbiddenString } from "../validators";
 import type { IUser } from "./user";
 
 export interface ICompany extends Document {
+  _id: Types.ObjectId;
   slug: string;
   name: string;
   employeesCount: number;

@@ -1,6 +1,7 @@
-import { type Model, model, Schema } from "mongoose";
+import { type Model, model, Schema, type Types } from 'mongoose';
 
 export interface IEmailCode extends Document {
+  _id: Types.ObjectId;
   email: string;
   code: string;
   expiresAt: Date;

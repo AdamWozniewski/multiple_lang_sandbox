@@ -1,4 +1,4 @@
-import type { Document, Model, Schema } from "mongoose";
+import type { Document, Model, Schema, UpdateWriteOpResult } from 'mongoose';
 import { model } from "mongoose";
 
 export interface IBaseModel extends Document {
@@ -39,7 +39,7 @@ export abstract class BaseModel<T extends Document> {
     return this.model.findById(id).exec();
   }
 
-  async disable(active: boolean): Promise<T | null> {
+  async disable(active: boolean): Promise<UpdateWriteOpResult | null> {
     return this.model.updateOne({ active }).exec();
   }
 }

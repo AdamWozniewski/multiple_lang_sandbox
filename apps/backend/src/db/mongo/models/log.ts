@@ -1,6 +1,7 @@
-import { type Model, model, Schema } from "mongoose";
+import { type Model, model, Schema, type Types } from 'mongoose';
 
 export interface ILog extends Document {
+  _id: Types.ObjectId;
   timestamp: string;
   level: string;
   controller: string;
@@ -45,7 +46,7 @@ logSchema.set("toJSON", {
   virtuals: true,
   versionKey: false,
   transform: (_, ret) => {
-    delete ret._id;
+    Reflect.deleteProperty(ret, "_id");
   },
 });
 

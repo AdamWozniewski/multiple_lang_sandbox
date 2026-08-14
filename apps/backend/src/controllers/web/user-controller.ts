@@ -3,14 +3,13 @@ import { config } from "@config";
 import { ATTEMPT_TYPE } from "@customTypes/qr-code-attemp-status";
 import { ServiceNames } from "@customTypes/service-names";
 import type { IRoleService } from "@interface/role-interface";
-import { type ILink, Link } from "@mongo/models/link";
+import { type ILink, Link } from '@mongo/models/link';
 import type { IUser } from "@mongo/models/user";
 import { LinkService } from "@services/Link-Service";
 import { MailerService } from "@services/Mailer-Service";
 import { RoleService } from "@services/Role-Services";
 import { UserService } from "@services/User-Service";
 import { VerificationCodeService } from "@services/Verification-Code-Service";
-import { PRODUCTION } from "@static/env";
 import { AttemptsStore } from "@utility/attempts";
 import {
   base64url,
@@ -22,10 +21,12 @@ import {
 import { logger } from "@utility/logger";
 import passport from "@utility/passport.js";
 import type { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
+import jwt, { type JwtPayload } from 'jsonwebtoken';
 import QRCode from "qrcode";
 import { v4 as uuidv4 } from "uuid";
 import { LoginRequestDTO } from "../../dto/user.dto";
+import type { ObjectId } from 'mongoose';
+import * as console from 'node:console';
 
 const localUrl: string = `${config.appUrl}${config.port}`;
 const userControllerLogger = logger(ServiceNames.UserService);
@@ -82,8 +83,7 @@ export class UserController {
         .set("Content-Type", "text/html")
         .render("pages/confirm/confirm-registration");
     } catch (error: any) {
-      console.log(error);
-      const errMessageGenerator = (error) => {
+      const errMessageGenerator = (error: any) => {
         switch (error.code) {
           case 11000:
             return "takie konto juz istnieje";
@@ -449,14 +449,15 @@ export class UserController {
     // const user = req.session.pending2FA || await this.userService.findUserByEmail(req.params.email);
     try {
       const user = await this.userService.findUserByEmail(req.body.email);
+      if (!user) throw new Error("User not found");
       const { token, expiresAt, magicLink } =
         await this.userService.generateMagicLinkToken(user!.id);
-      const newMagicLink = this.linkService.createLink({
+      const newMagicLink = await this.linkService.createLink({
         link: magicLink,
         expiresAt,
         token,
         type: "magic-link",
-        user: user?.id,
+        user,
       });
       await this.mailerService.sendMagicLinkEmail(
         user.email,
@@ -472,7 +473,8 @@ export class UserController {
     try {
       const { magicLink: token } = req.query;
       const link = await Link.findOne({ token });
-      if (!link && link!.active && link.expiresAt < Date.now()) {
+
+      if (!link && (link!.active && link.expiresAt < Date.now())) {
         return res.render("pages/auth/magic-link-error");
       }
       await Link.findOneAndUpdate({ token }, { active: false });
@@ -483,8 +485,6 @@ export class UserController {
         user as IUser,
       );
     } catch (error: any) {
-      console.log(error);
-      console.log("weszlo do catch");
       res.render("pages/auth/magic-link-error");
     }
   };
@@ -613,7 +613,8 @@ export class UserController {
     const token = jwt.sign({ id: user.id }, config.jwtSecret, {
       expiresIn: "1h",
     });
-    const resetLink = `${process.env.CLIENT_URL}/reset-forgot-password?token=${token}`;
+    const resetLink = `${config.appUrl}${config.port}/reset-forgot-password?token=${token}`;
+
     try {
       const link = await this.linkService.createLink({
         type: "forgot-password",
@@ -655,25 +656,32 @@ export class UserController {
   };
 
   resetForgotPassword = async (req: Request, res: Response) => {
-    const { token, password } = req.body;
+    const { token, password, confirmPassword } = req.body;
+
+    const renderError = (status: number, message: string) =>
+      res.status(status).render("pages/auth/reset-forgot-password.ejs", {
+        errors: { message },
+        form: req.body,
+        token,
+      });
 
     if (!token) {
-      return res.status(400).send("Token is required");
+      return renderError(400, "Token jest wymagany");
     }
 
-    // if (password !== confirmPassword) {
-    //   return res.status(400).send("Passwords do not match");
-    // }
+    if (password !== confirmPassword) {
+      return renderError(400, "Passwords do not match");
+    }
 
     try {
-      const { id } = jwt.verify(token, config.jwtSecret);
-      const user = await this.userService.findUserById(id);
+      const payload = jwt.verify(token, config.jwtSecret) as JwtPayload;
+      const user = await this.userService.findUserById(payload.id as string);
 
       if (!user) {
         return res.status(404).send("User not found");
       }
       const hashedPassword = await hashPassword(password);
-      await this.userService.updateUserProfile(id, {
+      await this.userService.updateUserProfile(payload.id as string, {
         password: hashedPassword,
       });
 
@@ -681,10 +689,15 @@ export class UserController {
         .set("Content-Type", "text/html")
         .render("pages/confirm/password-changed-confirm.ejs");
     } catch (error: any) {
-      res.status(400).render("pages/auth/reset-forgot-password.ejs", {
-        errors: error.errors,
-        form: req.body,
+      userControllerLogger.error("Reset Forgot Password Failed", {
+        metadata: {
+          ip: req.ip,
+          message: error.message,
+          controller,
+          event: EventLogin.USER_FORGOT_PASSWORD,
+        },
       });
+      return renderError(400, error.message ?? "Nie udało się zresetować hasła");
     }
   };
 

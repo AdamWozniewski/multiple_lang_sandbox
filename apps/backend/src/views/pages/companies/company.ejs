@@ -1,9 +1,9 @@
 <div class="page-container max-w-2xl">
-    <% if(company.name) { %>
+    <% if(company && company.name) { %>
         <div class="card overflow-hidden">
             <% if(company.image) { %>
                 <div class="h-56 w-full overflow-hidden bg-slate-800">
-                    <img src="<%= company.image %>" alt="<%= company.name %>" class="h-full w-full object-cover" />
+                    <img src="/img/uploads/<%= company.image %>" alt="<%= company.name %>" class="h-full w-full object-cover" />
                 </div>
             <% } %>
             <div class="card-body">
@@ -11,16 +11,15 @@
                     <h1 class="heading-page"><%= company.name %></h1>
                     <p class="text-muted">Slug: <%= company.slug %></p>
                 </div>
-
-
                 <div class="flex items-center gap-2">
                     <span class="field-help">Właściciel: <%= company.user?.fullName %></span>
-                    <span class="badge-indigo"><%- user && (user.id.toString() === company.user.toString()) ? 'Tak' : 'Nie' %></span>
+                    <span class="badge-indigo"><%- user && (company.user && company.user.id === user.id) ? 'Tak' : 'Nie' %></span>
                 </div>
-                <% if(user && (user.id.toString() === company.user.toString())) { %>
-                    <div>
-                        <a href="/<%= language ;%>/admin/company/<%= company.name %>/edit" class="btn-primary">Edytuj</a>
-                    </div>
+                <% if(user && (company.user && company.user.id === user.id)) { %>
+                    <a class="btn-secondary btn-block" href="/<%= language ;%>/admin/company/<%= company.slug %>/edit">Edytuj</a>
+                    <a class="btn-danger btn-block"
+                       href="/<%= language ;%>/admin/company/<%= company.slug %>/delete"
+                       onclick="return confirm('Czy jesteś pewien?')">Usuń</a>
                 <% } %>
             </div>
         </div>

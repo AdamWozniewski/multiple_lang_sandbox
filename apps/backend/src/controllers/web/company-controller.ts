@@ -3,6 +3,7 @@ import { CompanyService } from "@services/Company-Service.js";
 import { logger } from "@utility/logger.js";
 import type { Request, Response } from "express";
 import { Parser } from "json2csv";
+import type { Filters } from '@customTypes/filters';
 
 const companiesControllerLogger = logger("CompaniesController");
 
@@ -19,17 +20,20 @@ export class CompaniesController {
   }
 
   showCompany = async (req: Request, res: Response) => {
-    const { name } = req.params;
+    const { slug } = req.params;
     try {
-      const company = await this.companyService.findCompanyBySlug(name);
-      res.render("pages/companies/company", {
+      const company = await this.companyService.findCompanyBySlug(slug as string);
+      res.status(company ? 200 : 404).render("pages/companies/company", {
         company,
         title: "Kompanie",
       });
     } catch (error: any) {
-      res.redirect("/companies", {
-        error,
+      companiesControllerLogger.error("Show Company Failed", {
+        metadata: { ip: req.ip, message: error.message, controller },
       });
+      res.locals.errors = { message: error.message };
+      return res.status(500).render("pages/companies/companies", { title: "Kompanie" });
+
     }
   };
 
@@ -37,7 +41,7 @@ export class CompaniesController {
     const { query, sort, countMin, countMax, page } = req.query;
 
     const currentPage = Number.parseInt(page as string, 10) || 1;
-    const perPage = 2;
+    const perPage = 4;
 
     const filters = {
       query,
@@ -49,7 +53,7 @@ export class CompaniesController {
     };
 
     const { companies, resultsCount, pagesCount, companiesAll } =
-      await this.companyService.getCompanies(filters);
+      await this.companyService.getCompanies(filters as Partial<Filters>);
 
     res.render("pages/companies/companies", {
       companies,
@@ -97,7 +101,6 @@ export class CompaniesController {
   editCompany = async (req: Request, res: Response) => {
     const { name } = req.params;
     const { slug, employeesCount } = req.body;
-    const _userId = req.session.user.id;
 
     const updateData: any = { name, slug, employeesCount };
 
@@ -107,7 +110,7 @@ export class CompaniesController {
 
     try {
       await this.companyService.updateCompany(
-        name,
+        slug,
         updateData,
         req.file?.filename,
       );
@@ -121,10 +124,10 @@ export class CompaniesController {
   };
 
   deleteCompany = async (req: Request, res: Response) => {
-    const { name } = req.params;
+    const { slug } = req.params;
 
     try {
-      await this.companyService.deleteCompany(name);
+      await this.companyService.deleteCompany(slug as string);
       companiesControllerLogger.info("Company Deleted", {
         metadata: {
           ip: req.ip,
@@ -150,11 +153,11 @@ export class CompaniesController {
   };
 
   deleteImg = async (req: Request, res: Response) => {
-    const { name } = req.params;
+    const { slug } = req.params;
 
     try {
-      await this.companyService.deleteImage(name);
-      res.redirect(`/company/${name}`);
+      await this.companyService.deleteImage(slug as string);
+      res.redirect(`/company/${slug}`);
     } catch (_error: any) {
       res.status(500).send("Nie udało się usunąć obrazu firmy.");
     }

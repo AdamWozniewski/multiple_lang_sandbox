@@ -17,7 +17,7 @@ const user = new UserController();
 
 routerWeb.get("/", page.home);
 routerWeb.get("/companies", company.showCompanies);
-routerWeb.get("/company/:name", company.showCompany);
+routerWeb.get("/company/:slug", company.showCompany);
 
 routerWeb.get(
   "/admin/company/add",

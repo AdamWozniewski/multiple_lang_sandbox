@@ -3,6 +3,7 @@ import type { IUser } from "@mongo/models/user";
 import { type Model, model, type ObjectId, Schema, Types } from "mongoose";
 
 export interface ILink extends Document {
+  _id: Types.ObjectId;
   type: LinksType;
   maxUsage?: number;
   link: string;
@@ -50,7 +51,7 @@ linkSchema.set("toJSON", {
   virtuals: true,
   versionKey: false,
   transform: (_, ret) => {
-    delete ret._id;
+    Reflect.deleteProperty(ret, "_id");
   },
 });
 

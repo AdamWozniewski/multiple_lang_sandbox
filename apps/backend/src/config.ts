@@ -44,8 +44,4 @@ export const config = {
   // NewRelic
   NEW_RELIC_API_KEY: process.env.NEW_RELIC_API_KEY || "",
   NEW_RELIC_APP_NAME: process.env.NEW_RELIC_APP_NAME || "",
-
-  // OAUTH
-  oauthClientId: process.env.OAUTH_CLIENT_ID || "",
-  oauthClientSecret: process.env.OAUTH_CLIENT_SECRET || "",
 };

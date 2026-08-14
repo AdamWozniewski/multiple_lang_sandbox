@@ -1,10 +1,10 @@
 import fs from "node:fs/promises";
 import type { Filters } from "@customTypes/filters";
-import { Company } from "@mongo/models/company";
+import { Company, type ICompany } from '@mongo/models/company';
 import { BaseService } from "./Base-Service";
 
 export class CompanyService extends BaseService {
-  async createCompany(data: Partial<typeof Company>) {
+  async createCompany(data: Partial<ICompany>) {
     const company = new Company(data);
     return company.save();
   }
@@ -60,7 +60,7 @@ export class CompanyService extends BaseService {
     }
   }
 
-  async getCompanies(filters: Filters) {
+  async getCompanies(filters: Partial<Filters>) {
     const {
       query,
       sort,
