@@ -3,7 +3,7 @@ import { config } from "@config";
 import { ATTEMPT_TYPE } from "@customTypes/qr-code-attemp-status";
 import { ServiceNames } from "@customTypes/service-names";
 import type { IRoleService } from "@interface/role-interface";
-import { type ILink, Link } from '@mongo/models/link';
+import { Link } from "@mongo/models/link";
 import type { IUser } from "@mongo/models/user";
 import { LinkService } from "@services/Link-Service";
 import { MailerService } from "@services/Mailer-Service";
@@ -16,17 +16,13 @@ import {
   generateSecret,
   hashPassword,
   sha256Base64url,
-  verifyPassword,
 } from "@utility/hash";
 import { logger } from "@utility/logger";
-import passport from "@utility/passport.js";
-import type { NextFunction, Request, Response } from "express";
-import jwt, { type JwtPayload } from 'jsonwebtoken';
+import type { Request, Response } from "express";
+import jwt, { type JwtPayload } from "jsonwebtoken";
 import QRCode from "qrcode";
 import { v4 as uuidv4 } from "uuid";
 import { LoginRequestDTO } from "../../dto/user.dto";
-import type { ObjectId } from 'mongoose';
-import * as console from 'node:console';
 
 const localUrl: string = `${config.appUrl}${config.port}`;
 const userControllerLogger = logger(ServiceNames.UserService);
@@ -87,7 +83,6 @@ export class UserController {
         switch (error.code) {
           case 11000:
             return "takie konto juz istnieje";
-            break;
           default:
             return "Inny błąd";
         }
@@ -451,7 +446,7 @@ export class UserController {
       const user = await this.userService.findUserByEmail(req.body.email);
       if (!user) throw new Error("User not found");
       const { token, expiresAt, magicLink } =
-        await this.userService.generateMagicLinkToken(user!.id);
+        await this.userService.generateMagicLinkToken(user?.id);
       const newMagicLink = await this.linkService.createLink({
         link: magicLink,
         expiresAt,
@@ -474,7 +469,7 @@ export class UserController {
       const { magicLink: token } = req.query;
       const link = await Link.findOne({ token });
 
-      if (!link && (link!.active && link.expiresAt < Date.now())) {
+      if (!link && link?.active && link.expiresAt < Date.now()) {
         return res.render("pages/auth/magic-link-error");
       }
       await Link.findOneAndUpdate({ token }, { active: false });
@@ -484,7 +479,7 @@ export class UserController {
         () => res.redirect("/"),
         user as IUser,
       );
-    } catch (error: any) {
+    } catch (_error: any) {
       res.render("pages/auth/magic-link-error");
     }
   };
@@ -697,7 +692,10 @@ export class UserController {
           event: EventLogin.USER_FORGOT_PASSWORD,
         },
       });
-      return renderError(400, error.message ?? "Nie udało się zresetować hasła");
+      return renderError(
+        400,
+        error.message ?? "Nie udało się zresetować hasła",
+      );
     }
   };
 
