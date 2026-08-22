@@ -5,21 +5,23 @@
     </div>
 
     <% if(user) { %>
-        <%= JSON.stringify(user)%>
         <div class="card">
             <div class="card-body">
                 <h2 class="heading-section">Zalogowano jako</h2>
                 <dl class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div class="rounded-lg bg-slate-950/60 p-4 ring-1 ring-white/5">
                         <dt class="field-help">E-mail</dt>
-                        <dd class="mt-1 truncate text-sm font-medium text-slate-100"><%- user.email %></dd>
+                        <dd class="mt-1 truncate text-sm font-medium text-slate-100"><%= user.email %></dd>
                     </div>
                     <div class="rounded-lg bg-slate-950/60 p-4 ring-1 ring-white/5">
                         <dt class="field-help">User ID</dt>
-                        <dd class="mt-1 truncate font-mono text-sm text-slate-100"><%- user.id %></dd>
+                        <dd class="mt-1 truncate font-mono text-sm text-slate-100"><%= user.id %></dd>
                     </div>
                     <div class="rounded-lg bg-slate-950/60 p-4 ring-1 ring-white/5">
                         <dt class="field-help">Rola</dt>
+                        <% user.roles.forEach(role => { %>
+                            <dd class="mt-1 truncate font-mono text-sm text-slate-100"><%= role %></dd>
+                        <% }) %>
                     </div>
                 </dl>
             </div>

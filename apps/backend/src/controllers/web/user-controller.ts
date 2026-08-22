@@ -22,7 +22,9 @@ import type { Request, Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import QRCode from "qrcode";
 import { v4 as uuidv4 } from "uuid";
-import { LoginRequestDTO } from "../../dto/user.dto";
+import { LoginRequestDTO } from "../../dto/user-login.dto";
+import { RegisterRequestDTO } from "../../dto/user-register.dto";
+import type {IUserRole} from "@mongo/models/roles";
 
 const localUrl: string = `${config.appUrl}${config.port}`;
 const userControllerLogger = logger(ServiceNames.UserService);
@@ -58,6 +60,8 @@ export class UserController {
 
   registerUser = async (req: Request, res: Response): Promise<void> => {
     try {
+      const dto = new RegisterRequestDTO(req.body);
+      dto.validate();
       const roles = await this.roleService.getDefaultUserRole();
       const user = await this.userService.createUser({ ...req.body, roles });
       const token = await this.userService.generateActivationToken(user.id);
@@ -79,12 +83,13 @@ export class UserController {
         .set("Content-Type", "text/html")
         .render("pages/confirm/confirm-registration");
     } catch (error: any) {
+      console.log(error)
       const errMessageGenerator = (error: any) => {
         switch (error.code) {
           case 11000:
             return "takie konto juz istnieje";
           default:
-            return "Inny błąd";
+            return error;
         }
       };
 
@@ -125,30 +130,34 @@ export class UserController {
       if (!user.activate) {
         throw new Error("Account not activated");
       }
+      const { id, email, firstName, lastName, roles } = user as IUser;
+      const { role } = roles as IUserRole;
+      const destructuredUser = {
+        id,
+        email,
+        firstName,
+        lastName,
+        roles: role,
+      };
       if (user.twoFactorAuthentication) {
-        req.session.pending2FA = {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          roles: user?.roles,
-        };
-        // switch (user.twoFactorAuthenticationType) {
-        //   case 'verification-code': return res.redirect('/verification/verification-code');
-        //   case 'qr-code': return res.redirect('/verification/qr-code');
-        //   case 'magic-link': return res.redirect('/verification/magic-link');
-        //   case 'physical-key': return res.redirect('/verification/magic-link');
-        //   case 'biometrics': return res.redirect('/verification/magic-link');
+        req.session.pending2FA = destructuredUser
+        switch (user.twoFactorAuthenticationType) {
+          case 'verification-code': return res.redirect('/verification/verification-code');
+          case 'qr-code': return res.redirect('/verification/qr-code');
+          case 'magic-link': return res.redirect('/verification/magic-link');
+          // case 'physical-key': return res.redirect('/verification/magic-link');
+          // case 'biometrics': return res.redirect('/verification/magic-link');
+          default: return ;
+        }
+        // if (user.twoFactorAuthenticationType === "verification-code") {
+        //   return res.redirect("/verification/verification-code");
         // }
-        if (user.twoFactorAuthenticationType === "verification-code") {
-          return res.redirect("/verification/verification-code");
-        }
-        if (user.twoFactorAuthenticationType === "qr-code") {
-          return res.redirect("/verification/qr-code");
-        }
-        if (user.twoFactorAuthenticationType === "magic-link") {
-          return res.redirect("/verification/magic-link");
-        }
+        // if (user.twoFactorAuthenticationType === "qr-code") {
+        //   return res.redirect("/verification/qr-code");
+        // }
+        // if (user.twoFactorAuthenticationType === "magic-link") {
+        //   return res.redirect("/verification/magic-link");
+        // }
         // if (user.twoFactorAuthenticationType === 'physical-key') {
         //   return res.redirect('/verification/magic-link');
         // }
@@ -157,7 +166,7 @@ export class UserController {
         // }
       }
 
-      return this.setSuccessLogin(req, () => res.redirect("/"), user as IUser);
+      return this.setSuccessLogin(req, () => res.redirect("/"), destructuredUser);
     } catch (error: any) {
       userControllerLogger.error("Login failed", {
         metadata: {
@@ -230,7 +239,7 @@ export class UserController {
         used: true,
       });
       const user = await this.userService.findUserByEmail(email);
-      this.setSuccessLogin(req, res, user as IUser);
+      this.setSuccessLogin(req, () => {}, user as IUser);
     } catch (error: any) {
       userControllerLogger.error("Login failed", {
         metadata: {
@@ -469,13 +478,13 @@ export class UserController {
       const { magicLink: token } = req.query;
       const link = await Link.findOne({ token });
 
-      if (!link && link?.active && link.expiresAt < Date.now()) {
+      if (!link || !link?.active || !link.expiresAt || link.expiresAt.getTime() < Date.now()) {
         return res.render("pages/auth/magic-link-error");
       }
       await Link.findOneAndUpdate({ token }, { active: false });
-      const user = await this.userService.findUserById(link.user);
-      return this.setSuccessLogin(
-        { ...req, body: { email: user.email } },
+      const user = await this.userService.findUserById(String(link.user));
+      if (!user) throw new Error("User not found");
+      return this.setSuccessLogin(req,
         () => res.redirect("/"),
         user as IUser,
       );
@@ -699,14 +708,12 @@ export class UserController {
     }
   };
 
-  setSuccessLogin(req: Request, callback: any, user: IUser): Response {
-    req.session.user = {
-      id: user?.id,
-      email: user?.email,
-      firstName: user?.firstName,
-      lastName: user?.lastName,
-      roles: user?.roles,
-    };
+  setSuccessLogin<T extends Pick<IUser, "id" | "email">>(
+      req: Request,
+      callback: (...args: undefined[]) => any,
+      user: T,
+  ): Response {
+    req.session.user = user
     userControllerLogger.info("Login Success", {
       metadata: {
         ip: req.ip,

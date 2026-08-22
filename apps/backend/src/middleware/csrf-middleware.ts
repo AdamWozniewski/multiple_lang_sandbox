@@ -34,10 +34,15 @@ const csrfTokenMiddleware = (
 
 const handleCsrfErrors = (
   err: any,
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction,
 ): void => {
+    if (
+        req.path.startsWith("/api")
+    ) {
+        return next();
+    }
   if (err === invalidCsrfTokenError) {
     res.status(403).json({ message: "Invalid CSRF token" });
   } else {

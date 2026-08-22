@@ -2,7 +2,6 @@ import fs from "node:fs";
 import { createServer } from "node:https";
 import os from "node:os";
 import { config } from "@config";
-import { connectMongoDB } from "@mongo/database";
 import { startApp } from "./app";
 
 function pickPhoneIP() {

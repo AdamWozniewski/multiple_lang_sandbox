@@ -18,26 +18,29 @@ export class UserControllerApi {
       if (!user || !pswdCompared || !user.activate) {
         throw new Error("Błędny login, hasło lub konto nie jest aktywne");
       }
-      const token = jwt.sign({ user }, config.jwtSecret, { expiresIn: "1h" });
-      const refreshToken = jwt.sign({ user }, config.jwtRefreshSecret, {
-        expiresIn: "1d",
-      });
-      res
-        .status(200)
-        .cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          sameSite: "strict",
-          secure: config.env === PRODUCTION,
-          maxAge: 24 * 60 * 60 * 1000,
-        })
-        .header("Authorization", token)
-        .json({
-          user,
-          // token,
-          // refreshToken
-        });
+
+      // const token = jwt.sign({ user }, config.jwtSecret, { expiresIn: "1h" });
+      // const refreshToken = jwt.sign({ user }, config.jwtRefreshSecret, {
+      //   expiresIn: "1d",
+      // });
+      // res
+      //   .status(200)
+      //   .cookie("refreshToken", refreshToken, {
+      //     httpOnly: true,
+      //     sameSite: "strict",
+      //     secure: config.env === PRODUCTION,
+      //     maxAge: 24 * 60 * 60 * 1000,
+      //   })
+      //   .header("Authorization", token)
+      //   .json({
+      //     user,
+      //     // token,
+      //     // refreshToken
+      //   });
+      res.status(200).json({
+        user
+      })
     } catch (error: any) {
-      console.log(error);
       res.status(401).json({ message: "error" });
     }
   };
@@ -70,6 +73,6 @@ export class UserControllerApi {
   };
 
   logoutUser = async (_: Request, res: Response): Promise<void> => {
-    res.clearCookie("refreshToken");
+    res.clearCookie('token').clearCookie("refreshToken");
   };
 }

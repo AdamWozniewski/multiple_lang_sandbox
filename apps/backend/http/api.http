@@ -1,3 +1,4 @@
+### AUTH
 ### POST request
 POST {{baseUrl}}/api/login
 Content-Type: application/json
@@ -7,15 +8,58 @@ Content-Type: application/json
   "password": "{{password}}"
 }
 
+### POST request
+POST {{baseUrl}}/api/logout
+Content-Type: application/json
+
+### POST request
+POST {{baseUrl}}/api/register
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
 > {% client.global.set("token", response.body.token); %}
 
-
+### COMPANIES
 ### GET request
 GET {{baseUrl}}/api/companies
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
+### POST request
+GET {{baseUrl}}/api/companies
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+
+}
 
 ### GET request
 GET {{baseUrl}}/dev/debug-sentry
 Content-Type: application/json
+
+
+routerApi.get("/companies", isAuthMiddlewareJWT, companies.showCompanies);
+routerApi.post("/companies", isAuthMiddlewareJWT, companies.createCompany);
+routerApi.put(
+"/companies/:slug",
+isAuthMiddlewareJWT,
+upload.single("image"),
+companies.editCompany,
+);
+routerApi.delete(
+"/companies/:slug",
+isAuthMiddlewareJWT,
+companies.deleteCompany,
+);
+
+routerApi.post("/login", user.loginUser);
+routerApi.post("/logout", user.logoutUser);
+routerApi.post("/refresh", user.refreshToken);
+routerApi.get("/csrf-token", (_, res) => {
+res.json({ csrfToken: res.locals.csrfToken });
+});

@@ -1,7 +1,7 @@
 <div class="auth-shell">
     <div class="w-full max-w-sm card">
         <form method="POST" class="flex flex-col" <% if(showFile) { %>enctype="multipart/form-data" action="?_csrf=<%= csrfToken %>"<% } %>>
-            <input type="hidden" value="<%= csrfToken %>" name="_csrf">
+            <%- include('../../partials/csrf', { csrfToken }) %>
             <div class="card-header">
                 <h3 class="card-header-title"><%- typeof title !== 'undefined' ? title : 'Firma' %></h3>
             </div>

@@ -1,7 +1,5 @@
 import { status500 } from "@static/status-500";
-import { mailer } from "@utility/mailing";
 import type { Request, Response } from "express";
-// import { logger } from '@utility/logger.js';
 
 // const pageControllerLogger = logger("PageController");
 

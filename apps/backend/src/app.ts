@@ -21,7 +21,6 @@ import { rateLimiterMiddleware } from "./middleware/rate-limiter-middleware";
 import { userMiddleware } from "./middleware/user-middleware";
 import { globalMiddleware } from "./middleware/view-variables";
 import "./db/mongo/database.ts";
-import * as console from "node:console";
 import { connectMongoDB } from "@mongo/database";
 import { DEVELOPMENT, PRODUCTION } from "@static/env";
 import { __dirname } from "@utility/dirname";
@@ -37,10 +36,7 @@ import { routerDev } from "./routes/dev/dev";
 import { setupGraphQL } from "./routes/graphql/graphql";
 import { routerWeb } from "./routes/web/web";
 import passport from "./utility/passport";
-
-// import * as mongoSanitize from 'express-mongo-sanitize';
-
-console.log(process.env.NEST_PORT);
+import {routerApi} from "./routes/api/api";
 
 export const startApp = async () => {
   try {
@@ -55,9 +51,6 @@ export const startApp = async () => {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(cors());
-
-  console.log("==========");
-  console.log(config.db);
   app.use(
     expressSession({
       secret: config.secretSession,
@@ -129,7 +122,7 @@ export const startApp = async () => {
   Sentry.setupExpressErrorHandler(app);
   app.use(rateLimiterMiddleware);
   app.use("/admin", isAuthMiddleware);
-  // app.use("/api", routerApi);
+  app.use("/api", routerApi);
   if (DEV) {
     app.use("/api-docs", serve, setup(swaggerDocument));
     app.use("/dev", routerDev);

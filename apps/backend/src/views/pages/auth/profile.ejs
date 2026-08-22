@@ -1,7 +1,7 @@
 <div class="auth-shell">
     <div class="w-full max-w-md card">
         <form method="POST" class="flex flex-col">
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <%- include('../partials/csrf', { csrfToken }) %>
             <div class="card-header">
                 <h3 class="card-header-title">Edytuj profil</h3>
             </div>
