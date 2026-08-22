@@ -24,7 +24,7 @@ export interface IUser extends IBaseModel {
 
   // credentials?: Types.DocumentArray<IWebAuthnCredential>;
 
-  comparePassword(password: string): boolean;
+  comparePassword(password: string): Promise<boolean>;
 
   fullName?: string;
 }
@@ -106,7 +106,7 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.methods = {
-  comparePassword: async function (password: string) {
+  comparePassword: async function (password: string): Promise<boolean> {
     return await verifyPassword(password, this.password);
   },
 };
@@ -127,6 +127,9 @@ userSchema.set("toJSON", {
   versionKey: false,
   transform: (_, ret) => {
     Reflect.deleteProperty(ret, "_id");
+    Reflect.deleteProperty(ret, "password");
+    Reflect.deleteProperty(ret, "apiTokenExpires");
+    Reflect.deleteProperty(ret, "apiToken");
   },
 });
 

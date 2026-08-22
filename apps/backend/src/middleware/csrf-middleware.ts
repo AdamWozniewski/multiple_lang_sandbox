@@ -18,7 +18,7 @@ const { invalidCsrfTokenError, generateToken, doubleCsrfProtection } =
     },
     size: 32,
     ignoredMethods: ["GET", "HEAD", "OPTIONS"],
-    // getCsrfTokenFromRequest: (req) => req.headers["x-csrf-token"],
+    getTokenFromRequest: (req) => req.body?._csrf ?? req.query?._csrf,
     skipCsrfProtection: undefined,
   });
 
@@ -27,7 +27,7 @@ const csrfTokenMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  res.locals.csrfToken = generateToken(req, res);
+  res.locals.csrfToken = generateToken(req, res, false, false);
   console.log("Generated CSRF Token:", res.locals.csrfToken);
   next();
 };

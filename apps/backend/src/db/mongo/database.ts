@@ -11,6 +11,7 @@ connection.on("disconnecting", () => console.log("mongo - disconnecting"));
 connection.on("close", () => console.log("mongo - close"));
 
 mongoose.set("debug", true);
+mongoose.set("sanitizeFilter", true);
 
 export const connectMongoDB = async () => {
   try {

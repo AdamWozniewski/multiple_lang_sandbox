@@ -16,9 +16,9 @@
                     <span class="badge-indigo"><%- user && (company.user && company.user.id === user.id) ? 'Tak' : 'Nie' %></span>
                 </div>
                 <% if(user && (company.user && company.user.id === user.id)) { %>
-                    <a class="btn-secondary btn-block" href="/<%= language ;%>/admin/company/<%= company.slug %>/edit">Edytuj</a>
+                    <a class="btn-secondary btn-block" href="/<%= language ;%>/company/<%= company.slug %>/edit">Edytuj</a>
                     <a class="btn-danger btn-block"
-                       href="/<%= language ;%>/admin/company/<%= company.slug %>/delete"
+                       href="/<%= language ;%>/company/<%= company.slug %>/delete"
                        onclick="return confirm('Czy jesteś pewien?')">Usuń</a>
                 <% } %>
             </div>

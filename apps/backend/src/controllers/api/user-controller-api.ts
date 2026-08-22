@@ -1,6 +1,4 @@
 import { config } from "@config";
-import { MailerService } from "@services/Mailer-Service";
-import { RoleService } from "@services/Role-Services";
 import { UserService } from "@services/User-Service";
 import { PRODUCTION } from "@static/env";
 import type { Request, Response } from "express";
@@ -16,11 +14,9 @@ export class UserControllerApi {
   loginUser = async (req: Request, res: Response): Promise<void> => {
     try {
       const user = await this.userService.findUserByEmail(req.body.email);
-      if (!user || !user.comparePassword(req.body.password)) {
-        throw new Error("Błędny login lub hasło");
-      }
-      if (!user.activate) {
-        throw new Error("Account not activated");
+      const pswdCompared = await user?.comparePassword(req.body.password);
+      if (!user || !pswdCompared || !user.activate) {
+        throw new Error("Błędny login, hasło lub konto nie jest aktywne");
       }
       const token = jwt.sign({ user }, config.jwtSecret, { expiresIn: "1h" });
       const refreshToken = jwt.sign({ user }, config.jwtRefreshSecret, {
@@ -35,7 +31,11 @@ export class UserControllerApi {
           maxAge: 24 * 60 * 60 * 1000,
         })
         .header("Authorization", token)
-        .json({ token, user, refreshToken });
+        .json({
+          user,
+          // token,
+          // refreshToken
+        });
     } catch (error: any) {
       console.log(error);
       res.status(401).json({ message: "error" });

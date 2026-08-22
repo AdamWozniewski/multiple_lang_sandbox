@@ -1,6 +1,7 @@
 <div class="auth-shell">
     <div class="w-full max-w-sm card">
-        <form method="POST" class="flex flex-col" <% if(showFile) { %>enctype="multipart/form-data"<% } %>>
+        <form method="POST" class="flex flex-col" <% if(showFile) { %>enctype="multipart/form-data" action="?_csrf=<%= csrfToken %>"<% } %>>
+            <input type="hidden" value="<%= csrfToken %>" name="_csrf">
             <div class="card-header">
                 <h3 class="card-header-title"><%- typeof title !== 'undefined' ? title : 'Firma' %></h3>
             </div>
@@ -25,8 +26,8 @@
                 <% if(showFile) { %>
                     <% if(form.image) { %>
                         <div class="flex items-center gap-3">
-                            <img src="/img/uploads/<%- form.image %>" alt="" class="h-16 w-16 rounded-lg object-cover ring-1 ring-slate-200" />
-                            <a href="/admin/company/<%- form.slug %>/delete-img" class="btn-danger btn-sm">Usuń zdjęcie</a>
+                            <img src="/img/uploads/<%= form.image %>" alt="" class="h-16 w-16 rounded-lg object-cover ring-1 ring-slate-200" />
+                            <a href="/company/<%= form.slug %>/delete-img" class="btn-danger btn-sm">Usuń zdjęcie</a>
                         </div>
                     <% } %>
                     <div class="field">

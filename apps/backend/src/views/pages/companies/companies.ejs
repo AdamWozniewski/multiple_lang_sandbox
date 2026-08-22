@@ -3,7 +3,7 @@
         <h1 class="heading-page">Lista firm</h1>
         <div class="flex flex-wrap gap-2">
             <% if(user) { %>
-                <a class="btn-primary" href="/<%= language ;%>/admin/company/add">+ Dodaj nową firmę</a>
+                <a class="btn-primary" href="/<%= language ;%>/company/add">+ Dodaj nową firmę</a>
             <% } %>
             <a class="btn-secondary" href="/csv">Pobierz listę firm</a>
         </div>
@@ -24,7 +24,7 @@
                         <% if(company.image) { %>
                             <div class="h-44 w-full overflow-hidden bg-slate-800">
                                 <img
-                                        src="/img/uploads/<%- company.image %>"
+                                        src="/img/uploads/<%= company.image %>"
                                         alt="<%= company.name %>" class="h-full w-full object-cover" />
                             </div>
                         <% } %>
@@ -37,9 +37,9 @@
                         <div class="flex flex-col gap-2 p-5 pt-0">
                             <a class="btn-secondary btn-block" href="/company/<%= company.slug %>">Podgląd</a>
                             <% if(user && (company.user && company.user.id === user.id)) { %>
-                                <a class="btn-secondary btn-block" href="/<%= language ;%>/admin/company/<%= company.slug %>/edit">Edytuj</a>
+                                <a class="btn-secondary btn-block" href="/<%= language ;%>/company/<%= company.slug %>/edit">Edytuj</a>
                                 <a class="btn-danger btn-block"
-                                   href="/<%= language ;%>/admin/company/<%= company.slug %>/delete"
+                                   href="/<%= language ;%>/company/<%= company.slug %>/delete"
                                    onclick="return confirm('Czy jesteś pewien?')">Usuń</a>
                             <% } %>
                         </div>

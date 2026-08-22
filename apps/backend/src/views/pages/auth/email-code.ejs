@@ -1,6 +1,7 @@
 <div class="auth-shell">
     <div class="w-full max-w-sm card">
         <form method="POST" class="flex flex-col">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
             <div class="card-header">
                 <h3 class="card-header-title">Kod weryfikacyjny</h3>
             </div>

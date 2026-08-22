@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import type { Filters } from "@customTypes/filters";
-import { Company, type ICompany } from '@mongo/models/company';
+import { Company, type ICompany } from "@mongo/models/company";
 import { BaseService } from "./Base-Service";
 
 export class CompanyService extends BaseService {
@@ -11,9 +11,7 @@ export class CompanyService extends BaseService {
 
   async findCompanyBySlug(slug: string) {
     try {
-      return await Company.findOne({ slug })
-        .populate({path: 'user'})
-        .exec();
+      return await Company.findOne({ slug }).populate({ path: "user" }).exec();
     } catch (error: any) {
       throw new Error(error);
     }
@@ -72,7 +70,7 @@ export class CompanyService extends BaseService {
     const where: any = {};
 
     if (query) {
-      where.name = { $regex: query, $options: "i" };
+      where.name = { $text: { $search: query }, $options: "i" };
     }
 
     if (countMin || countMax) {

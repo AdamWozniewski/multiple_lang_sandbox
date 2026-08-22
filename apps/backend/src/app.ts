@@ -21,20 +21,26 @@ import { rateLimiterMiddleware } from "./middleware/rate-limiter-middleware";
 import { userMiddleware } from "./middleware/user-middleware";
 import { globalMiddleware } from "./middleware/view-variables";
 import "./db/mongo/database.ts";
+import * as console from "node:console";
 import { connectMongoDB } from "@mongo/database";
 import { DEVELOPMENT, PRODUCTION } from "@static/env";
 import { __dirname } from "@utility/dirname";
 import i18next from "./i18n";
+import {
+  csrfTokenMiddleware,
+  doubleCsrfProtection,
+  handleCsrfErrors,
+} from "./middleware/csrf-middleware.js";
 import { languageMiddleware } from "./middleware/language-middleware";
 import { sentryMiddleware } from "./middleware/sentry-middleware";
 import { routerDev } from "./routes/dev/dev";
 import { setupGraphQL } from "./routes/graphql/graphql";
 import { routerWeb } from "./routes/web/web";
-// import { csrfTokenMiddleware, doubleCsrfProtection, handleCsrfErrors } from './middleware/csrf-middleware.js';
 import passport from "./utility/passport";
-import * as console from 'node:console';
 
-console.log(process.env.NEST_PORT)
+// import * as mongoSanitize from 'express-mongo-sanitize';
+
+console.log(process.env.NEST_PORT);
 
 export const startApp = async () => {
   try {
@@ -50,8 +56,8 @@ export const startApp = async () => {
   app.use(cookieParser());
   app.use(cors());
 
-  console.log('==========')
-  console.log(config.db)
+  console.log("==========");
+  console.log(config.db);
   app.use(
     expressSession({
       secret: config.secretSession,
@@ -78,6 +84,7 @@ export const startApp = async () => {
   app.use(expressEjsLayouts);
   app.set("views", path.join(__dirname(import.meta.url), "/views"));
   app.set("layout", "layouts/main");
+  app.set("query parser", "simple");
 
   app.use(
     express.static("./public", {
@@ -96,9 +103,9 @@ export const startApp = async () => {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // app.use(csrfTokenMiddleware);
-  // app.use(doubleCsrfProtection);
-  // app.use(handleCsrfErrors);
+  app.use(csrfTokenMiddleware);
+  app.use(doubleCsrfProtection);
+  app.use(handleCsrfErrors);
 
   if (PROD) {
     app.enable("view cache");

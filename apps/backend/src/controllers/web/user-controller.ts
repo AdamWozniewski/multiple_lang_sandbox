@@ -117,7 +117,7 @@ export class UserController {
       const dto = new LoginRequestDTO(req.body);
       dto.validate();
       const user = await this.userService.findUserByEmail(dto.email);
-      const userComparedPassword = user?.comparePassword(dto.password);
+      const userComparedPassword = await user?.comparePassword(dto.password);
 
       if (!user || !userComparedPassword) {
         throw new Error("Błędny login lub hasło");
