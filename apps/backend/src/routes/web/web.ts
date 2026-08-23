@@ -16,10 +16,11 @@ const user = new UserController();
 
 routerWeb.get("/", page.home);
 routerWeb.get("/companies", company.showCompanies);
-routerWeb.get("/company/:slug", company.showCompany);
 
 routerWeb.get("/company/add", isAuthMiddleware, company.showCreateCompany);
 routerWeb.post("/company/add", isAuthMiddleware, company.createCompany);
+
+routerWeb.get("/company/:slug", company.showCompany);
 
 routerWeb.get("/company/:name/edit", isAuthMiddleware, company.showEditCompany);
 routerWeb.post(

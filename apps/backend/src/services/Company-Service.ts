@@ -69,9 +69,7 @@ export class CompanyService extends BaseService {
     } = filters;
     const where: any = {};
 
-    if (query) {
-      where.name = { $text: { $search: query }, $options: "i" };
-    }
+    if (query) where.$text = { $search: query };
 
     if (countMin || countMax) {
       where.employeesCount = {};

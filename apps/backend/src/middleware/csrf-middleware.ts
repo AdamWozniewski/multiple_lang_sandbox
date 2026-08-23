@@ -7,7 +7,7 @@ const PROD = config.env === PRODUCTION;
 
 const { invalidCsrfTokenError, generateToken, doubleCsrfProtection } =
   doubleCsrf({
-    getSecret: () => config.csrfToken,
+    getSecret: () => config.csrfSecret,
     getSessionIdentifier: (req) => req.session.id,
     cookieName: "___Host-psifi.x-csrf-token",
     cookieOptions: {
@@ -27,8 +27,7 @@ const csrfTokenMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  res.locals.csrfToken = generateToken(req, res, false, false);
-  console.log("Generated CSRF Token:", res.locals.csrfToken);
+  res.locals.csrfSecret = generateToken(req, res, false, false);
   next();
 };
 
@@ -38,16 +37,9 @@ const handleCsrfErrors = (
   res: Response,
   next: NextFunction,
 ): void => {
-    if (
-        req.path.startsWith("/api")
-    ) {
-        return next();
-    }
-  if (err === invalidCsrfTokenError) {
-    res.status(403).json({ message: "Invalid CSRF token" });
-  } else {
-    next(err);
-  }
+    if (req.path.startsWith("/api")) return next();
+  if (err === invalidCsrfTokenError) res.status(403).json({ message: "Invalid CSRF token" });
+  else next(err);
 };
 
 export { csrfTokenMiddleware, doubleCsrfProtection, handleCsrfErrors };

@@ -35,6 +35,7 @@ const companySchema = new Schema<ICompany>({
   },
   image: String,
 });
+companySchema.index({name: 'text'});
 export const Company: Model<ICompany> = model<ICompany>(
   "Company",
   companySchema,

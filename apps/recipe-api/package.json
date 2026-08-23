@@ -47,6 +47,7 @@
     "typeorm": "^1.0.0"
   },
   "devDependencies": {
+    "@repo/config-typescript": "workspace:*",
     "@faker-js/faker": "^10.4.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",

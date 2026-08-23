@@ -1,6 +1,12 @@
 import * as process from "node:process";
 import { DEVELOPMENT } from "@static/env";
 
+const requireEnv = (name: string): string => {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing vars: ${name}`);
+  return value;
+};
+
 export const config = {
   // ENV
   env: process.env.NODE_ENV || DEVELOPMENT,
@@ -20,14 +26,14 @@ export const config = {
     `postgresql://${process.env.POSTGRES_DB_USER}:${process.env.POSTGRES_DB_PASSWORD}@${process.env.POSTGRES_DB_HOST}:${process.env.POSTGRES_DB_PORT}/${process.env.POSTGRES_DB_NAME}`,
 
   // SESSION
-  secretSession: process.env.SESSION_SECRET || "",
+  secretSession: requireEnv("SESSION_SECRET"),
 
   // JWT
-  jwtSecret: process.env.JWT_SECRET || "",
-  jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || "",
+  jwtSecret: requireEnv("JWT_SECRET"),
+  jwtRefreshSecret: requireEnv("JWT_REFRESH_SECRET"),
 
   // CSRF
-  csrfToken: process.env.CSRF_TOKEN || "",
+  csrfSecret: requireEnv("CSRF_SECRET"),
 
   // Email
   emailSender: process.env.EMAIL_SENDER || "Adam W <xx@xx.xx>",

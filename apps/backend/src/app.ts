@@ -50,7 +50,12 @@ export const startApp = async () => {
   app.use(bodyParser.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
-  app.use(cors());
+  app.use(cors({
+    origin: `${config.appUrl}${config.port}`,
+    credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    allowedHeaders: ['Content-Type', 'Authorization']
+  }));
   app.use(
     expressSession({
       secret: config.secretSession,
@@ -100,8 +105,7 @@ export const startApp = async () => {
   app.use(doubleCsrfProtection);
   app.use(handleCsrfErrors);
 
-  if (PROD) {
-    app.enable("view cache");
+  if (PROD) app.enable("view cache");
     app.use(
       helmet({
         contentSecurityPolicy: {
@@ -117,9 +121,7 @@ export const startApp = async () => {
         crossOriginEmbedderPolicy: false,
       }),
     );
-  }
 
-  Sentry.setupExpressErrorHandler(app);
   app.use(rateLimiterMiddleware);
   app.use("/admin", isAuthMiddleware);
   app.use("/api", routerApi);

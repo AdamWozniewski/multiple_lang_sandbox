@@ -23,7 +23,6 @@ export class CompaniesControllerApi {
       await newCompany.save();
       res.status(201).json(newCompany);
     } catch (e) {
-      console.log(e);
       if (e instanceof mongoose.Error.ValidationError) {
         res.status(422).json({ error: e.errors });
       } else {
@@ -60,7 +59,6 @@ export class CompaniesControllerApi {
       await company?.save();
       res.status(200).json(company);
     } catch (e) {
-      console.log(e);
       if (e instanceof mongoose.Error.ValidationError) {
         res.status(422).json({ error: e.errors });
       } else {

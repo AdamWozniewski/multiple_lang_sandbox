@@ -27,7 +27,7 @@ routerApi.post("/login", user.loginUser);
 routerApi.post("/logout", user.logoutUser);
 routerApi.post("/refresh", user.refreshToken);
 routerApi.get("/csrf-token", (_, res) => {
-  res.json({ csrfToken: res.locals.csrfToken });
+  res.json({ csrfSecret: res.locals.csrfSecret });
 });
 
 export { routerApi };
