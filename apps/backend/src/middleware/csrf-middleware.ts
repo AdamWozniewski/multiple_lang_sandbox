@@ -19,7 +19,7 @@ const { invalidCsrfTokenError, generateToken, doubleCsrfProtection } =
     size: 32,
     ignoredMethods: ["GET", "HEAD", "OPTIONS"],
     getTokenFromRequest: (req) => req.body?._csrf ?? req.query?._csrf,
-    skipCsrfProtection: undefined,
+    skipCsrfProtection: (req) => req.path.startsWith("/dev"),
   });
 
 const csrfTokenMiddleware = (

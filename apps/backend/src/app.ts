@@ -101,26 +101,33 @@ export const startApp = async () => {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  app.use(csrfTokenMiddleware);
-  app.use(doubleCsrfProtection);
-  app.use(handleCsrfErrors);
+  // app.use(csrfTokenMiddleware);
+  // app.use(doubleCsrfProtection);
+  // app.use(handleCsrfErrors);
 
   if (PROD) app.enable("view cache");
-    app.use(
+
+  app.use(
       helmet({
-        contentSecurityPolicy: {
-          useDefaults: true,
-          directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "cdn.jsdelivr.net"],
-            styleSrc: ["'self'", "cdn.jsdelivr.net", "'unsafe-inline'"],
-            imgSrc: ["'self'", "data:"],
-            connectSrc: ["'self'"],
+        ...(PROD ? {
+          contentSecurityPolicy: {
+            useDefaults: true,
+            directives: {
+              defaultSrc: ["'self'"],
+              scriptSrc: ["'self'", "cdn.jsdelivr.net"],
+              styleSrc: ["'self'", "cdn.jsdelivr.net", "'unsafe-inline'"],
+              imgSrc: ["'self'", "data:"],
+              connectSrc: ["'self'"],
+            },
           },
-        },
+
+        } : {
+          contentSecurityPolicy: false,
+          hsts: false,
+        }),
         crossOriginEmbedderPolicy: false,
-      }),
-    );
+      })
+  )
 
   app.use(rateLimiterMiddleware);
   app.use("/admin", isAuthMiddleware);

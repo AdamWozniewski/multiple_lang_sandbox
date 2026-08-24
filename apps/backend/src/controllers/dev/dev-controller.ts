@@ -1,5 +1,6 @@
 import { mailer } from "@utility/mailing";
-import type { Request, Response } from "express";
+import type {NextFunction, Request, Response} from "express";
+import {expressBullMQ} from "../../routes/events/bull-mq";
 
 export class DevController {
   test__emailPage(_req: Request, res: Response) {
@@ -10,5 +11,9 @@ export class DevController {
     const { email, text } = req.body;
     await mailer(email, "Test", text, "");
     res.render("pages/subscribe-thanks");
+  }
+
+  bullMqConfig(req: Request, res: Response, next: NextFunction) {
+    return expressBullMQ(req, res, next);
   }
 }

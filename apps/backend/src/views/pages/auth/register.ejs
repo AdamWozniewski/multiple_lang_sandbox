@@ -25,10 +25,10 @@
                 </div>
                 <div class="field">
                     <label class="field-label">Powtórz hasło</label>
-                    <input value="<%= form?.password %>" type="password" name="repeat-password" required
+                    <input value="<%= form?.confirmPassword %>" type="password" name="confirmPassword" required
                            class="field-input" placeholder="Powtórz hasło" />
-                    <% if (errors?.password) { %>
-                        <div class="field-error"><%= errors?.password %></div>
+                    <% if (errors?.confirmPassword) { %>
+                        <div class="field-error"><%= errors?.confirmPassword %></div>
                     <% } %>
                 </div>
                 <% if (errors) { %>

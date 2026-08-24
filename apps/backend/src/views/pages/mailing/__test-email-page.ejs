@@ -1,5 +1,5 @@
 <form action="/dev/test-mailing" method="POST">
-    <%- include('../../partials/csrf', { csrfSecret }) %>
+    <%- include('../partials/csrf', { csrfSecret }) %>
     <input type="text" name="email" placeholder="email">
     <textArea type="text" name="text" placeholder="text"></textArea>
     <button type="submit">Send</button>

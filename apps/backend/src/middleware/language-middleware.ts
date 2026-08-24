@@ -8,11 +8,11 @@ export const languageMiddleware = (
   const supportedLanguages = ["pl", "eng"];
   const urlParts = req.url.split("/").filter(Boolean);
   if (
+    req.path.startsWith("/api") ||
     req.path.startsWith("/graphql") ||
     req.path.startsWith("/auth") ||
     req.path.startsWith("/webauthn") ||
     req.path.startsWith("/dev") ||
-    // req.path.startsWith("/dev/health") ||
     req.path.startsWith("/mobile")
   ) {
     return next();

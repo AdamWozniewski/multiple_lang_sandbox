@@ -22,3 +22,6 @@ start-mongo:
 	$(MAKE) start-common
 	docker compose start mongo mongo-express
 	cd apps/backend && bun run dev:server
+
+stop:
+	docker compose stop

@@ -37,10 +37,10 @@
 
 <%- contentFor('sidebar')%>
 <div class="flex flex-col gap-4">
-    <h2 class="heading-section">SideBar</h2>
+    <h2 class="heading-section">DEV-ROUTES</h2>
     <p class="field-help">Przykład użycia <code class="rounded bg-slate-800 px-1 py-0.5 font-mono text-[11px] text-slate-300">contentFor('sidebar')</code> z <code class="rounded bg-slate-800 px-1 py-0.5 font-mono text-[11px] text-slate-300">layouts/main.ejs</code>.</p>
     <nav class="flex flex-col gap-1">
-        <a href="/<%= language %>/" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">Dashboard</a>
+        <a href="/dev/bull-mq" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">BULL-MQ</a>
         <a href="/<%= language %>/companies" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">Firmy</a>
         <% if(user) { %>
             <a href="/<%= language %>/admin/profile" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white">Profil</a>
