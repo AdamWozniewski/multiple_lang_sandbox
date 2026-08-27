@@ -16,7 +16,7 @@ start-common:
 
 start-sql:
 	docker compose start postgres adminer
-	cd apps/backend && bun run dev:server
+	cd apps/recipe-api && bun run start:dev
 
 start-mongo:
 	$(MAKE) start-common
@@ -24,4 +24,4 @@ start-mongo:
 	cd apps/backend && bun run dev:server
 
 stop:
-	docker compose stop
+	docker compose stopimport { DataSource } from 'typeorm';

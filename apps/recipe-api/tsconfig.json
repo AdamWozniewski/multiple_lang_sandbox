@@ -1,5 +1,5 @@
 {
-  "extends": "@repo/config-typescript/express.json",
+
   "compilerOptions": {
     "module": "nodenext",
     "moduleResolution": "nodenext",
@@ -21,6 +21,9 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@utility/*": ["./src/utility/*"],
+    }
+  },
 }

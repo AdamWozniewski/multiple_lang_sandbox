@@ -10,10 +10,9 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import type { CompaniesService } from './companies.service';
-import type { Company } from './company.entity';
-import type { CreateCompaniesDto } from './dto/create-companies.dto';
-import type { UpdateCompaniesDto } from './dto/update-companies.dto';
+import { CompaniesService } from './companies.service';
+import {CreateCompaniesDto} from "./dto/create-companies.dto";
+import {UpdateCompaniesDto} from "./dto/update-companies.dto";
 
 @Controller('companies')
 export class CompaniesController {
@@ -32,17 +31,17 @@ export class CompaniesController {
   }
 
   @Post()
-  createCompany(@Body() company: CreateCompaniesDto) {
-    this.companyService.create(company);
+  async createCompany(@Body() company: CreateCompaniesDto) {
+    await this.companyService.create(company);
   }
 
   @Put()
-  updateOne(@Body() company: UpdateCompaniesDto) {
-    this.companyService.update(company);
+  async updateOne(@Body() company: UpdateCompaniesDto) {
+    await this.companyService.update(company);
   }
 
   @Delete(':companyId')
-  deleteCompany(@Param('companyId') companyId: number) {
-    this.companyService.remove(companyId);
+  async deleteCompany(@Param('companyId') companyId: number) {
+    await this.companyService.remove(companyId);
   }
 }

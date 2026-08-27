@@ -13,6 +13,7 @@ export interface IUser extends IBaseModel {
   email: string;
   password: string;
   avatar?: string;
+  bgc?: string;
   firstName?: string;
   lastName?: string;
   apiToken?: string;
@@ -49,6 +50,7 @@ const userSchema = new Schema<IUser>(
       minlength: [4, "hasło powinno posiadać przynajmniej 4 znaki"],
     },
     avatar: String,
+    bgc: String,
     firstName: String,
     lastName: String,
     apiToken: String,

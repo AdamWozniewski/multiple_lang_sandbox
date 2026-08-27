@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { type DataSource, Repository } from "typeorm";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 
-import { IngredientEntity } from "./ingredient.entity";
+import { IngredientEntity } from './ingredient.entity';
 
 @Injectable()
 export class IngredientsRepository extends Repository<IngredientEntity> {
@@ -11,10 +11,10 @@ export class IngredientsRepository extends Repository<IngredientEntity> {
   }
 
   async findById(id: number): Promise<IngredientEntity | null> {
-    return this.createQueryBuilder("ingredients")
-      .innerJoinAndSelect("ingredients.company", "company")
-      .innerJoinAndSelect("ingredients.product", "product")
-      .where("ingredients.id = :id", { id })
+    return this.createQueryBuilder('ingredients')
+      .innerJoinAndSelect('ingredients.company', 'company')
+      .innerJoinAndSelect('ingredients.product', 'product')
+      .where('ingredients.id = :id', { id })
       .getOne();
   }
 }

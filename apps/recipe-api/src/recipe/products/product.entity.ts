@@ -1,35 +1,29 @@
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from "typeorm";
-import { Company } from "../companies/company.entity";
-import { IngredientEntity } from "../ingredients/ingredient.entity";
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {IngredientEntity} from "../ingredients/ingredient.entity";
 
 @Entity()
 export class Products extends BaseEntity {
+
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
   })
   name: string;
 
   @Column({
-    type: "varchar",
+    type: 'varchar',
   })
-  unit: "kg" | "g" | "tsp" | "sp" | "pinch" | "ml" | "l" | "item";
+  unit: 'kg' | 'g' | 'tsp' | 'sp' | 'pinch' | 'ml' | 'l' | 'item';
+
+
 
   @OneToMany(
-    () => IngredientEntity,
-    (ingredients: IngredientEntity) => ingredients.product,
-    {
-      onDelete: "CASCADE",
-    },
+    () => IngredientEntity, (ingredients: IngredientEntity) => ingredients.product, {
+      onDelete: 'CASCADE'
+    }
   )
-  ingredients: IngredientEntity[];
+  ingredients: IngredientEntity[]
+
 }

@@ -7,5 +7,5 @@ export interface IUserService {
 
   findUserByEmail(email: string): Promise<IUser | null>;
 
-  updateUserProfile(id: string, data: Partial<IUser>): Promise<IUser | null>;
+  updateUserProfile(id: string, data: Partial<IUser>, newAvatar?: string, newBgc?: string): Promise<IUser | null>;
 }

@@ -11,13 +11,13 @@ import { RecipeModule } from "./recipe/recipe.module";
 @Module({
   imports: [
     RecipeModule,
-    TypeOrmModule.forRootAsync(databaseConfig),
     ConfigModule.forRoot({
-      ignoreEnvFile: true,
+      // ignoreEnvFile: true,
       isGlobal: true,
       validationSchema: envValidationConfig,
-      // envFilePath: [`.env.${process.env.NODE_ENV}`],
+      envFilePath: [`../../.env`], // .${process.env.NODE_ENV}
     }),
+    TypeOrmModule.forRootAsync(databaseConfig),
     AuthModule,
   ],
   controllers: [AppController],

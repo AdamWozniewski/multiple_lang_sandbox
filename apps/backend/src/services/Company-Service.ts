@@ -25,9 +25,7 @@ export class CompanyService extends BaseService {
     const company = await Company.findOne({ slug });
     if (!company) throw new Error("Company not found");
 
-    if (newImage && company.image) {
-      await fs.unlink(`public/img/uploads/${company.image}`);
-    }
+    if (newImage && company.image) await fs.unlink(`public/img/uploads/${company.image}`);
     Object.assign(company, data);
     return await company.save();
   }

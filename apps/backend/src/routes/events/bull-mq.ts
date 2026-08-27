@@ -10,7 +10,6 @@ export const expressBullMQ = bullstudio({
         }),
     ],
     protection: {
-        // type: "session",
         type: "basic",
         username: process.env.BULLSTUDIO_USERNAME ?? "operator",
         password: process.env.BULLSTUDIO_PASSWORD ?? "change-me",

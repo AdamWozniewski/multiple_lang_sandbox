@@ -10,7 +10,7 @@ import {
   POSTGRES_DB_PASSWORD,
   POSTGRES_DB_PORT,
   POSTGRES_DB_USERNAME,
-} from '../utility/statics';
+} from '@utility/statics';
 
 export class TypeOrmConfig {
   static getOrmConfig(configService: ConfigService): TypeOrmModuleOptions {
@@ -30,7 +30,7 @@ export class TypeOrmConfig {
 
 export const databaseConfig: TypeOrmModuleAsyncOptions = {
   imports: [ConfigModule],
+  inject: [ConfigService],
   useFactory: async (configService: ConfigService) =>
     TypeOrmConfig.getOrmConfig(configService),
-  inject: [ConfigService],
 };

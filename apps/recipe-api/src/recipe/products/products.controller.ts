@@ -8,10 +8,9 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { CompaniesService } from '../companies/companies.service';
-import type { CreateProductsDto } from './dto/create-products.dto';
-import type { UpdateProductsDto } from './dto/update-products.dto';
-import type { ProductsService } from './products.service';
+import {ProductsService} from "./products.service";
+import {CreateProductsDto} from "./dto/create-products.dto";
+import {UpdateProductsDto} from "./dto/update-products.dto";
 
 @Controller('products')
 export class ProductsController {
@@ -25,18 +24,18 @@ export class ProductsController {
   }
 
   @Post()
-  createProduct(@Body() product: CreateProductsDto) {
+  async createProduct(@Body() product: CreateProductsDto) {
     // const company = this.companyService.getOneById(product.dishId);
-    this.productService.createProduct(product);
+    await this.productService.createProduct(product);
   }
 
   @Put()
-  updateOne(@Body() product: UpdateProductsDto) {
-    this.productService.update(product);
+  async updateOne(@Body() product: UpdateProductsDto) {
+    await this.productService.update(product);
   }
 
   @Delete(':productId')
-  deleteProduct(@Param('productId', ParseIntPipe) productId: number) {
-    this.productService.remove(productId);
+  async deleteProduct(@Param('productId', ParseIntPipe) productId: number) {
+    await this.productService.remove(productId);
   }
 }

@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
-import {JWT_REFRESH_SECRET_TOKEN, REFRESH_TOKEN} from '../../utility/statics';
+import {JWT_REFRESH_SECRET, REFRESH_TOKEN} from '@utility/statics';
 
 @Injectable()
 export class RefreshJwtStrategy extends PassportStrategy(
@@ -22,7 +22,7 @@ export class RefreshJwtStrategy extends PassportStrategy(
       ]),
 
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>(JWT_REFRESH_SECRET_TOKEN)!,
+      secretOrKey: configService.get<string>(JWT_REFRESH_SECRET)!,
     });
   }
 

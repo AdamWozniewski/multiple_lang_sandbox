@@ -1,10 +1,9 @@
-import { OmitType } from "@nestjs/mapped-types";
-import { IsNumber, IsOptional, IsString } from "class-validator";
-import { UpdateCompaniesDto } from "./update-companies.dto";
+import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { OmitType } from '@nestjs/mapped-types';
+import { UpdateCompaniesDto } from './update-companies.dto';
 
-export class CreateCompaniesDto extends OmitType(UpdateCompaniesDto, [
-  "id",
-] as const) {
+export class CreateCompaniesDto extends OmitType(UpdateCompaniesDto, ['id'] as const) {
+
   @IsString()
   name: string;
 

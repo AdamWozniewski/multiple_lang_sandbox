@@ -101,9 +101,9 @@ export const startApp = async () => {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // app.use(csrfTokenMiddleware);
-  // app.use(doubleCsrfProtection);
-  // app.use(handleCsrfErrors);
+  app.use(csrfTokenMiddleware);
+  app.use(doubleCsrfProtection);
+  app.use(handleCsrfErrors);
 
   if (PROD) app.enable("view cache");
 

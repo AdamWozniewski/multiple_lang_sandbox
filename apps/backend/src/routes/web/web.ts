@@ -1,4 +1,3 @@
-import { upload } from "@utility/uploader";
 import { Router } from "express";
 import { CompaniesController } from "../../controllers/web/company-controller";
 import { PageController } from "../../controllers/web/page-controller";
@@ -23,12 +22,7 @@ routerWeb.post("/company/add", isAuthMiddleware, company.createCompany);
 routerWeb.get("/company/:slug", company.showCompany);
 
 routerWeb.get("/company/:name/edit", isAuthMiddleware, company.showEditCompany);
-routerWeb.post(
-  "/company/:name/edit",
-  isAuthMiddleware,
-  upload.single("image"),
-  company.editCompany,
-);
+routerWeb.post("/company/:name/edit", isAuthMiddleware, company.editCompany);
 routerWeb.get("/company/:name/delete", isAuthMiddleware, company.deleteCompany);
 routerWeb.get("/company/:name/delete-img", isAuthMiddleware, company.deleteImg);
 

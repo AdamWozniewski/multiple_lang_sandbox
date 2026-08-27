@@ -1,7 +1,10 @@
 // import { userTable } from "@sql/models/index.js";
 // import { db } from "@sql/db.js";
-
+// import { userTable } from "@sql/models/index.js";
+// import { db } from "@sql/db.js";
+import type {ObjectId} from 'mongoose';
 import { randomBytes } from "node:crypto";
+import fs from "node:fs/promises";
 import { config } from "@config";
 import type { IUserService } from "@interface/user-interface";
 import type { IUser } from "@mongo/models/user.js";
@@ -53,12 +56,21 @@ export class UserService extends BaseService implements IUserService {
   async updateUserProfile(
     id: string,
     data: Partial<IUser>,
+    newAvatar?: string,
+    newBgc?: string
   ): Promise<IUser | null> {
-    const user = await User.findById(id);
-    if (!user) throw new Error("User not found");
-    Object.assign(user, data);
-    await user.save();
-    return user;
+    const user = await User.findOne({id});
+
+    if (newAvatar && user!.avatar) await fs.unlink(`public/img/uploads/${user!.avatar}`);
+    if (newBgc && user!.bgc) await fs.unlink(`public/img/uploads/${user!.bgc}`);
+    const result = await User.findOneAndUpdate(
+      { _id: id },
+      { $set: data },
+      { new: true },
+    );
+    if (!result) throw new Error("User not found");
+
+    return result;
   }
 
   async activateUser(id: string, token: string): Promise<IUser> {

@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
-import { Images } from '../../gallery/images/images.entity';
+import {Company} from "../../recipe/companies/company.entity";
 
 @Entity()
 export class User extends BaseEntity {
@@ -21,17 +21,16 @@ export class User extends BaseEntity {
 
   @Exclude()
   @Column({
-    type: 'varchar',
+    type: 'varchar'
   })
   password: string;
 
-  @Exclude()
+  @OneToMany(() => Company, (company: Company) => company.user)
+  companies: Company[]
+
   @Column({
     type: 'varchar',
-    default: null,
+    default: null
   })
   refreshToken: string;
-
-  @OneToMany(() => Images, (image: Images) => image.user)
-  images: Images[];
 }

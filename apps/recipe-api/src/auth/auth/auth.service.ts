@@ -15,9 +15,9 @@ import {
   DOMAIN,
   JWT_EXPIRATION_REFRESH_SECRET,
   JWT_EXPIRATION_SECRET,
-  JWT_REFRESH_SECRET_TOKEN,
+  JWT_REFRESH_SECRET,
   REFRESH_TOKEN,
-} from '../../utility/statics';
+} from '@utility/statics';
 import { CookieOptions } from 'express';
 
 @Injectable()
@@ -58,7 +58,7 @@ export class AuthService {
     const token = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(payload, {
       expiresIn: this.configService.get<number>(JWT_EXPIRATION_REFRESH_SECRET),
-      secret: `${this.configService.get<string>(JWT_REFRESH_SECRET_TOKEN)}`,
+      secret: `${this.configService.get<string>(JWT_REFRESH_SECRET)}`,
     });
     return [token, refreshToken];
   }

@@ -1,8 +1,10 @@
-import { Company } from "@mongo/models/company.js";
+import {Company, type ICompany} from "@mongo/models/company.js";
 import { CompanyService } from "@services/Company-Service.js";
 import { logger } from "@utility/logger.js";
+import {companyImageUpload, runImageMiddleware} from "@utility/uploader.js";
 import type { Request, Response } from "express";
 import { Parser } from "json2csv";
+import multer from "multer";
 import type { Filters } from '@customTypes/filters';
 
 const companiesControllerLogger = logger("CompaniesController");
@@ -100,15 +102,17 @@ export class CompaniesController {
 
   editCompany = async (req: Request, res: Response) => {
     const { name } = req.params;
-    const { slug, employeesCount } = req.body;
-
-    const updateData: any = { name, slug, employeesCount };
-
-    if (req.file?.filename) {
-      updateData.image = req.file.filename;
-    }
 
     try {
+      await runImageMiddleware(companyImageUpload, req, res);
+
+      const { slug, employeesCount } = req.body;
+      const updateData: Partial<any> = { name, slug, employeesCount };
+
+      if (req.file?.filename) {
+        updateData.image = req.file.filename;
+      }
+
       await this.companyService.updateCompany(
         slug,
         updateData,
@@ -116,8 +120,15 @@ export class CompaniesController {
       );
       res.redirect(`/${req.language}/company/${name}`);
     } catch (error: any) {
-      res.render("pages/companies/edit-company", {
-        errors: error.errors,
+      const message =
+        error instanceof multer.MulterError
+          ? error.code === "LIMIT_FILE_SIZE"
+            ? "file > 5mb"
+            : "error"
+          : error.message;
+
+      res.status(400).render("pages/companies/edit-company", {
+        errors: error.errors ?? { message },
         form: req.body,
       });
     }

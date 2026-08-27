@@ -6,6 +6,8 @@ import type { IRoleService } from "@interface/role-interface";
 import { Link } from "@mongo/models/link";
 import type { IUser } from "@mongo/models/user";
 import { LinkService } from "@services/Link-Service";
+import {profileUpload, runImageMiddleware} from "@utility/uploader";
+import multer from "multer";
 import { MailerService } from "@services/Mailer-Service";
 import { RoleService } from "@services/Role-Services";
 import { UserService } from "@services/User-Service";
@@ -501,18 +503,26 @@ export class UserController {
   };
 
   showProfile(req: Request, res: Response) {
+    console.log(req.session.user)
     res.status(200).render("pages/auth/profile", { form: req.session.user });
   }
 
   saveProfile = async (req: Request, res: Response): Promise<void> => {
     try {
-      const user = await this.userService.updateUserProfile(
+      await runImageMiddleware(profileUpload, req, res);
+
+      const { password, ...rest } = req.body;
+      const payload: Partial<IUser> = {
+        ...rest,
+        ...(password && {password: await hashPassword(password)}),
+        twoFactorAuthentication: req.body.twoFactorAuthentication === "on",
+        twoFactorAuthenticationType: req.body.twoFactorAuthenticationType,
+      };
+      const user: IUser | null = await this.userService.updateUserProfile(
         req.session.user.id,
-        {
-          ...req.body,
-          twoFactorAuthentication: req.body.twoFactorAuthentication === "on",
-          twoFactorAuthenticationType: req.body.twoFactorAuthenticationType,
-        },
+        payload,
+        req.file?.avatar,
+        req.file?.bgc,
       );
       req.session.user = {
         id: user?.id,
@@ -533,18 +543,25 @@ export class UserController {
       });
       res.render("pages/auth/profile", { form: req.session.user });
     } catch (error: any) {
+      const message =
+        error instanceof multer.MulterError
+          ? error.code === "LIMIT_FILE_SIZE"
+            ? "Plik jest za duży (maksymalnie 5 MB)"
+            : "Błąd podczas przesyłania pliku"
+          : error.message;
+
       userControllerLogger.error("Update Profile failed", {
         metadata: {
           ip: req.ip,
-          message: error.message,
-          email: req.session.user.email,
+          message,
+          email: req.session.user?.email,
           controller,
           event: EventLogin.UPDATE_PROFILE,
         },
       });
-      res.render("pages/auth/profile", {
-        errors: error.errors,
-        form: req.body,
+      res.status(400).render("pages/auth/profile", {
+        errors: error.errors ?? { message },
+        form: req.session.user,
       });
     }
   };

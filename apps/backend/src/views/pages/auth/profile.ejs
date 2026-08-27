@@ -1,5 +1,15 @@
 <div class="auth-shell">
     <div class="w-full max-w-md card">
+        <% if(form.avatar) { %>
+            <div class="h-56 w-full overflow-hidden bg-slate-800">
+                <img src="/img/uploads/<%= form.avatar %>" alt="<%= form.avatar %>" class="h-full w-full object-cover" />
+            </div>
+        <% } %>
+            <% if(form.bgc) { %>
+                <div class="h-56 w-full overflow-hidden bg-slate-800">
+                    <img src="/img/uploads/<%= form.bgc %>" alt="<%= form.bgc %>" class="h-full w-full object-cover" />
+                </div>
+            <% } %>
         <form method="POST" class="flex flex-col">
             <%- include('../partials/csrf', { csrfSecret }) %>
             <div class="card-header">
@@ -55,6 +65,28 @@
                             name="lastName"
                             class="field-input"
                             placeholder="Nazwisko"
+                    />
+                </div>
+
+                <div class="field">
+                    <label class="field-label">Avatar</label>
+                    <input
+                            value="<%= form?.avatar %>"
+                            type="file"
+                            name="avatar"
+                            class="field-input"
+                            placeholder="avatar"
+                    />
+                </div>
+
+                <div class="field">
+                    <label class="field-label">Tło</label>
+                    <input
+                            value="<%= form?.bgc %>"
+                            type="file"
+                            name="bgc"
+                            class="field-input"
+                            placeholder="Background"
                     />
                 </div>
 
