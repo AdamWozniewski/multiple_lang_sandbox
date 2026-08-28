@@ -17,8 +17,6 @@ export class Products extends BaseEntity {
   })
   unit: 'kg' | 'g' | 'tsp' | 'sp' | 'pinch' | 'ml' | 'l' | 'item';
 
-
-
   @OneToMany(
     () => IngredientEntity, (ingredients: IngredientEntity) => ingredients.product, {
       onDelete: 'CASCADE'

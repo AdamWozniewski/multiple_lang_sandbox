@@ -18,6 +18,16 @@ export class UserService {
       },
     });
   }
+  async getOneById(id: number): Promise<User | null> {
+    const user = await this.userRepository
+        .createQueryBuilder('user')
+        .leftJoinAndSelect('user.companies', 'company')
+        .select(['user.id', 'user.email', 'company.name', 'company.id'])
+        .where('user.id = :id', {id})
+        .getOne()
+    if (!user) throw new NotFoundException('Nie ma')
+    return user
+  }
   async create(user: Pick<CreateUserDto, 'email' | 'password'>): Promise<User> {
     const entity = this.userRepository.create({
       email: user.email.trim().toLocaleLowerCase(),

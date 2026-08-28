@@ -75,7 +75,9 @@ export class AuthService {
       .cookie(ACCESS_TOKEN, accessToken, {
         ...this.commonCookieOptions,
         maxAge:
-          Number(this.configService.get<string>(JWT_EXPIRATION_SECRET)) * 1000,
+            Number(
+                this.configService.get<string>(JWT_EXPIRATION_SECRET),
+            ) * 1000,
       })
       .cookie(REFRESH_TOKEN, refreshToken, {
         ...this.commonCookieOptions,

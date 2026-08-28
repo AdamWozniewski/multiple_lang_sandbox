@@ -44,6 +44,7 @@
     "pg-error-enum": "^2.0.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "slugify": "^1.6.9",
     "typeorm": "^1.0.0"
   },
   "devDependencies": {

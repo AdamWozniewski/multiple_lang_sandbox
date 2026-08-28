@@ -22,7 +22,7 @@ export class ProductsService {
       }
     });
     if (!product) {
-      throw new HttpException(`Nie ma takiej Company`, 404);
+      throw new HttpException(`Nie ma takiej Ingredients`, 404);
     }
     return product;
   }

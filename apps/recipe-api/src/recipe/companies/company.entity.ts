@@ -2,6 +2,7 @@ import { Products } from '../products/product.entity';
 import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { IngredientEntity } from '../ingredients/ingredient.entity';
 import {User} from "../../auth/user/user.entity";
+import {Optional} from "@nestjs/common";
 
 @Entity()
 export class Company extends BaseEntity {
@@ -16,15 +17,16 @@ export class Company extends BaseEntity {
 
   @Column({
     type: 'varchar',
+    unique: true,
   })
-  slug?: string;
+  slug: string;
 
   @Column({
     type: 'decimal',
   })
   servings: number;
 
-
+@Optional()
   @Column({
     nullable: true,
     type: 'text',

@@ -19,7 +19,7 @@ import { JWT_EXPIRATION_SECRET, JWT_SECRET } from '@utility/statics';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>(JWT_SECRET),
         signOptions: {
-          expiresIn: configService.get<number>(JWT_EXPIRATION_SECRET),
+          expiresIn: Number(configService.get<string>(JWT_EXPIRATION_SECRET)),
         },
       }),
     }),

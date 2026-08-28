@@ -6,6 +6,7 @@ import { AppModule } from "./app.module";
 import { DatabaseExceptionFilter } from "./filters/database.filter";
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { join } from 'path';
+import {ConfigService} from "@nestjs/config";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -15,7 +16,8 @@ async function bootstrap() {
   });
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalFilters(new DatabaseExceptionFilter());
+  const configService = app.get(ConfigService)
+  app.useGlobalFilters(new DatabaseExceptionFilter(configService));
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads/',
   });

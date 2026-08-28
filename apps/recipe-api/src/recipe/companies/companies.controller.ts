@@ -8,11 +8,13 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Put,
+  Put, Req, UseGuards,
 } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import {CreateCompaniesDto} from "./dto/create-companies.dto";
 import {UpdateCompaniesDto} from "./dto/update-companies.dto";
+import {JwtStrategy} from "../../auth/auth/jwt.strategy";
+import {JwtAuthGuard} from "../../auth/auth/jwt.guard";
 
 @Controller('companies')
 export class CompaniesController {
@@ -31,8 +33,9 @@ export class CompaniesController {
   }
 
   @Post()
-  async createCompany(@Body() company: CreateCompaniesDto) {
-    await this.companyService.create(company);
+  @UseGuards(JwtAuthGuard)
+  async createCompany(@Req() req, @Body() company: CreateCompaniesDto) {
+    await this.companyService.create(req.user.id, company);
   }
 
   @Put()

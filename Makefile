@@ -15,6 +15,7 @@ start-common:
 	docker compose start mailhog redis #jenkins gitea
 
 start-sql:
+	$(MAKE) start-common
 	docker compose start postgres adminer
 	cd apps/recipe-api && bun run start:dev
 
@@ -24,4 +25,4 @@ start-mongo:
 	cd apps/backend && bun run dev:server
 
 stop:
-	docker compose stopimport { DataSource } from 'typeorm';
+	docker compose stop

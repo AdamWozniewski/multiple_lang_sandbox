@@ -6,11 +6,12 @@ import {
   Param,
   ParseIntPipe,
   Post,
-  Put,
+  Put, UseGuards,
 } from '@nestjs/common';
 import {ProductsService} from "./products.service";
 import {CreateProductsDto} from "./dto/create-products.dto";
 import {UpdateProductsDto} from "./dto/update-products.dto";
+import {JwtAuthGuard} from "../../auth/auth/jwt.guard";
 
 @Controller('products')
 export class ProductsController {
@@ -24,8 +25,8 @@ export class ProductsController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   async createProduct(@Body() product: CreateProductsDto) {
-    // const company = this.companyService.getOneById(product.dishId);
     await this.productService.createProduct(product);
   }
 

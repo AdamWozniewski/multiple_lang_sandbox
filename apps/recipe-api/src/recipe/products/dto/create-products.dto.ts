@@ -12,7 +12,4 @@ export class CreateProductsDto extends OmitType(UpdateProductsDto, ['id'] as con
 
   @IsNumber()
   amount: number;
-
-  @IsNumber()
-  dishId: number;
 }

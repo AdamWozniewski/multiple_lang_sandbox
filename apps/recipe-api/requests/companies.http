@@ -1,5 +1,5 @@
 ### Create company
-POST http://localhost:3000/companies
+POST {{baseUrl}}/companies
 Content-Type: application/json
 
 {
@@ -9,15 +9,15 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/companies
+GET {{baseUrl}}/companies
 
 ###
 
-GET http://localhost:3000/companies/1
+GET {{baseUrl}}/companies/1
 
 ###
 
-PUT http://localhost:3000/companies
+PUT {{baseUrl}}/companies
 Content-Type: application/json
 
 {
@@ -28,5 +28,5 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/companies/1
+DELETE {{baseUrl}}/companies/1
 Content-Type: application/json

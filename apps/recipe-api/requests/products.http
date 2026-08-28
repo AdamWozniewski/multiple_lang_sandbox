@@ -1,5 +1,5 @@
 ### Create Product
-POST http://localhost:3000/products
+POST {{baseUrl}}/products
 Content-Type: application/json
 
 {
@@ -11,22 +11,21 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/products
+GET {{baseUrl}}/products
 
 ###
 
-PUT http://localhost:3000/products
+PUT {{baseUrl}}/products
 Content-Type: application/json
 
 {
   "id": 1,
   "name": "8===D",
   "unit": "kg",
-  "amount": 1,
-  "dishId": 1
+  "amount": 1
 }
 
 ###
 
-DELETE http://localhost:3000/products/1
+DELETE {{baseUrl}}/products/1
 Content-Type: application/json
