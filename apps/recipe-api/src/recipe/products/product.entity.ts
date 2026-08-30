@@ -24,4 +24,7 @@ export class Products extends BaseEntity {
   )
   ingredients: IngredientEntity[]
 
+  // @Column({ type: 'varchar'})
+  // createdAt: string
+
 }

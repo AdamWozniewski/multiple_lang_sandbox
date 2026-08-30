@@ -2,11 +2,12 @@ import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { Company } from './company.entity';
 import { ProductsService } from '../products/products.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, UpdateResult } from 'typeorm';
+import {Like, Repository, UpdateResult} from 'typeorm';
 import {CreateCompaniesDto} from "./dto/create-companies.dto";
 import {UpdateCompaniesDto} from "./dto/update-companies.dto";
 import {UserService} from "../../auth/user/user.service";
 import slugify from "slugify";
+import {FilterQueryDto} from "../../commons/dto/FilterQueryDto";
 
 @Injectable()
 export class CompaniesService {
@@ -18,12 +19,17 @@ export class CompaniesService {
   }
 
 
-  async getOneById(id: number): Promise<Company> {
+  async getOneById(userId: number, id: number): Promise<Company> {
     const company = await this.companyRepository.findOne({
       where: {
-        id
+        id,
+        isPublic: true,
+        user: {
+          id: userId
+        }
       }, relations: {
-        // products: true
+        user: true,
+        ingredients: true
       }
     });
     if (!company) {
@@ -40,7 +46,10 @@ export class CompaniesService {
           id: userId
         }
       }, relations: {
-        // products: true
+        user: true,
+        ingredients: {
+          product: true
+        }
       }
     });
     if (!company) {
@@ -59,22 +68,43 @@ export class CompaniesService {
     })
   }
 
-  read(): Promise<Company[]> {
-    return Company.find({
-      relations: {
-        // products: true,
+  async read(userId:number, filters: FilterQueryDto<Company>): Promise<{ result: Company[]; total: number}> {
+    const [result, total] =  await this.companyRepository.findAndCount({
+      take: filters.limit,
+      skip: filters.offset,
+      order: {
+        [filters.orderBy || 'id']: filters.order
       },
+      relations: {
+        ingredients: {
+          product: true
+        }
+      },
+      where: [
+        {
+          name: Like(`%${filters.query}%`),
+          isPublic: true
+        },
+        {
+          name: Like(`%${filters.query}%`),
+          user: {
+            id: userId
+          }
+        }
+      ]
     });
-
+    return  {
+      result, total
+    }
   }
 
-  async update(company: UpdateCompaniesDto): Promise<UpdateResult> {
-    await this.getOneById(company.id);
+  async update(userId: number, company: UpdateCompaniesDto): Promise<UpdateResult> {
+    await this.getOneById(userId, company.id);
     return this.companyRepository.update(company.id, company);
   }
 
-  async remove(companyId: number): Promise<Company> {
-    const company = await this.getOneById(companyId);
+  async remove(userId: number, companyId: number): Promise<Company> {
+    const company = await this.getOneById(userId , companyId);
     return this.companyRepository.remove(company);
   }
 

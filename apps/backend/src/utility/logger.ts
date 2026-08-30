@@ -23,7 +23,7 @@ export const logger = (service: string) =>
       new DailyRotateFile({
         filename: path.join(
           __dirname(import.meta.url),
-          "../../logs",
+          "./../logs",
           "application-%DATE%.log",
         ),
         datePattern: "YYYY-MM-DD",
@@ -32,7 +32,7 @@ export const logger = (service: string) =>
       new winston.transports.File({
         filename: path.join(
           __dirname(import.meta.url),
-          "../../logs",
+          "./../logs",
           "errors.log",
         ),
         level: "error",

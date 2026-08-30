@@ -1,10 +1,11 @@
 import { forwardRef, HttpException, Inject, Injectable } from '@nestjs/common';
 import { Products } from './product.entity';
-import { Repository, UpdateResult } from 'typeorm';
+import {Like, Repository, UpdateResult} from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {CompaniesService} from "../companies/companies.service";
 import {CreateProductsDto} from "./dto/create-products.dto";
 import {UpdateProductsDto} from "./dto/update-products.dto";
+import {FilterQueryDto} from "../../commons/dto/FilterQueryDto";
 
 @Injectable()
 export class ProductsService {
@@ -27,8 +28,22 @@ export class ProductsService {
     return product;
   }
 
-  async findAll(): Promise<Products[]> {
-    return this.productRepository.find();
+  async findAll(filters: FilterQueryDto<Products>): Promise<{result: Products[]; total: number}> {
+    const [result, total] = await this.productRepository.findAndCount({
+      take: filters.limit,
+      skip: filters.offset,
+      order: {
+        [filters.orderBy || 'id']: filters.order
+      },
+      where: [
+        {
+          name: Like(`%${filters.query}%`),
+        },
+      ]
+    });
+    return {
+      result, total
+    }
   }
 
   async createProduct(product: CreateProductsDto) {

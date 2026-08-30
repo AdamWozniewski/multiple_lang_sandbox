@@ -16,9 +16,19 @@ export class IngredientsService {
   ) {
   }
 
-  async findOne(id: number): Promise<IngredientEntity> {
-    const ingredient = await this.ingredientRepository.findById(id);
-    if (!ingredient) {
+  async findOne(userId: number, id: number): Promise<IngredientEntity> {
+    const ingredient = await this.ingredientRepository.findOne({
+      relations: {
+        company: {
+          user: true
+        },
+        product: true,
+      },
+      where: {
+        id
+      }
+    });
+    if (!ingredient || ingredient.company.user.id !== userId && !ingredient.company.isPublic) {
       throw new NotFoundException('Nie ma')
     }
     return ingredient

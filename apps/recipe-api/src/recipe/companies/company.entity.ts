@@ -33,7 +33,6 @@ export class Company extends BaseEntity {
   })
   description?: string;
 
-
   @ManyToOne(() => User, (user: User) => user.companies, {
     onDelete: 'CASCADE',
   })
@@ -44,12 +43,14 @@ export class Company extends BaseEntity {
   })
   isPublic: boolean;
 
-
   @OneToMany(
     () => IngredientEntity, (ingredients: IngredientEntity) => ingredients.company, {
       onDelete: 'CASCADE'
     }
   )
   ingredients: IngredientEntity[]
+
+  // @Column({ type: 'varchar'})
+  // createdAt: string
 }
 

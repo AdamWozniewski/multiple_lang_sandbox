@@ -8,4 +8,7 @@ Content-Type: application/json
   "product": 1
 }
 
+### GET Ingredients
+GET {{baseUrl}}/ingredients/13
+
 ###

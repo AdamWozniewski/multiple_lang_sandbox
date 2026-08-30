@@ -12,6 +12,9 @@ import {ProductsService} from "./products.service";
 import {CreateProductsDto} from "./dto/create-products.dto";
 import {UpdateProductsDto} from "./dto/update-products.dto";
 import {JwtAuthGuard} from "../../auth/auth/jwt.guard";
+import {FilterBy} from "../../commons/decorators/filter-by.decorator";
+import {Products} from "./product.entity";
+import {FilterQueryDto} from "../../commons/dto/FilterQueryDto";
 
 @Controller('products')
 export class ProductsController {
@@ -20,8 +23,8 @@ export class ProductsController {
     this.productService = productService
   }
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(@FilterBy<Products>() filters: FilterQueryDto<Products>) {
+    return this.productService.findAll(filters);
   }
 
   @Post()

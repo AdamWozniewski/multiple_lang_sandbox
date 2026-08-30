@@ -15,6 +15,10 @@ GET {{baseUrl}}/products
 
 ###
 
+GET {{baseUrl}}/products?query=pin
+
+###
+
 PUT {{baseUrl}}/products
 Content-Type: application/json
 
