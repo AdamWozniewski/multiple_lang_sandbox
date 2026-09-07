@@ -1,5 +1,5 @@
-import { Router } from "express";
 import type { NextFunction, Request, Response } from "express";
+import { Router } from "express";
 import { DevController } from "../../controllers/dev/dev-controller";
 import { PageController } from "../../controllers/web/page-controller.js";
 

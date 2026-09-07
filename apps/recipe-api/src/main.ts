@@ -1,12 +1,12 @@
 import { ValidationPipe } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
-import { NestExpressApplication } from '@nestjs/platform-express';
+import type { NestExpressApplication } from "@nestjs/platform-express";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
+import { join } from "path";
 import { AppModule } from "./app.module";
 import { DatabaseExceptionFilter } from "./filters/database.filter";
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { join } from 'path';
-import {ConfigService} from "@nestjs/config";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -16,19 +16,19 @@ async function bootstrap() {
   });
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
-  const configService = app.get(ConfigService)
+  const configService = app.get(ConfigService);
   app.useGlobalFilters(new DatabaseExceptionFilter(configService));
-  app.useStaticAssets(join(process.cwd(), 'uploads'), {
-    prefix: '/uploads/',
+  app.useStaticAssets(join(process.cwd(), "uploads"), {
+    prefix: "/uploads/",
   });
   const config = new DocumentBuilder()
-    .setTitle('Image API')
-    .setDescription('REST API for uploading and managing images')
-    .setVersion('1.0')
+    .setTitle("Image API")
+    .setDescription("REST API for uploading and managing images")
+    .setVersion("1.0")
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  SwaggerModule.setup("api/docs", app, document);
   await app.listen(process.env.NEST_PORT ?? 3001);
 }
 

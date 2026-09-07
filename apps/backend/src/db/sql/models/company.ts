@@ -1,1 +1,1 @@
-export const companyTable = {}
+export const companyTable = {};

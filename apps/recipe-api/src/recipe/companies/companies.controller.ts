@@ -1,27 +1,31 @@
 import {
-  Body, ClassSerializerInterceptor,
+  Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
   HttpException,
   NotFoundException,
   Param,
-  ParseIntPipe,
+  ParseIntPipe, Patch,
   Post,
-  Put, Req, UseGuards, UseInterceptors,
-} from '@nestjs/common';
-import { CompaniesService } from './companies.service';
-import {CreateCompaniesDto} from "./dto/create-companies.dto";
-import {UpdateCompaniesDto} from "./dto/update-companies.dto";
-import {JwtAuthGuard} from "../../auth/auth/jwt.guard";
-import {AuthGuard} from "@nestjs/passport";
-import {Company} from "./company.entity";
-import {FilterQueryDto} from "../../commons/dto/FilterQueryDto";
-import {FilterBy} from "../../commons/decorators/filter-by.decorator";
+  Put,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
+import { JwtAuthGuard } from "../../auth/auth/jwt.guard";
+import { FilterBy } from "../../commons/decorators/filter-by.decorator";
+import type { FilterQueryDto } from "../../commons/dto/FilterQueryDto";
+import { CompaniesService } from "./companies.service";
+import type { Company } from "./company.entity";
+import type { CreateCompaniesDto } from "./dto/create-companies.dto";
+import type { UpdateCompaniesDto } from "./dto/update-companies.dto";
 
-@Controller('companies')
+@Controller("companies")
 @UseInterceptors(ClassSerializerInterceptor)
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard("jwt"))
 export class CompaniesController {
   constructor(private companyService: CompaniesService) {
     this.companyService = companyService;
@@ -32,8 +36,8 @@ export class CompaniesController {
     return this.companyService.read(req.user.id, filters);
   }
 
-  @Get(':companyId')
-  findOne(@Req() req, @Param('companyId') companyId: number) {
+  @Get(":companyId")
+  findOne(@Req() req, @Param("companyId") companyId: number) {
     return this.companyService.getOneById(req.user.id, companyId);
   }
 
@@ -43,13 +47,13 @@ export class CompaniesController {
     await this.companyService.create(req.user.id, company);
   }
 
-  @Put()
-  async updateOne(@Req() req, @Body() company: UpdateCompaniesDto) {
-    await this.companyService.update(req.user.id, company);
+  @Patch(':id')
+  async updateOne(@Req() req, @Param('id', ParseIntPipe) companyId, @Body() company: UpdateCompaniesDto) {
+    return await this.companyService.update(req.user.id, companyId, company);
   }
 
-  @Delete(':companyId')
-  async deleteCompany(@Req() req, @Param('companyId') companyId: number) {
+  @Delete(":companyId")
+  async deleteCompany(@Req() req, @Param("companyId") companyId: number) {
     await this.companyService.remove(req.user.id, companyId);
   }
 }

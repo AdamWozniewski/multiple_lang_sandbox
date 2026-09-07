@@ -1,12 +1,12 @@
-import {IsNumber} from "class-validator";
+import { IsNumber } from "class-validator";
 
 export class CreateIngredientsDto {
-    @IsNumber()
-    company: number;
+  @IsNumber()
+  company: number;
 
-    @IsNumber()
-    product: number;
+  @IsNumber()
+  product: number;
 
-    @IsNumber()
-    amount: number;
+  @IsNumber()
+  amount: number;
 }

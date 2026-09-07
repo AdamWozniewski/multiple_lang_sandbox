@@ -1,1 +1,1 @@
-export const LinkTable = {}
+export const LinkTable = {};

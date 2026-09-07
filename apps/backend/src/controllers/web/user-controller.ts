@@ -4,10 +4,9 @@ import { ATTEMPT_TYPE } from "@customTypes/qr-code-attemp-status";
 import { ServiceNames } from "@customTypes/service-names";
 import type { IRoleService } from "@interface/role-interface";
 import { Link } from "@mongo/models/link";
+import type { IUserRole } from "@mongo/models/roles";
 import type { IUser } from "@mongo/models/user";
 import { LinkService } from "@services/Link-Service";
-import {profileUpload, runImageMiddleware} from "@utility/uploader";
-import multer from "multer";
 import { MailerService } from "@services/Mailer-Service";
 import { RoleService } from "@services/Role-Services";
 import { UserService } from "@services/User-Service";
@@ -20,13 +19,14 @@ import {
   sha256Base64url,
 } from "@utility/hash";
 import { logger } from "@utility/logger";
+import { profileUpload, runImageMiddleware } from "@utility/uploader";
 import type { Request, Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
+import multer from "multer";
 import QRCode from "qrcode";
 import { v4 as uuidv4 } from "uuid";
 import { LoginRequestDTO } from "../../dto/user-login.dto";
 import { RegisterRequestDTO } from "../../dto/user-register.dto";
-import type {IUserRole} from "@mongo/models/roles";
 
 const localUrl: string = `${config.appUrl}${config.port}`;
 const userControllerLogger = logger(ServiceNames.UserService);
@@ -85,7 +85,7 @@ export class UserController {
         .set("Content-Type", "text/html")
         .render("pages/confirm/confirm-registration");
     } catch (error: any) {
-      console.log(error)
+      console.log(error);
       const errMessageGenerator = (error: any) => {
         switch (error.code) {
           case 11000:
@@ -142,14 +142,18 @@ export class UserController {
         roles: role,
       };
       if (user.twoFactorAuthentication) {
-        req.session.pending2FA = destructuredUser
+        req.session.pending2FA = destructuredUser;
         switch (user.twoFactorAuthenticationType) {
-          case 'verification-code': return res.redirect('/verification/verification-code');
-          case 'qr-code': return res.redirect('/verification/qr-code');
-          case 'magic-link': return res.redirect('/verification/magic-link');
+          case "verification-code":
+            return res.redirect("/verification/verification-code");
+          case "qr-code":
+            return res.redirect("/verification/qr-code");
+          case "magic-link":
+            return res.redirect("/verification/magic-link");
           // case 'physical-key': return res.redirect('/verification/magic-link');
           // case 'biometrics': return res.redirect('/verification/magic-link');
-          default: return ;
+          default:
+            return;
         }
         // if (user.twoFactorAuthenticationType === "verification-code") {
         //   return res.redirect("/verification/verification-code");
@@ -168,7 +172,11 @@ export class UserController {
         // }
       }
 
-      return this.setSuccessLogin(req, () => res.redirect("/"), destructuredUser);
+      return this.setSuccessLogin(
+        req,
+        () => res.redirect("/"),
+        destructuredUser,
+      );
     } catch (error: any) {
       userControllerLogger.error("Login failed", {
         metadata: {
@@ -480,16 +488,18 @@ export class UserController {
       const { magicLink: token } = req.query;
       const link = await Link.findOne({ token });
 
-      if (!link || !link?.active || !link.expiresAt || link.expiresAt.getTime() < Date.now()) {
+      if (
+        !link ||
+        !link?.active ||
+        !link.expiresAt ||
+        link.expiresAt.getTime() < Date.now()
+      ) {
         return res.render("pages/auth/magic-link-error");
       }
       await Link.findOneAndUpdate({ token }, { active: false });
       const user = await this.userService.findUserById(String(link.user));
       if (!user) throw new Error("User not found");
-      return this.setSuccessLogin(req,
-        () => res.redirect("/"),
-        user as IUser,
-      );
+      return this.setSuccessLogin(req, () => res.redirect("/"), user as IUser);
     } catch (_error: any) {
       res.render("pages/auth/magic-link-error");
     }
@@ -503,7 +513,7 @@ export class UserController {
   };
 
   showProfile(req: Request, res: Response) {
-    console.log(req.session.user)
+    console.log(req.session.user);
     res.status(200).render("pages/auth/profile", { form: req.session.user });
   }
 
@@ -514,7 +524,7 @@ export class UserController {
       const { password, ...rest } = req.body;
       const payload: Partial<IUser> = {
         ...rest,
-        ...(password && {password: await hashPassword(password)}),
+        ...(password && { password: await hashPassword(password) }),
         twoFactorAuthentication: req.body.twoFactorAuthentication === "on",
         twoFactorAuthenticationType: req.body.twoFactorAuthenticationType,
       };
@@ -726,11 +736,11 @@ export class UserController {
   };
 
   setSuccessLogin<T extends Pick<IUser, "id" | "email">>(
-      req: Request,
-      callback: (...args: undefined[]) => any,
-      user: T,
+    req: Request,
+    callback: (...args: undefined[]) => any,
+    user: T,
   ): Response {
-    req.session.user = user
+    req.session.user = user;
     userControllerLogger.info("Login Success", {
       metadata: {
         ip: req.ip,

@@ -1,4 +1,4 @@
-import type { Document, Model, Schema, UpdateWriteOpResult } from 'mongoose';
+import type { Document, Model, Schema, UpdateWriteOpResult } from "mongoose";
 import { model } from "mongoose";
 
 export interface IBaseModel extends Document {

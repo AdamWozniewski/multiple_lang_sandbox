@@ -1,11 +1,11 @@
-import {Company, type ICompany} from "@mongo/models/company.js";
+import type { Filters } from "@customTypes/filters";
+import { Company, type ICompany } from "@mongo/models/company.js";
 import { CompanyService } from "@services/Company-Service.js";
 import { logger } from "@utility/logger.js";
-import {companyImageUpload, runImageMiddleware} from "@utility/uploader.js";
+import { companyImageUpload, runImageMiddleware } from "@utility/uploader.js";
 import type { Request, Response } from "express";
 import { Parser } from "json2csv";
 import multer from "multer";
-import type { Filters } from '@customTypes/filters';
 
 const companiesControllerLogger = logger("CompaniesController");
 
@@ -24,7 +24,9 @@ export class CompaniesController {
   showCompany = async (req: Request, res: Response) => {
     const { slug } = req.params;
     try {
-      const company = await this.companyService.findCompanyBySlug(slug as string);
+      const company = await this.companyService.findCompanyBySlug(
+        slug as string,
+      );
       res.status(company ? 200 : 404).render("pages/companies/company", {
         company,
         title: "Kompanie",
@@ -34,14 +36,15 @@ export class CompaniesController {
         metadata: { ip: req.ip, message: error.message, controller },
       });
       res.locals.errors = { message: error.message };
-      return res.status(500).render("pages/companies/companies", { title: "Kompanie" });
-
+      return res
+        .status(500)
+        .render("pages/companies/companies", { title: "Kompanie" });
     }
   };
 
   showCompanies = async (req: Request, res: Response) => {
     const { query, sort, countMin, countMax, page } = req.query;
-    console.log(query, sort, countMin, countMax, page)
+    console.log(query, sort, countMin, countMax, page);
 
     const currentPage = Number.parseInt(page as string, 10) || 1;
 

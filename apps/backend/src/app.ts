@@ -32,11 +32,11 @@ import {
 } from "./middleware/csrf-middleware.js";
 import { languageMiddleware } from "./middleware/language-middleware";
 import { sentryMiddleware } from "./middleware/sentry-middleware";
+import { routerApi } from "./routes/api/api";
 import { routerDev } from "./routes/dev/dev";
 import { setupGraphQL } from "./routes/graphql/graphql";
 import { routerWeb } from "./routes/web/web";
 import passport from "./utility/passport";
-import {routerApi} from "./routes/api/api";
 
 export const startApp = async () => {
   try {
@@ -50,12 +50,14 @@ export const startApp = async () => {
   app.use(bodyParser.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
-  app.use(cors({
-    origin: `${config.appUrl}${config.port}`,
-    credentials: true,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    allowedHeaders: ['Content-Type', 'Authorization']
-  }));
+  app.use(
+    cors({
+      origin: `${config.appUrl}${config.port}`,
+      credentials: true,
+      methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+      allowedHeaders: ["Content-Type", "Authorization"],
+    }),
+  );
   app.use(
     expressSession({
       secret: config.secretSession,
@@ -108,26 +110,27 @@ export const startApp = async () => {
   if (PROD) app.enable("view cache");
 
   app.use(
-      helmet({
-        ...(PROD ? {
-          contentSecurityPolicy: {
-            useDefaults: true,
-            directives: {
-              defaultSrc: ["'self'"],
-              scriptSrc: ["'self'", "cdn.jsdelivr.net"],
-              styleSrc: ["'self'", "cdn.jsdelivr.net", "'unsafe-inline'"],
-              imgSrc: ["'self'", "data:"],
-              connectSrc: ["'self'"],
+    helmet({
+      ...(PROD
+        ? {
+            contentSecurityPolicy: {
+              useDefaults: true,
+              directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["'self'", "cdn.jsdelivr.net"],
+                styleSrc: ["'self'", "cdn.jsdelivr.net", "'unsafe-inline'"],
+                imgSrc: ["'self'", "data:"],
+                connectSrc: ["'self'"],
+              },
             },
-          },
-
-        } : {
-          contentSecurityPolicy: false,
-          hsts: false,
-        }),
-        crossOriginEmbedderPolicy: false,
-      })
-  )
+          }
+        : {
+            contentSecurityPolicy: false,
+            hsts: false,
+          }),
+      crossOriginEmbedderPolicy: false,
+    }),
+  );
 
   app.use(rateLimiterMiddleware);
   app.use("/admin", isAuthMiddleware);

@@ -17,13 +17,13 @@ GET {{baseUrl}}/companies/1
 
 ###
 
-PUT {{baseUrl}}/companies
+PATCH {{baseUrl}}/companies/1
 Content-Type: application/json
 
 {
-  "id": 3,
-  "name": "new name",
-  "servings": 3
+  "name": "TEST NAME 2",
+  "servings": 3,
+  "description": "test"
 }
 
 ###

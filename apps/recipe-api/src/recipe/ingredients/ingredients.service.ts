@@ -1,45 +1,54 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { IngredientEntity } from './ingredient.entity';
-import { Repository } from 'typeorm';
-import { IngredientsRepository } from './ingredientsRepository';
-import {CompaniesService} from "../companies/companies.service";
-import {CreateIngredientsDto} from "./dto/create-ingredients.dto";
-import {ProductsService} from "../products/products.service";
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { CompaniesService } from "../companies/companies.service";
+import { ProductsService } from "../products/products.service";
+import type { CreateIngredientsDto } from "./dto/create-ingredients.dto";
+import type { IngredientEntity } from "./ingredient.entity";
+import { IngredientsRepository } from "./ingredientsRepository";
 
 @Injectable()
 export class IngredientsService {
   constructor(
-      private readonly ingredientRepository: IngredientsRepository,
-      private readonly companyService: CompaniesService,
-      private readonly productService: ProductsService
-  ) {
-  }
+    private readonly ingredientRepository: IngredientsRepository,
+    private readonly companyService: CompaniesService,
+    private readonly productService: ProductsService,
+  ) {}
 
   async findOne(userId: number, id: number): Promise<IngredientEntity> {
     const ingredient = await this.ingredientRepository.findOne({
       relations: {
         company: {
-          user: true
+          user: true,
         },
         product: true,
       },
       where: {
-        id
-      }
+        id,
+      },
     });
-    if (!ingredient || ingredient.company.user.id !== userId && !ingredient.company.isPublic) {
-      throw new NotFoundException('Nie ma')
+    if (
+      !ingredient ||
+      (ingredient.company.user.id !== userId && !ingredient.company.isPublic)
+    ) {
+      throw new NotFoundException("Nie ma");
     }
-    return ingredient
+    return ingredient;
   }
 
-  async create(userId: number, ingredient: CreateIngredientsDto): Promise<IngredientEntity> {
-    const company = await this.companyService.getOneOf(userId, ingredient.company);
+  async create(
+    userId: number,
+    ingredient: CreateIngredientsDto,
+  ): Promise<IngredientEntity> {
+    const company = await this.companyService.getOneOf(
+      userId,
+      ingredient.company,
+    );
     const product = await this.productService.getOneById(ingredient.product);
     return this.ingredientRepository.save({
-      ...ingredient, company, product
-    })
+      ...ingredient,
+      company,
+      product,
+    });
   }
-
 }

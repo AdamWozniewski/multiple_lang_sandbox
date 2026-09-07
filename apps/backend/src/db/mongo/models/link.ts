@@ -1,6 +1,6 @@
 import type { LinksType } from "@customTypes/links";
 import type { IUser } from "@mongo/models/user";
-import { type Model, model, type ObjectId, Schema, Types } from "mongoose";
+import { type Model, model, type ObjectId, Schema, type Types } from "mongoose";
 
 export interface ILink extends Document {
   _id: Types.ObjectId;

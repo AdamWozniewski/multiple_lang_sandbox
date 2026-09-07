@@ -51,5 +51,5 @@ export const config = {
   NEW_RELIC_API_KEY: process.env.NEW_RELIC_API_KEY || "",
   NEW_RELIC_APP_NAME: process.env.NEW_RELIC_APP_NAME || "",
 
-  redisPort: process.env.REDIS_PORT || "6379"
+  redisPort: process.env.REDIS_PORT || "6379",
 };

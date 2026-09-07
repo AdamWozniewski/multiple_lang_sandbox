@@ -1,6 +1,6 @@
 export class DbRepository {
-    findById() {}
-    findOne() {}
-    deleteOne() {}
-    getAll() {}
+  findById() {}
+  findOne() {}
+  deleteOne() {}
+  getAll() {}
 }

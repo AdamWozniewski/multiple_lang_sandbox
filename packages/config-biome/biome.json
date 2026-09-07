@@ -64,6 +64,17 @@
       "quoteProperties": "asNeeded",
       "semicolons": "always",
       "trailingCommas": "all"
+    },
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  },
+  "css": {
+    "formatter": {
+      "enabled": false
+    },
+    "parser": {
+      "tailwindDirectives": true
     }
   },
   "json": {
@@ -73,16 +84,23 @@
   },
   "overrides": [
     {
-      "includes": [
-        "**/*.ts",
-        "**/*.tsx"
-      ],
+      "includes": ["**/*.ts", "**/*.tsx"],
       "linter": {
         "rules": {
           "suspicious": {
             "noExplicitAny": "warn"
           },
           "style": {}
+        }
+      }
+    },
+    {
+      "includes": ["apps/recipe-api/**/*.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useImportType": "off"
+          }
         }
       }
     }

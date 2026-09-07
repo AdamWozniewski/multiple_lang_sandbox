@@ -1,17 +1,21 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from "class-validator";
 
 export class UpdateCompaniesDto {
-
-  @IsNumber()
-  id: number;
+  // @IsNumber()
+  // id: number;
 
   @IsString()
-  name: string;
+  @IsOptional()
+  name?: string;
 
-  @IsNumber({}, {
-    message: 'Servings must by a number'
-  })
-  servings: number;
+  @IsOptional()
+  @IsNumber(
+    {},
+    {
+      message: "Servings must by a number",
+    },
+  )
+  servings?: number;
 
   @IsOptional()
   @IsString()

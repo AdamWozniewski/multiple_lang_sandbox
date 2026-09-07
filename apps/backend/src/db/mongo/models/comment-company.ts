@@ -1,12 +1,10 @@
-import {model, type Model, Schema} from "mongoose";
+import { type Model, model, Schema } from "mongoose";
 
-export interface iCommentCompany extends Document {
+export interface iCommentCompany extends Document {}
 
-}
-
-const commentCompanySchema = new Schema<iCommentCompany>({})
+const commentCompanySchema = new Schema<iCommentCompany>({});
 
 export const CompanyCommend: Model<iCommentCompany> = model<iCommentCompany>(
-    "CommentCompany",
-    commentCompanySchema,
+  "CommentCompany",
+  commentCompanySchema,
 );

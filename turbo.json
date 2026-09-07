@@ -15,6 +15,9 @@
       "dependsOn": ["transit", "@repo/vitest-config#build"],
       "outputs": ["coverage/blob/**"]
     },
+    "transit": {
+      "dependsOn": ["^transit"]
+    },
     "migrate": { "cache": false },
     "migrate:generate": { "cache": false },
     "migrate:revert": { "cache": false },
