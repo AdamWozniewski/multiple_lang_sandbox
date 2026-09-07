@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "aspire": {
+      "command": "./node_modules/.bin/aspire",
+      "args": ["agent", "mcp"]
+    }
+  }
+}

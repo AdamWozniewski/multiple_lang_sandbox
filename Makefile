@@ -2,6 +2,7 @@ install-all:
 	docker compose up --build --no-start
 
 	bun install
+	bunx aspire certs trust
 
 	bun scripts/mongo-types.ts
 	bun scripts/mongo-create-admin.ts
@@ -24,5 +25,12 @@ start-mongo:
 	docker compose start mongo mongo-express
 	cd apps/backend && bun run dev:server
 
+aspire:
+	bunx aspire run
+
+aspire-start:
+	bunx aspire start
+
 stop:
 	docker compose stop
+	bunx aspire stop

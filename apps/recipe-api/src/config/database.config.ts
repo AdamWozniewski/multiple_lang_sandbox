@@ -9,16 +9,16 @@ import {
   POSTGRES_DB_HOST,
   POSTGRES_DB_PASSWORD,
   POSTGRES_DB_PORT,
-  POSTGRES_DB_USERNAME,
-} from '@utility/statics';
+  POSTGRES_DB_USER,
+} from "@utility/statics";
 
 export class TypeOrmConfig {
   static getOrmConfig(configService: ConfigService): TypeOrmModuleOptions {
     return {
-      type: 'postgres',
-      host: configService.get<string>(POSTGRES_DB_HOST, 'localhost'),
+      type: "postgres",
+      host: configService.get<string>(POSTGRES_DB_HOST, "localhost"),
       port: configService.get<number>(POSTGRES_DB_PORT, 5432),
-      username: configService.get<string>(POSTGRES_DB_USERNAME),
+      username: configService.get<string>(POSTGRES_DB_USER),
       password: configService.get<string>(POSTGRES_DB_PASSWORD),
       database: configService.get<string>(POSTGRES_DB_DATABASE),
       autoLoadEntities: true,
