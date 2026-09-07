@@ -1,17 +1,18 @@
-import { forwardRef, HttpException, Inject, Injectable } from '@nestjs/common';
-import { Products } from './product.entity';
-import {Like, Repository, UpdateResult} from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import {CompaniesService} from "../companies/companies.service";
-import {CreateProductsDto} from "./dto/create-products.dto";
-import {UpdateProductsDto} from "./dto/update-products.dto";
-import {FilterQueryDto} from "../../commons/dto/FilterQueryDto";
+import { forwardRef, HttpException, Inject, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Like, type Repository, type UpdateResult } from "typeorm";
+import type { FilterQueryDto } from "../../commons/dto/FilterQueryDto";
+import { CompaniesService } from "../companies/companies.service";
+import type { CreateProductsDto } from "./dto/create-products.dto";
+import type { UpdateProductsDto } from "./dto/update-products.dto";
+import { Products } from "./product.entity";
 
 @Injectable()
 export class ProductsService {
   constructor(
-    @Inject(forwardRef(() => CompaniesService)) private companyService: CompaniesService,
-    @InjectRepository(Products) private productRepository: Repository<Products>
+    @Inject(forwardRef(() => CompaniesService))
+    private companyService: CompaniesService,
+    @InjectRepository(Products) private productRepository: Repository<Products>,
   ) {
     this.companyService = companyService;
   }
@@ -19,8 +20,8 @@ export class ProductsService {
   async getOneById(id: number): Promise<Products> {
     const product = await this.productRepository.findOne({
       where: {
-        id
-      }
+        id,
+      },
     });
     if (!product) {
       throw new HttpException(`Nie ma takiej Ingredients`, 404);
@@ -28,22 +29,25 @@ export class ProductsService {
     return product;
   }
 
-  async findAll(filters: FilterQueryDto<Products>): Promise<{result: Products[]; total: number}> {
+  async findAll(
+    filters: FilterQueryDto<Products>,
+  ): Promise<{ result: Products[]; total: number }> {
     const [result, total] = await this.productRepository.findAndCount({
       take: filters.limit,
       skip: filters.offset,
       order: {
-        [filters.orderBy || 'id']: filters.order
+        [filters.orderBy || "id"]: filters.order,
       },
       where: [
         {
           name: Like(`%${filters.query}%`),
         },
-      ]
+      ],
     });
     return {
-      result, total
-    }
+      result,
+      total,
+    };
   }
 
   async createProduct(product: CreateProductsDto) {

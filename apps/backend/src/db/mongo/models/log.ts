@@ -1,4 +1,4 @@
-import { type Model, model, Schema, type Types } from 'mongoose';
+import { type Model, model, Schema, type Types } from "mongoose";
 
 export interface ILog extends Document {
   _id: Types.ObjectId;

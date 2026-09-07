@@ -2,7 +2,7 @@
 // import { db } from "@sql/db.js";
 // import { userTable } from "@sql/models/index.js";
 // import { db } from "@sql/db.js";
-import type {ObjectId} from 'mongoose';
+
 import { randomBytes } from "node:crypto";
 import fs from "node:fs/promises";
 import { config } from "@config";
@@ -10,6 +10,7 @@ import type { IUserService } from "@interface/user-interface";
 import type { IUser } from "@mongo/models/user.js";
 import { User } from "@mongo/models/user.js";
 import { hashPassword, verifyPassword } from "@utility/hash.js";
+import type { ObjectId } from "mongoose";
 import { BaseService } from "./Base-Service.js";
 
 const localUrl: string = `${config.appUrl}${config.port}`;
@@ -57,11 +58,12 @@ export class UserService extends BaseService implements IUserService {
     id: string,
     data: Partial<IUser>,
     newAvatar?: string,
-    newBgc?: string
+    newBgc?: string,
   ): Promise<IUser | null> {
-    const user = await User.findOne({id});
+    const user = await User.findOne({ id });
 
-    if (newAvatar && user!.avatar) await fs.unlink(`public/img/uploads/${user!.avatar}`);
+    if (newAvatar && user!.avatar)
+      await fs.unlink(`public/img/uploads/${user!.avatar}`);
     if (newBgc && user!.bgc) await fs.unlink(`public/img/uploads/${user!.bgc}`);
     const result = await User.findOneAndUpdate(
       { _id: id },

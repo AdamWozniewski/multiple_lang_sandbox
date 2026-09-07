@@ -2,14 +2,9 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-} from '@nestjs/common';
-import { UserService } from '../user/user.service';
-import { CreateUserDto } from '../user/dto/create-user.dto';
-import { User } from '../user/user.entity';
-import { LoginUserDto } from '../user/dto/login-user.dto';
-import bcrypt from 'bcrypt';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+} from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
 import {
   ACCESS_TOKEN,
   DOMAIN,
@@ -17,8 +12,13 @@ import {
   JWT_EXPIRATION_SECRET,
   JWT_REFRESH_SECRET,
   REFRESH_TOKEN,
-} from '@utility/statics';
-import { CookieOptions } from 'express';
+} from "@utility/statics";
+import bcrypt from "bcrypt";
+import type { CookieOptions } from "express";
+import type { CreateUserDto } from "../user/dto/create-user.dto";
+import type { LoginUserDto } from "../user/dto/login-user.dto";
+import type { User } from "../user/user.entity";
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class AuthService {
@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   async register(
-    user: Pick<CreateUserDto, 'email' | 'password'>,
+    user: Pick<CreateUserDto, "email" | "password">,
   ): Promise<User> {
     return this.userService.create(user);
   }
@@ -44,12 +44,12 @@ export class AuthService {
   async login({ email, password }: LoginUserDto): Promise<User> {
     const user = await this.userService.findOne({ email });
     if (!user) {
-      throw new BadRequestException('User does not exist');
+      throw new BadRequestException("User does not exist");
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
-      throw new BadRequestException('Wrong password');
+      throw new BadRequestException("Wrong password");
     }
     return user;
   }
@@ -75,9 +75,7 @@ export class AuthService {
       .cookie(ACCESS_TOKEN, accessToken, {
         ...this.commonCookieOptions,
         maxAge:
-            Number(
-                this.configService.get<string>(JWT_EXPIRATION_SECRET),
-            ) * 1000,
+          Number(this.configService.get<string>(JWT_EXPIRATION_SECRET)) * 1000,
       })
       .cookie(REFRESH_TOKEN, refreshToken, {
         ...this.commonCookieOptions,
@@ -96,7 +94,7 @@ export class AuthService {
   }
 
   async tokenIsActive(token: string, hash: string): Promise<boolean> {
-    const tokenIsActive = await bcrypt.compare(token, hash || '');
+    const tokenIsActive = await bcrypt.compare(token, hash || "");
     if (!tokenIsActive) {
       throw new ForbiddenException();
     }

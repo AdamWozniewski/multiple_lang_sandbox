@@ -10,25 +10,23 @@ import {
   Res,
   UseGuards,
   UseInterceptors,
-} from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { CreateUserDto } from '../user/dto/create-user.dto';
-import { User } from '../user/user.entity';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
-import { LoginUserDto } from '../user/dto/login-user.dto';
-import { RefreshAuthGuard } from './refresh.guard';
-import { JwtAuthGuard } from './jwt.guard';
-import {REFRESH_TOKEN} from "@utility/statics";
+} from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { REFRESH_TOKEN } from "@utility/statics";
+import type { CreateUserDto } from "../user/dto/create-user.dto";
+import type { LoginUserDto } from "../user/dto/login-user.dto";
+import type { User } from "../user/user.entity";
+import { AuthService } from "./auth.service";
+import { JwtAuthGuard } from "./jwt.guard";
+import { RefreshAuthGuard } from "./refresh.guard";
 
-@Controller('auth')
+@Controller("auth")
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
-  @Post('register')
+  @Post("register")
   async register(
     @Body() { email, password }: CreateUserDto,
     @Res({ passthrough: true }) res: Response,
@@ -38,7 +36,7 @@ export class AuthController {
     return user;
   }
 
-  @Post('login')
+  @Post("login")
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() { email, password }: LoginUserDto,
@@ -49,7 +47,7 @@ export class AuthController {
     return user;
   }
 
-  @Post('refresh')
+  @Post("refresh")
   @UseGuards(RefreshAuthGuard)
   @HttpCode(HttpStatus.OK)
   async refresh(@Req() req, @Res({ passthrough: true }) res: Response) {
@@ -61,17 +59,17 @@ export class AuthController {
       user_id: req.user.id,
     });
     return {
-      message: 'token refreshed',
+      message: "token refreshed",
     };
   }
 
-  @Get('logout')
+  @Get("logout")
   @UseGuards(JwtAuthGuard)
   async logout(@Req() req, @Res({ passthrough: true }) res: Response) {
     await this.authService.logout(res, req.user.id);
 
     return {
-      message: 'Logged Out',
+      message: "Logged Out",
     };
   }
 }

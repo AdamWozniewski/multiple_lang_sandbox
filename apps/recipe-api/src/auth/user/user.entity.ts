@@ -1,12 +1,12 @@
+import { Exclude } from "class-transformer";
 import {
   BaseEntity,
   Column,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Exclude } from 'class-transformer';
-import {Company} from "../../recipe/companies/company.entity";
+} from "typeorm";
+import { Company } from "../../recipe/companies/company.entity";
 
 @Entity()
 export class User extends BaseEntity {
@@ -14,23 +14,26 @@ export class User extends BaseEntity {
   id: number;
 
   @Column({
-    type: 'varchar',
+    type: "varchar",
     unique: true,
   })
   email: string;
 
   @Exclude()
   @Column({
-    type: 'varchar'
+    type: "varchar",
   })
   password: string;
 
-  @OneToMany(() => Company, (company: Company) => company.user)
-  companies: Company[]
+  @OneToMany(
+    () => Company,
+    (company: Company) => company.user,
+  )
+  companies: Company[];
 
   @Column({
-    type: 'varchar',
-    default: null
+    type: "varchar",
+    default: null,
   })
   refreshToken: string;
 }

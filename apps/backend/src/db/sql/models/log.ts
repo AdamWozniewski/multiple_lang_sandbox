@@ -1,1 +1,1 @@
-export const logTable = {}
+export const logTable = {};

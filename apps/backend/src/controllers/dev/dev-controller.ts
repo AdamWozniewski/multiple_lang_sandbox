@@ -1,6 +1,6 @@
 import { mailer } from "@utility/mailing";
-import type {NextFunction, Request, Response} from "express";
-import {expressBullMQ} from "../../routes/events/bull-mq";
+import type { NextFunction, Request, Response } from "express";
+import { expressBullMQ } from "../../routes/events/bull-mq";
 
 export class DevController {
   test__emailPage(_req: Request, res: Response) {

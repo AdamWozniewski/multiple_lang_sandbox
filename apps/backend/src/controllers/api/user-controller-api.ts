@@ -38,9 +38,9 @@ export class UserControllerApi {
       //     // refreshToken
       //   });
       res.status(200).json({
-        user
-      })
-    } catch (error: any) {
+        user,
+      });
+    } catch (_error: any) {
       res.status(401).json({ message: "error" });
     }
   };
@@ -73,6 +73,6 @@ export class UserControllerApi {
   };
 
   logoutUser = async (_: Request, res: Response): Promise<void> => {
-    res.clearCookie('token').clearCookie("refreshToken");
+    res.clearCookie("token").clearCookie("refreshToken");
   };
 }

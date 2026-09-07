@@ -4,10 +4,10 @@ import {
   type ExceptionFilter,
   HttpStatus,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import type { Response } from "express";
 import { PostgresError } from "pg-error-enum";
 import { QueryFailedError, TypeORMError } from "typeorm";
-import { ConfigService } from "@nestjs/config";
 
 @Catch(TypeORMError)
 export class DatabaseExceptionFilter implements ExceptionFilter {

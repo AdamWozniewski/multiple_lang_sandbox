@@ -1,1 +1,1 @@
-export const emailCodeTable = {}
+export const emailCodeTable = {};
