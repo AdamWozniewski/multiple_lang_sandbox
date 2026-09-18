@@ -10,8 +10,8 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../../auth/auth/jwt.guard";
-import { FilterBy } from "../../commons/decorators/filter-by.decorator";
-import type { FilterQueryDto } from "../../commons/dto/FilterQueryDto";
+import { FilterBy } from "../../common/decorators/filter-by.decorator";
+import type { FilterQueryDto } from "../../common/dto/FilterQueryDto";
 import type { CreateProductsDto } from "./dto/create-products.dto";
 import type { UpdateProductsDto } from "./dto/update-products.dto";
 import type { Products } from "./product.entity";
@@ -19,7 +19,6 @@ import { ProductsService } from "./products.service";
 
 @Controller("products")
 export class ProductsController {
-  // private productService: ProductsService;
   constructor(private productService: ProductsService) {
     this.productService = productService;
   }

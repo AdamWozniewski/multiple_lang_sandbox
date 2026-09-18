@@ -12,7 +12,6 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { JwtAuthGuard } from "../../auth/auth/jwt.guard";
-import { JwtStrategy } from "../../auth/auth/jwt.strategy";
 import type { CreateIngredientsDto } from "./dto/create-ingredients.dto";
 import { IngredientsService } from "./ingredients.service";
 

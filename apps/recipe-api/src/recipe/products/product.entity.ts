@@ -32,6 +32,11 @@ export class Products extends BaseEntity {
   )
   ingredients: IngredientEntity[];
 
+  @Column({
+    type: "boolean",
+    default: false,
+  })
+  archived: boolean;
   // @Column({ type: 'varchar'})
   // createdAt: string
 }

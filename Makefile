@@ -4,13 +4,13 @@ install-all:
 	bun install
 	bunx aspire certs trust
 
-	bun scripts/mongo-types.ts
-	bun scripts/mongo-create-admin.ts
-	bun scripts/mongo-seed.ts
+	#bun scripts/mongo-types.ts
+	#bun scripts/mongo-create-admin.ts
+	#bun scripts/mongo-seed.ts
 
-	bun scripts/sql-types.ts
-	bun scripts/sql-create-admin.ts
-	bun scripts/sql-seed.ts
+	#bun scripts/sql-types.ts
+	#bun scripts/sql-create-admin.ts
+	#bun scripts/sql-seed.ts
 
 start-common:
 	docker compose start mailhog redis #jenkins gitea

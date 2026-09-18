@@ -26,3 +26,7 @@ Content-Type: application/json
 ### [L]ogin user
 POST {{baseUrl}}/auth/refresh
 Content-Type: application/json
+
+### [D]elete user
+DELETE {{baseUrl}}/auth/delete
+Content-Type: application/json

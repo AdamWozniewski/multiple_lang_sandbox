@@ -1,7 +1,7 @@
 import { forwardRef, HttpException, Inject, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Like, type Repository, type UpdateResult } from "typeorm";
-import type { FilterQueryDto } from "../../commons/dto/FilterQueryDto";
+import type { FilterQueryDto } from "../../common/dto/FilterQueryDto";
 import { CompaniesService } from "../companies/companies.service";
 import type { CreateProductsDto } from "./dto/create-products.dto";
 import type { UpdateProductsDto } from "./dto/update-products.dto";

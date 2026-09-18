@@ -9,6 +9,7 @@ export interface ICompany extends Document {
   employeesCount: number;
   user: Types.ObjectId | IUser;
   image?: string;
+  archived?: boolean
 }
 
 const companySchema = new Schema<ICompany>({
@@ -34,6 +35,11 @@ const companySchema = new Schema<ICompany>({
     ref: "User",
   },
   image: String,
+  archived: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
 });
 companySchema.index({ name: "text" });
 export const Company: Model<ICompany> = model<ICompany>(

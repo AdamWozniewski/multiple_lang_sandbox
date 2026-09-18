@@ -5,6 +5,7 @@ import type { Repository } from "typeorm";
 import type { CreateUserDto } from "./dto/create-user.dto";
 import type { UpdateUserDto } from "./dto/update-user.dto";
 import { User } from "./user.entity";
+import {v4} from 'uuid'
 
 @Injectable()
 export class UserService {
@@ -49,5 +50,18 @@ export class UserService {
 
   hashPassword(password: string): string {
     return bcrypt.hashSync(password, 8);
+  }
+
+  async deleteUser(id: number) : Promise<{success: boolean}> {
+    const user = await this.userRepository.findOne({ where: {
+      id
+      } });
+    if(!user) throw new NotFoundException('Nie ma company do usunuiecia')
+    const { affected } = await this.userRepository.update(id, {
+      email: v4(),
+      password: v4(),
+
+    });
+    return affected ? { success: true } : { success: false }
   }
 }

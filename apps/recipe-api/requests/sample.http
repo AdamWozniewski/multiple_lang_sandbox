@@ -1,0 +1,3 @@
+### [S]ample
+GET {{baseUrl}}/user?name=ADAM
+Content-Type: application/json

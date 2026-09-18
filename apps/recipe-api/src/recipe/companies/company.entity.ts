@@ -9,7 +9,6 @@ import {
 } from "typeorm";
 import { User } from "../../auth/user/user.entity";
 import { IngredientEntity } from "../ingredients/ingredient.entity";
-import { Products } from "../products/product.entity";
 
 @Entity()
 export class Company extends BaseEntity {
@@ -53,6 +52,12 @@ export class Company extends BaseEntity {
     default: false,
   })
   isPublic: boolean;
+
+  @Column({
+    type: "boolean",
+    default: false,
+  })
+  archived: boolean;
 
   @OneToMany(
     () => IngredientEntity,

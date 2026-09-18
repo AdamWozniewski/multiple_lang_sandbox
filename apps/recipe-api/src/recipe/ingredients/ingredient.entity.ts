@@ -24,9 +24,16 @@ export class IngredientEntity extends BaseEntity {
   )
   product: Products;
 
+  @Column({
+    type: "boolean",
+    default: false,
+  })
+  archived: boolean;
+
   @ManyToOne(
     () => Company,
     (company: Company) => company.ingredients,
+      { onDelete: 'SET NULL', nullable: true }
   )
   company: Company;
 }

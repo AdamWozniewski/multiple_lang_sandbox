@@ -16,7 +16,8 @@
     "biome:check": "biome check .",
     "biome:check:fix": "biome check . --fix",
     "biome:check:fix:unsafe": "biome check . --fix --unsafe",
-    "test": "jest",
+    "test": "vitest",
+    "test:run": "vitest run",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "@repo/config-typescript": "workspace:*",
+    "@repo/config-vitest": "workspace:*",
     "@faker-js/faker": "^10.4.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",

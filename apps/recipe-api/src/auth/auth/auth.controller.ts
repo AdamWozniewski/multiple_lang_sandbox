@@ -1,7 +1,7 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller,
+  Controller, Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -11,8 +11,6 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
 import { REFRESH_TOKEN } from "@utility/statics";
 import type { CreateUserDto } from "../user/dto/create-user.dto";
 import type { LoginUserDto } from "../user/dto/login-user.dto";
@@ -20,11 +18,12 @@ import type { User } from "../user/user.entity";
 import { AuthService } from "./auth.service";
 import { JwtAuthGuard } from "./jwt.guard";
 import { RefreshAuthGuard } from "./refresh.guard";
+import {UserService} from "../user/user.service";
 
 @Controller("auth")
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private readonly userService: UserService) {}
 
   @Post("register")
   async register(
@@ -71,5 +70,12 @@ export class AuthController {
     return {
       message: "Logged Out",
     };
+  }
+
+  @Delete('delete')
+  @UseGuards(JwtAuthGuard)
+  async deleteUser(@Req() req, @Res({passthrough: true}) res): Promise<{success: boolean}>  {
+    await this.authService.logout(res, req.user.id)
+    return await this.userService.deleteUser(req.user.id)
   }
 }

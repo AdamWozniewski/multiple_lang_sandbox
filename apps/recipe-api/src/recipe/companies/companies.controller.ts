@@ -4,8 +4,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  NotFoundException,
   Param,
   ParseIntPipe, Patch,
   Post,
@@ -16,8 +14,8 @@ import {
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { JwtAuthGuard } from "../../auth/auth/jwt.guard";
-import { FilterBy } from "../../commons/decorators/filter-by.decorator";
-import type { FilterQueryDto } from "../../commons/dto/FilterQueryDto";
+import { FilterBy } from "../../common/decorators/filter-by.decorator";
+import type { FilterQueryDto } from "../../common/dto/FilterQueryDto";
 import { CompaniesService } from "./companies.service";
 import type { Company } from "./company.entity";
 import type { CreateCompaniesDto } from "./dto/create-companies.dto";
@@ -47,8 +45,8 @@ export class CompaniesController {
     await this.companyService.create(req.user.id, company);
   }
 
-  @Patch(':id')
-  async updateOne(@Req() req, @Param('id', ParseIntPipe) companyId, @Body() company: UpdateCompaniesDto) {
+  @Patch(':companyId')
+  async updateOne(@Req() req, @Param('companyId', ParseIntPipe) companyId, @Body() company: UpdateCompaniesDto) {
     return await this.companyService.update(req.user.id, companyId, company);
   }
 

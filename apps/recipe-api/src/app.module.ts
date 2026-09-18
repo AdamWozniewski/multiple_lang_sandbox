@@ -1,6 +1,6 @@
-import { Module } from "@nestjs/common";
+import {MiddlewareConsumer, Module, NestModule, RequestMethod} from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { APP_GUARD } from "@nestjs/core";
+import {APP_FILTER, APP_GUARD, APP_INTERCEPTOR} from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
@@ -9,6 +9,10 @@ import { AuthModule } from "./auth/auth.module";
 import { databaseConfig } from "./config/database.config";
 import { envValidationConfig } from "./config/envValidation.config";
 import { RecipeModule } from "./recipe/recipe.module";
+import {LoggerMiddleware} from "./common/middlewares/logger/logger.middleware";
+import {AppGuard} from "./common/guards/app/app.guard";
+import {HttpFilter} from "./common/filters/http.filter";
+import {WrapperInterceptor} from "./common/interceptors/wrapper/wrapper.interceptor";
 
 @Module({
   imports: [
@@ -46,6 +50,24 @@ import { RecipeModule } from "./recipe/recipe.module";
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
+    {
+      provide: APP_GUARD,
+      useClass: AppGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: WrapperInterceptor,
+    },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+        .apply(LoggerMiddleware)
+        .forRoutes({path: 'company', method: RequestMethod.GET}) // ('*') for every path
+  }
+}

@@ -1,10 +1,9 @@
 import {ForbiddenException, HttpException, Injectable, NotFoundException} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import slugify from "slugify";
-import { Like, type Repository, type UpdateResult } from "typeorm";
+import {Like, type Repository} from "typeorm";
 import { UserService } from "../../auth/user/user.service";
-import type { FilterQueryDto } from "../../commons/dto/FilterQueryDto";
-import { ProductsService } from "../products/products.service";
+import type { FilterQueryDto } from "../../common/dto/FilterQueryDto";
 import { Company } from "./company.entity";
 import type { CreateCompaniesDto } from "./dto/create-companies.dto";
 import type { UpdateCompaniesDto } from "./dto/update-companies.dto";
@@ -115,9 +114,12 @@ export class CompaniesService {
     return raw[0];
   }
 
-  async remove(userId: number, companyId: number): Promise<Company> {
+  async remove(userId: number, companyId: number): Promise<{success: boolean}> {
     const company = await this.getOneById(userId, companyId);
-    return this.companyRepository.remove(company);
+    if(!company) throw new NotFoundException('Nie ma company do usunuiecia')
+    if (company.user.id !== userId) throw new ForbiddenException('Nie możesz usunąć')
+    const { affected } = await this.companyRepository.delete(companyId);
+    return affected ? { success: true } : { success: false }
   }
 
   async generateSlug(name: string) {
