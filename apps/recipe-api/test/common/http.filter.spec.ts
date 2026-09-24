@@ -1,4 +1,4 @@
-import { HttpFilter } from './http.filter';
+import { HttpFilter } from '../../src/common/filters/http.filter';
 
 describe('HttpFilter', () => {
   it('should be defined', () => {

@@ -1,4 +1,4 @@
-import { ViteUserConfig } from 'vitest/config';
+import swc from "unplugin-swc";
 
 export const sharedConfig = {
   test: {
@@ -8,6 +8,7 @@ export const sharedConfig = {
       blob: "coverage/blob/report.json",
     },
     setupFiles: './vitest.setup.ts',
+    plugins: [swc.vite()],
     coverage: {
       provider: "istanbul" as const,
       enabled: true,
