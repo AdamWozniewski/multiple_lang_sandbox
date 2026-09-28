@@ -6,9 +6,9 @@ export class AppService {
     return "Hello World!";
   }
 
-  getSample(): Object {
+  getSample(test: string): Object {
     return {
-      test: "test",
+      test,
     };
   }
 }

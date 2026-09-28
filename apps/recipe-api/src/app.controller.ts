@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   ForbiddenException,
   Get,
@@ -36,7 +37,7 @@ export class AppController {
   }
 
   @Post("")
-  getUSer() {
-    return this.appService.getSample();
+  getUSer(@Body() user: string) {
+    return this.appService.getSample(user);
   }
 }

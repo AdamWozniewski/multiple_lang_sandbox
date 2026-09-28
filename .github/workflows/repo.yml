@@ -1,0 +1,102 @@
+name: TEST
+on:
+  push:
+    branches:
+      -main
+env:
+
+jobs:
+  build:
+    name: Instalacja Node
+    runs-on: self-hosted
+    steps:
+      - name: Check repo
+        uses: actions/checkout@v3
+      - name: Use Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22.x
+      - name: install repo
+        run:
+          bun install
+      - name: Cache install
+        uses: actions/cache@v3
+        id: restore-install
+        with:
+          path: ./*
+          key: ${{ github.sha }}
+
+  integration-test:
+    needs: build
+    name: Run Tests
+    runs-on: self-hosted
+    steps:
+      - name: Restore install
+        uses: actions/cache@v3
+        id: restore-install
+        with:
+          path: ./*
+          key: ${{ github.sha }}
+      - name: MAKE .env.test file
+        run: |
+          echo "NODE_ENV = TEST" > .env.test
+      - name: MIgrate DB
+        run: bun run migrage:test
+      - name: Run test
+        run: bun run test
+
+  build-adonis:
+    needs: integration-test
+    name: Build Adonis app
+    runs-on: self-hosted
+    steps:
+      - name: Restore install
+        uses: actions/cache@v3
+        id: restore-install
+        with:
+          path: ./*
+          key: ${{ github.sha }}
+      - name: Build node app
+        run: |
+          cd build
+          bun run ci --omit=dev
+      - name: provide ecosystem to build
+        run: cp ./ecosystem.config.js ./build/ecosystem.config.js
+      - name: provide prisma schema
+        run: cp -r ./prisma ./build/prisma
+      - name: Make .env file
+        run: |
+          cd build
+          echo "NODE_ENV" > .env
+          echo "APP_KEY=${{ secrets.APP_KEY }}"
+      - name: Cache build
+        uses: actions/cache@v3
+        id: restore-build
+        with:
+          key: ''
+          path: ''
+  deploy:
+    needs: build-adonis
+    name: Deploy
+    runs-on: self-hosted
+    steps:
+      - name: Respotere build
+        uses: actions/cache@v3
+        id: restore-build
+        with:
+          path: ./build/*
+          key: ${{ github.sha }}-build
+      - name: remove server direc
+        run: rm -rf ${{ env.DEPLOU_APP_PATH }}
+      - name: copy server files
+        run: cp -r ${{ github.workspace }}/build ${{ .env.DEPLOY_APP_PATH }}
+      - name: Migration
+        working-directory: ${{ .env.DEPLOY_APP_PATH }}
+        run: bun run migrate:dev
+      - name: assure that pm2
+        run: bun install pm2@latest -g
+      - name: start current server
+        working-directory: ${{ .env.DEPLOY_APP_PATH }}
+        run: |
+          pm2 start ecosystem.config.js --update-env
+

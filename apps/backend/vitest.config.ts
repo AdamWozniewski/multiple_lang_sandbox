@@ -7,9 +7,9 @@ export default defineConfig({
     environment: "node",
     include: [
       "src/**/*.test.ts",
+      "src/**/*.spec.ts",
       "test/**/*.test.ts",
       "test/**/*.spec.ts",
-      "src/**/*.spec.ts",
     ],
     reporters: "default",
     coverage: { reporter: ["text", "html"], reportsDirectory: "coverage" },

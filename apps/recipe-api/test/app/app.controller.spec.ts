@@ -1,6 +1,7 @@
 import { Test, type TestingModule } from "@nestjs/testing";
 import { AppController } from "../../src/app.controller";
 import { AppService } from "../../src/app.service";
+import {expect} from "vitest";
 
 describe("AppController", () => {
   let appController: AppController;
@@ -18,5 +19,13 @@ describe("AppController", () => {
     it('should return "Hello World!"', () => {
       expect(appController.getHello()).toBe("Hello World!");
     });
+    it('create User', () => {
+      // Arrange
+      const userDto = 'test'
+      // ACT
+      const result = appController.getUSer(userDto);
+      // Assert
+      expect(result).toStrictEqual({test: 'test'})
+    })
   });
 });

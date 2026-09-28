@@ -128,7 +128,7 @@ export class CompaniesService {
       lower: true,
     });
     const exists = await this.findSlugs(slug);
-    if (!exists || slug.length === 0) return slug;
+    if (!exists || exists.length === 0) return slug;
     slug = slug + "-" + exists.length;
     return slug;
   }
