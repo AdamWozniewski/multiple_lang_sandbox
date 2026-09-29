@@ -13,6 +13,7 @@ import {LoggerMiddleware} from "./common/middlewares/logger/logger.middleware";
 import {AppGuard} from "./common/guards/app/app.guard";
 import {HttpFilter} from "./common/filters/http.filter";
 import {WrapperInterceptor} from "./common/interceptors/wrapper/wrapper.interceptor";
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import {WrapperInterceptor} from "./common/interceptors/wrapper/wrapper.intercep
     }),
     TypeOrmModule.forRootAsync(databaseConfig),
     AuthModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [
