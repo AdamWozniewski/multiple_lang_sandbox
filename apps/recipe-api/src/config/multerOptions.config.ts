@@ -1,8 +1,7 @@
 import {MulterOptions} from "@nestjs/platform-express/multer/interfaces/multer-options.interface";
 import {HttpException, HttpStatus} from "@nestjs/common";
-import {existsSync, mkdir} from "node:fs";
+import {existsSync} from "node:fs";
 import {mkdirSync} from "fs";
-import {generateFileHash} from "vitest/node";
 
 export const multerOptions: MulterOptions = {
     limits: {

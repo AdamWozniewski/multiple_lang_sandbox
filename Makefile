@@ -15,12 +15,12 @@ install-all:
 start-common:
 	docker compose start mailhog redis #jenkins gitea
 
-start-sql:
+dev-start-sql:
 	$(MAKE) start-common
 	docker compose start postgres adminer
 	cd apps/recipe-api && bun run start:dev
 
-start-mongo:
+dev-start-mongo:
 	$(MAKE) start-common
 	docker compose start mongo mongo-express
 	cd apps/backend && bun run dev:server
