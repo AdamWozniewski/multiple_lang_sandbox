@@ -102,8 +102,8 @@
     "biome:check:fix:unsafe": "biome check . --fix --unsafe",
     "test:unit": "vitest",
     "sentry:sourcemaps": "sentry-cli sourcemaps inject --org b2b-hs --project node-express ./dist && sentry-cli sourcemaps upload --org b2b-hs --project node-express ./dist",
-    "storybook": "bunx storybook dev -p 6006",
-    "build-storybook": "bunx storybook build",
+    "storybook": "bunx nx storybook -p 6006",
+    "build-storybook": "bunx nx build-storybook",
     "chromatic": "dotenv -e .env -- npx chromatic --project-token=$CHROMATIC_PROJECT_TOKEN"
   },
   "type": "module"

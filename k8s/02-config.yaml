@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: sandbox
+  name: sandbox-config
+data:
+  POSTGRES_DB_HOST: "sandbox-postgres-service"
+  POSTGRES_DB_PORT: "5432"
+  POSTGRES_DB_NAME: "postgres"
+
+  MONGO_DB_ADDRESS: "sandbox-mongodb-service"
+  MONGO_DB_PORT: "27017"
+  MONGO_DB_NAME: "node"
+  NODE_ENV: "production"

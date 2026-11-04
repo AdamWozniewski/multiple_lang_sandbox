@@ -31,6 +31,11 @@ aspire:
 aspire-start:
 	bunx aspire start
 
+kubernetes-init:
+	minikube start
+	kubectl delete namespace sandbox --ignore-not-found
+	kubectl apply -f k8s/
+
 stop:
 	docker compose stop
 	bunx aspire stop

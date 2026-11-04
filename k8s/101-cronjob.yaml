@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sandbox-cronjob
+  namespace: sandbox
+spec:
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: sandbox-rbac-monitor
+          restartPolicy: Never
+          containers:
+            - name: weather
+              image: busybox:1.36
+              command:
+                - "sh"
+                - "-c"
+                - |
+                  echo "=== 🌤️ Pogoda Białystok ==="
+                  wget -qO- "http://wttr.in/Bialystok?format=4" || echo "Brak połączenia"
+            - name: pod-monitor
+              image: bitnami/kubectl:latest
+              command:
+                - "/bin/bash"
+                - "-c"
+                - |
+                  echo "=== 🔍 Status podów ==="
+                  kubectl get pods -n sandbox
+                  NOT_RUNNING=$(kubectl get pods -n sandbox --field-selector=status.phase!=Running --no-headers 2>/dev/null | wc -l)
+                  if [ "$NOT_RUNNING" -gt 0 ]; then
+                    echo "⚠️ UWAGA: $NOT_RUNNING pod(ów) NIE jest Running!"
+                  else
+                    echo "✅ Wszystkie pody działają."
+                  fi
