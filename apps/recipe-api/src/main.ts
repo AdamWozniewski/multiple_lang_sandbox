@@ -32,6 +32,11 @@ async function bootstrap() {
   app.useStaticAssets(join(process.cwd(), "uploads"), {
     prefix: "/uploads/",
   });
+  app.useSecurityHeaders({
+    xFrameOptions: false,
+    strictTransportSecurity: { maxAge: 63072000, preload: true },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  });
   const config = new DocumentBuilder()
     .setTitle("Image API")
     .setDescription("REST API for uploading and managing images")

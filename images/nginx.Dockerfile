@@ -1,5 +1,3 @@
 FROM nginx:alpine
-COPY nginx.conf /etc/nginx/ngnix.conf
-LABEL authors="Adam"
-
-ENTRYPOINT ["top", "-b"]
+COPY nginx.conf /etc/nginx/ngninx.conf
+EXPOSE 80 443

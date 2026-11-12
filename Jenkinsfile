@@ -6,9 +6,7 @@ pipeline {
     choice(choices: ["DEV", "QA", "STG", "PROD"], description: "opis parametru", name: "envs")
   }
   environment {
-    def exampleBoolean = true
-    def exampleString = "Hello"
-    def exampleNumber = 5
+    EXAMPLE_BOOLEAN = "true"
   }
   triggers {
     cron("H 5 * * 1")
@@ -42,33 +40,71 @@ pipeline {
     stage("Install") {
       steps {
         echo "Instalacja pakietów"
-        // sh 'npm run i'
+        sh 'cd apps/recipe-api && bun install'
       }
     }
     stage("Test") {
       parallel {
-        stage("Backend Unit Tests") {
-          steps {
-            echo "Uruchamiam backend unit tests"
-            // sh 'npm run test:backend:unit'
+        stage("Backend EXPRESS tests") {
+          stages {
+            stage("Unit Tests") {
+              steps {
+                echo "Uruchamiam - Unit Tests"
+                //sh 'cd apps/backend && bun run test:run'
+              }
+            }
+            stage("Integration Tests") {
+              steps {
+                echo "Uruchamiam - Integration Tests"
+                //sh 'npm run test:backend:integration'
+              }
+            }
+            stage("E2E Tests") {
+              steps {
+                echo "Uruchamiam - E2E Tests"
+                //sh 'npm run test:backend:integration'
+              }
+            }
           }
         }
-        stage("Backend Integration Tests") {
-          steps {
-            echo "Uruchamiam backend integration tests"
-            // sh 'npm run test:backend:integration'
+
+        stage("Backend NEST tests") {
+          stages {
+            stage("Unit Tests") {
+              steps {
+                echo "Uruchamiam - Unit Tests"
+                //sh 'cd apps/recipe-api && bun run test:run'
+              }
+            }
+            stage("Integration Tests") {
+              steps {
+                echo "Uruchamiam - Integration Tests"
+                //sh 'cd apps/recipe-api && bun run test:run'
+              }
+            }
           }
         }
-        stage("Frontend Unit Tests") {
-          steps {
-            echo "Uruchamiam frontend unit tests"
-            // sh 'npm run test:frontend:unit'
-          }
-        }
-        stage("Frontend E2E Tests") {
-          steps {
-            echo "Uruchamiam frontend e2e tests"
-            // sh 'npm run test:frontend:e2e'
+
+        stage("Frontend ANGULAR tests") {
+          stages {
+            stage("Unit Tests") {
+              steps {
+                echo "Uruchamiam - Unit Tests"
+                //sh 'cd apps/angular && bun run test:run'
+              }
+            }
+            stage("Integration Tests") {
+              steps {
+                echo "Uruchamiam - Integration Tests"
+                //sh 'cd apps/angular && bun run test:run'
+              }
+            }
+            stage("E2E Tests") {
+              steps {
+                echo "Uruchamiam - Integration Tests"
+                //sh 'cd apps/angular && bun run test:run'
+              }
+            }
           }
         }
       }
@@ -78,20 +114,26 @@ pipeline {
         stage("Backend Build") {
           steps {
             script {
-              if (params.exampleNumber == 5) {
+              if (env.EXAMPLE_BOOLEAN == "true") {
                 return
               } else {
                 echo "number is not equal build failed"
               }
             }
             echo "== Backend Build =="
-            // sh 'npm run build:backend'
+            // sh 'cd apps/backend && bun run build:backend'
           }
         }
-        stage("Frontend Build") {
+        stage("backend NEST Build") {
           steps {
             echo "== Frontend Build =="
-            // sh 'npm run build:frontend'
+            // sh 'cd apps/recipe-api && bun run build'
+          }
+        }
+        stage("Frontend ANGULAR Build") {
+          steps {
+            echo "== Frontend Build =="
+            // sh 'cd apps/angular && bun run build:frontend'
           }
         }
       }
@@ -106,6 +148,18 @@ pipeline {
       steps {
         echo "Publikacja zakończona"
       }
+    }
+  }
+  post {
+    always {
+        echo "Pipeline zakończony"
+        deleteDir()
+    }
+    success {
+        echo "*** SUCCESS ***"
+    }
+    failure {
+        echo "--- FAILED ---"
     }
   }
 }
